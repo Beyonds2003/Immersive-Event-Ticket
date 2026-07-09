@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useMouse } from "../libs/useMouse";
 import { remapClamp } from "../libs/remapClamp";
+import { useEmailInput } from "../libs/useEmailInput";
 
 const Login = () => {
   return (
@@ -18,8 +19,8 @@ const Scene = () => {
     <Canvas>
       <Poster />
       <LoginInput />
-      <OrbitControls />
-      <directionalLight position={[3, 1, 5]} intensity={1.7} color="white" />
+      {/* <OrbitControls /> */}
+      <directionalLight position={[3, 1, 5]} intensity={8.7} color="#3457e5" />
       <ambientLight intensity={0.4} color="#504ed8" />
     </Canvas>
   );
@@ -41,9 +42,27 @@ const LoginInput = () => {
     ref.current.rotation.x = remapClamp(-coords.y, -1, 1, -0.2, 0.2);
   });
 
+  const { texture, focus, blur } = useEmailInput();
+  texture.flipY = false;
+
   return (
     <group ref={ref} scale={2} position={[2, -0.2, 1]}>
-      <mesh geometry={nodes.text.geometry} material={materials.Material_1} />
+      {/* Email input plane — canvas texture replaces the baked text mesh */}
+      <mesh
+        geometry={nodes.text.geometry}
+        onClick={() => focus()}
+        onPointerMissed={() => blur()}
+      >
+        <meshStandardMaterial
+          emissiveIntensity={0.6}
+          roughness={0.3}
+          metalness={1}
+          emissiveMap={texture}
+          map={texture}
+          emissive={"white"}
+        />
+      </mesh>
+
       <mesh geometry={nodes.Mesh_1.geometry} material={materials.Material_1} />
       <mesh
         geometry={nodes.Mesh_1_1.geometry}
