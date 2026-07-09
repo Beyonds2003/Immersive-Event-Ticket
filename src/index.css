@@ -7,3 +7,16 @@
   margin: 0;
   padding: 0;
 }
+
+:root {
+  --primary-color: #9898ef;
+  --secondary-color: #6f74d6;
+}
+
+.login-container {
+  background: radial-gradient(
+    circle at 65% 50%,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
+}
