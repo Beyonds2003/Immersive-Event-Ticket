@@ -14,7 +14,7 @@ const PLACEHOLDER = "Enter Email";
 const PADDING_X = 80;
 const CURSOR_BLINK_MS = 530;
 
-export const useEmailInput = () => {
+export const useEmailInput = (onEnter?: (value: string) => void) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const textureRef = useRef<THREE.CanvasTexture | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -24,6 +24,9 @@ export const useEmailInput = () => {
     focused: false,
     cursorVisible: true,
   });
+
+  // true for exactly one frame after Enter is pressed, then resets to false
+  const enterPressed = useRef(false);
 
   // Build the canvas + texture once
   const texture = useMemo(() => {
@@ -116,9 +119,22 @@ export const useEmailInput = () => {
       draw();
     };
 
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        enterPressed.current = true;
+        onEnter?.(stateRef.current.value);
+        // Reset to false on the next event-loop tick so a single
+        // useFrame check sees it as true exactly once
+        setTimeout(() => {
+          enterPressed.current = false;
+        }, 0);
+      }
+    };
+
     input.addEventListener("input", onInput);
     input.addEventListener("focus", onFocus);
     input.addEventListener("blur", onBlur);
+    input.addEventListener("keydown", onKeyDown);
 
     // Cursor blink ticker
     const blinkId = setInterval(() => {
@@ -134,6 +150,7 @@ export const useEmailInput = () => {
       input.removeEventListener("input", onInput);
       input.removeEventListener("focus", onFocus);
       input.removeEventListener("blur", onBlur);
+      input.removeEventListener("keydown", onKeyDown);
       document.body.removeChild(input);
     };
   }, []);
@@ -141,5 +158,5 @@ export const useEmailInput = () => {
   const focus = () => inputRef.current?.focus();
   const blur = () => inputRef.current?.blur();
 
-  return { texture, focus, blur };
+  return { texture, focus, blur, enterPressed };
 };

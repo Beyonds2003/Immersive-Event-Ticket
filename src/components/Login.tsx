@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useMouse } from "../libs/useMouse";
 import { remapClamp } from "../libs/remapClamp";
 import { useEmailInput } from "../libs/useEmailInput";
+import gsap from "gsap";
 
 const Login = () => {
   return (
@@ -42,7 +43,44 @@ const LoginInput = () => {
     ref.current.rotation.x = remapClamp(-coords.y, -1, 1, -0.2, 0.2);
   });
 
-  const { texture, focus, blur } = useEmailInput();
+  const scaleDownTheEmailInput = () => {
+    if (!ref.current) return;
+
+    // Compute world-space bounding box to find the exact left edge
+    const box = new THREE.Box3().setFromObject(ref.current);
+    const currentPosX = ref.current.position.x;
+    const currentScale = ref.current.scale.x;
+
+    // Derive the local-space min-x of the pivot (works even if GLB pivot isn't centered)
+    const localMinX = (box.min.x - currentPosX) / currentScale;
+
+    // At scale 1 the left edge should still equal box.min.x:
+    //   targetX + localMinX * 1 = box.min.x  →  targetX = box.min.x - localMinX
+    const targetX = box.min.x - localMinX;
+
+    const scale = 0;
+    const dur = 0.6;
+    const ease = "power4.out";
+
+    gsap.to(ref.current.scale, {
+      x: scale,
+      y: scale,
+      z: scale,
+      duration: dur,
+      ease: ease,
+    });
+
+    // changing the origin
+    gsap.to(ref.current.position, {
+      x: targetX - 1,
+      duration: dur,
+      ease: ease,
+    });
+  };
+
+  const { texture, focus, blur } = useEmailInput((email) => {
+    scaleDownTheEmailInput();
+  });
   texture.flipY = false;
 
   return (
