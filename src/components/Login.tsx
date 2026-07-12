@@ -7,6 +7,7 @@ import { remapClamp } from "../libs/remapClamp";
 import { useEmailInput } from "../libs/useEmailInput";
 import gsap from "gsap";
 import SphereAudiences from "./SphereAudiences";
+import Audience from "./Audience";
 
 const Login = () => {
   return (
@@ -21,8 +22,9 @@ const Scene = () => {
     <Canvas>
       <Poster />
       <LoginInput />
+      <Audience />
       {/* <OtpInput show={showOtp} /> */}
-      <SphereAudiences
+      {/* <SphereAudiences
         position={[2.3, 0, 0.5]}
         obstacle={{
           x: -0.2,
@@ -31,7 +33,7 @@ const Scene = () => {
           halfH: 0.6,
           visible: false,
         }}
-      />
+      /> */}
       <directionalLight position={[3, 1, 5]} intensity={8.7} color="#3457e5" />
       <ambientLight intensity={0.4} color="#504ed8" />
     </Canvas>
