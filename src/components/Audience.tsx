@@ -275,7 +275,7 @@ const Audience = () => {
     Box: folder({
       boxX: { value: 2, min: -10, max: 10, step: 0.1, label: "Position X" },
       boxY: { value: 0, min: -10, max: 10, step: 0.1, label: "Position Y" },
-      boxZ: { value: 1, min: -10, max: 10, step: 0.1, label: "Position Z" },
+      boxZ: { value: 0.9, min: -10, max: 10, step: 0.1, label: "Position Z" },
       // hex-pack 2 cols: half-width = colDx/2 + r + margin ≈ r*(√3/2+1)+0.1
       boxW: {
         value: 3.25,
@@ -285,7 +285,7 @@ const Audience = () => {
         label: "Width (half)",
       },
       boxH: {
-        value: 4.0,
+        value: 4.6,
         min: 0.5,
         max: 20,
         step: 0.1,
@@ -294,7 +294,7 @@ const Audience = () => {
       showBox: { value: false, label: "Show Box" },
     }),
     Physics: folder({
-      stiffness: { value: 85, min: 1, max: 200, step: 1, label: "Stiffness" },
+      stiffness: { value: 60, min: 1, max: 200, step: 1, label: "Stiffness" },
       damping: {
         value: 0.9,
         min: 0.5,
@@ -304,7 +304,7 @@ const Audience = () => {
       },
       bounce: { value: 0.5, min: 0.0, max: 1.0, step: 0.01, label: "Bounce" },
       pbdIterations: {
-        value: 6,
+        value: 3,
         min: 1,
         max: 20,
         step: 1,
@@ -320,14 +320,14 @@ const Audience = () => {
     }),
     Mouse: folder({
       pushStrength: {
-        value: 14,
+        value: 12,
         min: 0,
         max: 80,
         step: 0.5,
         label: "Push Strength",
       },
       mouseRadius: {
-        value: 0.6,
+        value: 1,
         min: 0.05,
         max: 2.0,
         step: 0.05,
@@ -337,7 +337,7 @@ const Audience = () => {
     Obstacle: folder(
       {
         obstacleX: {
-          value: 2.1,
+          value: 2.15,
           min: -10,
           max: 10,
           step: 0.05,
