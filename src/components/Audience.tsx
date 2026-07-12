@@ -153,21 +153,29 @@ function resolveBoxWalls(
   vx: Float32Array,
   vy: Float32Array,
 ) {
+  // Velocity threshold: below this speed treat as resting contact (no bounce).
+  // Prevents low-energy spheres from jittering against walls at high bounce values.
+  const REST_THRESHOLD = 0.08;
+
   if (px[i] - r < boxX - halfW) {
     px[i] = boxX - halfW + r;
-    if (vx[i] < 0) vx[i] = -vx[i] * bounce;
+    if (vx[i] < -REST_THRESHOLD) vx[i] = -vx[i] * bounce;
+    else vx[i] = 0;
   }
   if (px[i] + r > boxX + halfW) {
     px[i] = boxX + halfW - r;
-    if (vx[i] > 0) vx[i] = -vx[i] * bounce;
+    if (vx[i] > REST_THRESHOLD) vx[i] = -vx[i] * bounce;
+    else vx[i] = 0;
   }
   if (py[i] - r < boxY - halfH) {
     py[i] = boxY - halfH + r;
-    if (vy[i] < 0) vy[i] = -vy[i] * bounce;
+    if (vy[i] < -REST_THRESHOLD) vy[i] = -vy[i] * bounce;
+    else vy[i] = 0;
   }
   if (py[i] + r > boxY + halfH) {
     py[i] = boxY + halfH - r;
-    if (vy[i] > 0) vy[i] = -vy[i] * bounce;
+    if (vy[i] > REST_THRESHOLD) vy[i] = -vy[i] * bounce;
+    else vy[i] = 0;
   }
 }
 
@@ -296,15 +304,15 @@ const Audience = () => {
     Physics: folder({
       stiffness: { value: 60, min: 1, max: 200, step: 1, label: "Stiffness" },
       damping: {
-        value: 0.9,
+        value: 0.96,
         min: 0.5,
         max: 0.999,
         step: 0.001,
         label: "Damping",
       },
-      bounce: { value: 0.5, min: 0.0, max: 1.0, step: 0.01, label: "Bounce" },
+      bounce: { value: 0.6, min: 0.0, max: 1.0, step: 0.01, label: "Bounce" },
       pbdIterations: {
-        value: 3,
+        value: 8,
         min: 1,
         max: 20,
         step: 1,
@@ -327,7 +335,7 @@ const Audience = () => {
         label: "Push Strength",
       },
       mouseRadius: {
-        value: 1,
+        value: 0.6,
         min: 0.05,
         max: 2.0,
         step: 0.05,
@@ -504,11 +512,22 @@ const Audience = () => {
     const my = _mouseWorld.y;
     const { px, py, vx, vy, tx, ty } = p;
 
-    // Step 1 – spring + damping + mouse push + integrate
+    // Step 1 – spring force → integrate position → damp
+    //  Order matches the reference engine:
+    //   1. Accumulate spring force into velocity
+    //   2. Integrate position
+    //   3. Apply mouse push (positional + velocity impulse)
+    //   4. Apply velocity damping AFTER integration (preserves bounce energy)
     for (let i = 0; i < count; i++) {
-      vx[i] = (vx[i] + (tx[i] - px[i]) * stiffness * dt) * damping;
-      vy[i] = (vy[i] + (ty[i] - py[i]) * stiffness * dt) * damping;
+      // 1. Spring acceleration (F = k * displacement)
+      vx[i] += (tx[i] - px[i]) * stiffness * dt;
+      vy[i] += (ty[i] - py[i]) * stiffness * dt;
 
+      // 2. Integrate position
+      px[i] += vx[i] * dt;
+      py[i] += vy[i] * dt;
+
+      // 3. Mouse push (after integrate so impulse affects next frame's spring)
       resolveMouseAABB(
         i,
         mx,
@@ -523,8 +542,9 @@ const Audience = () => {
         vy,
       );
 
-      px[i] += vx[i] * dt;
-      py[i] += vy[i] * dt;
+      // 4. Damping applied after position update — energy bleeds slowly
+      vx[i] *= damping;
+      vy[i] *= damping;
 
       const spd2 = vx[i] * vx[i] + vy[i] * vy[i];
       if (spd2 < sleepSpeed * sleepSpeed) {
@@ -561,7 +581,12 @@ const Audience = () => {
             const relVy = vy[j] - vy[i];
             const vDotN = relVx * nx + relVy * ny;
             if (vDotN < 0) {
-              const impulse = -(1 + bounce) * vDotN * 0.5;
+              const closingSpeed = -vDotN;
+              // Ramp restitution from 0 → bounce over the first 0.3 units/s.
+              // Resting contacts (closingSpeed ≈ 0) get no bounce — no jitter.
+              // Fast collisions get full bounce — still snappy.
+              const restScale = Math.min(closingSpeed / 0.3, 1.0);
+              const impulse = -(1 + bounce * restScale) * vDotN * 0.5;
               vx[i] -= impulse * nx;
               vy[i] -= impulse * ny;
               vx[j] += impulse * nx;
