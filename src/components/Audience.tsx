@@ -249,13 +249,9 @@ const PALETTE = [
 const Audience = () => {
   // ── Leva controls ────────────────────────────────────────────────────────
   const {
-    count,
-    boxX,
-    boxY,
-    boxZ,
-    boxW,
-    boxH,
-    radius,
+    groupX,
+    groupY,
+    groupZ,
     damping,
     stiffness,
     bounce,
@@ -263,44 +259,16 @@ const Audience = () => {
     sleepSpeed,
     pushStrength,
     mouseRadius,
-    showBox,
     obstacleX,
     obstacleY,
     obstacleW,
     obstacleH,
     obstacleMode,
   } = useControls("Audience Spheres", {
-    Simulation: folder({
-      // 2-column hex pack. Radius ≈ colDx/2 = sqrt(3)*r/2 fills nicely.
-      count: { value: 12, min: 1, max: 120, step: 1, label: "Sphere Count" },
-      radius: {
-        value: 0.7,
-        min: 0.05,
-        max: 2.0,
-        step: 0.01,
-        label: "Sphere Radius",
-      },
-    }),
-    Box: folder({
-      boxX: { value: 2, min: -10, max: 10, step: 0.1, label: "Position X" },
-      boxY: { value: 0, min: -10, max: 10, step: 0.1, label: "Position Y" },
-      boxZ: { value: 0.9, min: -10, max: 10, step: 0.1, label: "Position Z" },
-      // hex-pack 2 cols: half-width = colDx/2 + r + margin ≈ r*(√3/2+1)+0.1
-      boxW: {
-        value: 3.25,
-        min: 0.1,
-        max: 10,
-        step: 0.05,
-        label: "Width (half)",
-      },
-      boxH: {
-        value: 4.6,
-        min: 0.5,
-        max: 20,
-        step: 0.1,
-        label: "Height (half)",
-      },
-      showBox: { value: false, label: "Show Box" },
+    Group: folder({
+      groupX: { value: 1.6, min: -10, max: 10, step: 0.1, label: "Position X" },
+      groupY: { value: 0, min: -10, max: 10, step: 0.1, label: "Position Y" },
+      groupZ: { value: 1.2, min: -10, max: 10, step: 0.1, label: "Position Z" },
     }),
     Physics: folder({
       stiffness: { value: 60, min: 1, max: 200, step: 1, label: "Stiffness" },
@@ -329,14 +297,14 @@ const Audience = () => {
     }),
     Mouse: folder({
       pushStrength: {
-        value: 12,
+        value: 4,
         min: 0,
         max: 80,
         step: 0.5,
         label: "Push Strength",
       },
       mouseRadius: {
-        value: 0.6,
+        value: 0.5,
         min: 0.05,
         max: 2.0,
         step: 0.05,
@@ -346,7 +314,7 @@ const Audience = () => {
     Obstacle: folder(
       {
         obstacleX: {
-          value: 2.15,
+          value: 0.35,
           min: -10,
           max: 10,
           step: 0.05,
@@ -391,11 +359,48 @@ const Audience = () => {
 
   const node = useGLTF("/models/audience-position.glb");
 
+  const parsedSpheres = useMemo(() => {
+    const spheres: { position: THREE.Vector3; rotation: THREE.Quaternion; scale: THREE.Vector3 }[] = [];
+    if (node && node.scene) {
+      node.scene.traverse((child) => {
+        if ((child as THREE.InstancedMesh).isInstancedMesh) {
+          const instancedMesh = child as THREE.InstancedMesh;
+          const tempMatrix = new THREE.Matrix4();
+          const tempPosition = new THREE.Vector3();
+          const tempQuaternion = new THREE.Quaternion();
+          const tempScale = new THREE.Vector3();
+          for (let i = 0; i < instancedMesh.count; i++) {
+            instancedMesh.getMatrixAt(i, tempMatrix);
+            tempMatrix.decompose(tempPosition, tempQuaternion, tempScale);
+            spheres.push({
+              position: tempPosition.clone(),
+              rotation: tempQuaternion.clone(),
+              scale: tempScale.clone(),
+            });
+          }
+        }
+      });
+    }
+    return spheres;
+  }, [node]);
+
+  const count = parsedSpheres.length;
+
+  const parsedGeometry = useMemo(() => {
+    let geom: THREE.BufferGeometry | null = null;
+    if (node && node.scene) {
+      node.scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh && !geom) {
+          geom = (child as THREE.Mesh).geometry;
+        }
+      });
+    }
+    return geom;
+  }, [node]);
+
   // ── Mesh refs (pre-allocated to max capacity) ─────────────────────────────
   const MAX_COUNT = 120;
   const meshRefs = useRef<(THREE.Mesh | null)[]>(Array(MAX_COUNT).fill(null));
-  const boxRef = useRef<THREE.Mesh>(null);
-  const edgesRef = useRef<THREE.LineSegments>(null);
   const obstacleRef = useRef<THREE.Mesh>(null);
   const obsEdgesRef = useRef<THREE.LineSegments>(null);
 
@@ -407,69 +412,39 @@ const Audience = () => {
     vy: new Float32Array(MAX_COUNT),
     tx: new Float32Array(MAX_COUNT), // rest X
     ty: new Float32Array(MAX_COUNT), // rest Y
-    // Per-sphere Z offset (seeded, stable). Physics is 2-D; Z is just visual depth.
+    // Per-sphere Z offset. Physics is 2-D; Z is visual depth.
     tz: new Float32Array(MAX_COUNT),
+    radii: new Float32Array(MAX_COUNT),
+    rotations: Array.from({ length: MAX_COUNT }, () => new THREE.Quaternion()),
+    maxRadius: 0,
     initialised: false,
     prevCount: -1,
-    prevRadius: -1,
-    prevBoxW: -1,
-    prevBoxH: -1,
-    prevBoxX: 0,
-    prevBoxY: 0,
   });
 
   const spatialHash = useRef(new SpatialHash(1.0));
 
   // ── Init / reinit physics ─────────────────────────────────────────────────
-  // Hexagonal close-packing in 2 offset columns.
-  //
-  //  Col 0 (left)  : x = bx - colDx/2
-  //  Col 1 (right) : x = bx + colDx/2,  shifted DOWN by r (half-diameter)
-  //
-  //  colDx = sqrt(3)*r  →  every cross-column neighbour is exactly 2r apart:
-  //    sqrt((sqrt(3)*r)² + r²) = sqrt(3r²+r²) = sqrt(4r²) = 2r  ✓
-  //
-  //  Same-column vertical spacing = diameter  →  same-column neighbours touch ✓
-  //
-  //  Result: every sphere touches its immediate neighbours, no gaps.
-  //  Large seeded Z offsets (±r) give the organic depth overlap in the image.
   const initPhysics = (
-    n: number,
-    r: number,
-    bx: number,
-    by: number,
-    hw: number,
-    hh: number,
+    spheres: { position: THREE.Vector3; rotation: THREE.Quaternion; scale: THREE.Vector3 }[],
   ) => {
-    const diameter = r * 2;
-    // Column X separation for hex touching: sqrt(3)*r
-    const colDx = Math.sqrt(3) * r;
-    // Z depth: ±1× radius so spheres visually overlap front-to-back like the ref
-    const zRange = r * 1.0;
+    const n = spheres.length;
+    const { px, py, vx, vy, tx, ty, tz, radii, rotations } = physics.current;
 
-    const { px, py, vx, vy, tx, ty, tz } = physics.current;
-
+    let maxRadius = 0;
     for (let i = 0; i < n; i++) {
-      const col = i % 2; // 0 = left column, 1 = right column
-      const row = Math.floor(i / 2); // which row within that column
-
-      // X: left col at -colDx/2, right col at +colDx/2
-      const targetX = bx + (col === 0 ? -colDx / 2 : colDx / 2);
-
-      // Y: top-down, right column is offset down by r (gives hex stagger)
-      const targetY =
-        by +
-        hh -
-        r -
-        row * diameter - // row index × full diameter
-        (col === 1 ? r : 0); // right column shifted down by r
+      const sphere = spheres[i];
+      const targetX = sphere.position.x;
+      const targetY = sphere.position.y;
+      const r = sphere.scale.x; // Use scale.x as radius
+      if (r > maxRadius) maxRadius = r;
 
       // Tiny seeded positional jitter so PBD has something to separate at t=0
       const offX = (seededRand(i * 3.1 + 7) - 0.5) * r * 0.08;
       const offY = (seededRand(i * 5.7 + 13) - 0.5) * r * 0.08;
 
-      // Seeded Z offset — big range for dramatic depth like the reference image
-      tz[i] = (seededRand(i * 2.3 + 31) * 2 - 1) * zRange;
+      tz[i] = sphere.position.z;
+      radii[i] = r;
+      rotations[i].copy(sphere.rotation);
 
       tx[i] = targetX;
       ty[i] = targetY;
@@ -479,14 +454,10 @@ const Audience = () => {
       vy[i] = 0;
     }
 
-    spatialHash.current.resize(diameter * 1.1);
+    spatialHash.current.resize(maxRadius * 2 * 1.1);
     const p = physics.current;
+    p.maxRadius = maxRadius;
     p.prevCount = n;
-    p.prevRadius = r;
-    p.prevBoxW = hw;
-    p.prevBoxH = hh;
-    p.prevBoxX = bx;
-    p.prevBoxY = by;
     p.initialised = true;
   };
 
@@ -499,21 +470,16 @@ const Audience = () => {
 
     const needsReinit =
       !p.initialised ||
-      p.prevCount !== count ||
-      p.prevRadius !== radius ||
-      p.prevBoxW !== boxW ||
-      p.prevBoxH !== boxH ||
-      p.prevBoxX !== boxX ||
-      p.prevBoxY !== boxY;
+      p.prevCount !== count;
 
     if (needsReinit) {
-      initPhysics(count, radius, boxX, boxY, boxW, boxH);
+      initPhysics(parsedSpheres);
     }
 
-    unprojectMouseToZ(coords.x, coords.y, camera, boxZ, _mouseWorld);
-    const mx = _mouseWorld.x;
-    const my = _mouseWorld.y;
-    const { px, py, vx, vy, tx, ty } = p;
+    unprojectMouseToZ(coords.x, coords.y, camera, groupZ, _mouseWorld);
+    const mx = _mouseWorld.x - groupX;
+    const my = _mouseWorld.y - groupY;
+    const { px, py, vx, vy, tx, ty, tz, radii } = p;
 
     // Step 1 – spring force → integrate position → damp
     //  Order matches the reference engine:
@@ -537,7 +503,7 @@ const Audience = () => {
         my,
         mouseRadius * 0.5,
         mouseRadius * 0.5,
-        radius,
+        radii[i],
         pushStrength,
         px,
         py,
@@ -560,17 +526,16 @@ const Audience = () => {
     spatialHash.current.clear();
     for (let i = 0; i < count; i++) spatialHash.current.insert(i, px[i], py[i]);
 
-    // Step 3 – PBD (sphere–sphere + walls)
-    const diameter = radius * 2;
+    // Step 3 – PBD (sphere–sphere)
     for (let iter = 0; iter < pbdIterations; iter++) {
       for (let i = 0; i < count; i++) {
-        const candidates = spatialHash.current.query(px[i], py[i], diameter);
+        const candidates = spatialHash.current.query(px[i], py[i], radii[i] + p.maxRadius);
         for (const j of candidates) {
           if (j <= i) continue;
           const dx = px[j] - px[i];
           const dy = py[j] - py[i];
           const dist2 = dx * dx + dy * dy;
-          const minD = diameter;
+          const minD = radii[i] + radii[j];
           if (dist2 < minD * minD && dist2 > 1e-6) {
             const dist = Math.sqrt(dist2);
             const overlap = (minD - dist) * 0.5;
@@ -599,23 +564,6 @@ const Audience = () => {
         }
       }
 
-      // Wall constraint — soft (spheres CAN escape, spring returns them)
-      for (let i = 0; i < count; i++) {
-        resolveBoxWalls(
-          i,
-          boxX,
-          boxY,
-          boxW,
-          boxH,
-          radius,
-          bounce,
-          px,
-          py,
-          vx,
-          vy,
-        );
-      }
-
       // Obstacle constraint — only active when mode ≠ "Disabled"
       if (obstacleMode !== "Disabled") {
         for (let i = 0; i < count; i++) {
@@ -625,7 +573,7 @@ const Audience = () => {
             obstacleY,
             obstacleW,
             obstacleH,
-            radius,
+            radii[i],
             px,
             py,
             vx,
@@ -635,12 +583,14 @@ const Audience = () => {
       }
     }
 
-    // Step 4 – write to Three.js meshes (apply seeded Z offset for depth overlap)
-    const { tz } = p;
+    // Step 4 – write to Three.js meshes (apply Z offset and rotations)
+    const { rotations } = p;
     for (let i = 0; i < count; i++) {
       const mesh = meshRefs.current[i];
       if (!mesh) continue;
-      mesh.position.set(px[i], py[i], boxZ + tz[i]);
+      mesh.position.set(px[i], py[i], tz[i]);
+      mesh.quaternion.copy(rotations[i]);
+      mesh.scale.setScalar(radii[i]);
       mesh.visible = true;
     }
     for (let i = count; i < MAX_COUNT; i++) {
@@ -648,51 +598,17 @@ const Audience = () => {
       if (mesh) mesh.visible = false;
     }
 
-    // Sync box wireframe
-    if (boxRef.current) {
-      boxRef.current.position.set(boxX, boxY, boxZ);
-      boxRef.current.visible = showBox;
-    }
-    if (edgesRef.current) {
-      edgesRef.current.position.set(boxX, boxY, boxZ);
-      edgesRef.current.visible = showBox;
-    }
-
     // Sync obstacle mesh — visible only in "Visible" mode
     const obsVisible = obstacleMode === "Visible";
     if (obstacleRef.current) {
-      obstacleRef.current.position.set(obstacleX, obstacleY, boxZ + 0.02);
+      obstacleRef.current.position.set(obstacleX, obstacleY, 0.02);
       obstacleRef.current.visible = obsVisible;
     }
     if (obsEdgesRef.current) {
-      obsEdgesRef.current.position.set(obstacleX, obstacleY, boxZ + 0.02);
+      obsEdgesRef.current.position.set(obstacleX, obstacleY, 0.02);
       obsEdgesRef.current.visible = obsVisible;
     }
   });
-
-  // ── Update sphere geometry when radius changes ────────────────────────────
-  useEffect(() => {
-    meshRefs.current.forEach((mesh) => {
-      if (!mesh) return;
-      mesh.geometry.dispose();
-      mesh.geometry = new THREE.SphereGeometry(radius, 28, 28);
-    });
-  }, [radius]);
-
-  // ── Update box geometry when dimensions change ────────────────────────────
-  useEffect(() => {
-    if (!boxRef.current) return;
-    boxRef.current.geometry.dispose();
-    boxRef.current.geometry = new THREE.BoxGeometry(boxW * 2, boxH * 2, 0.01);
-  }, [boxW, boxH]);
-
-  useEffect(() => {
-    if (!edgesRef.current) return;
-    edgesRef.current.geometry.dispose();
-    const box = new THREE.BoxGeometry(boxW * 2, boxH * 2, 0.01);
-    edgesRef.current.geometry = new THREE.EdgesGeometry(box);
-    box.dispose();
-  }, [boxW, boxH]);
 
   // ── Update obstacle geometry when its size changes ────────────────────────
   useEffect(() => {
@@ -718,6 +634,11 @@ const Audience = () => {
     () =>
       Array.from({ length: MAX_COUNT }, (_, i) => {
         const color = PALETTE[i % PALETTE.length];
+        const uniforms = {
+          uColor: { value: color },
+          uEmissive: { value: color },
+          uEmissiveIntensity: { value: 0.22 },
+        };
         return (
           <mesh
             key={i}
@@ -725,14 +646,13 @@ const Audience = () => {
               meshRefs.current[i] = el;
             }}
             visible={false}
+            geometry={parsedGeometry || undefined}
           >
-            <sphereGeometry args={[radius, 28, 28]} />
-            <meshStandardMaterial
-              color={color}
-              roughness={0.12}
-              metalness={0.55}
-              emissive={color}
-              emissiveIntensity={0.22}
+            {!parsedGeometry && <sphereGeometry args={[1, 28, 28]} />}
+            <shaderMaterial
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={uniforms}
             />
           </mesh>
         );
@@ -742,40 +662,13 @@ const Audience = () => {
   );
 
   return (
-    <group>
+    <group position={[groupX, groupY, groupZ]}>
       {sphereMeshes}
-
-      {/* Translucent container face */}
-      <mesh ref={boxRef} position={[boxX, boxY, boxZ]} visible={showBox}>
-        <boxGeometry args={[boxW * 2, boxH * 2, 0.01]} />
-        <meshStandardMaterial
-          color="#6C63FF"
-          roughness={0.7}
-          metalness={0.1}
-          emissive="#6C63FF"
-          emissiveIntensity={0.15}
-          transparent
-          opacity={0.08}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-
-      {/* Container glowing edges */}
-      <lineSegments
-        ref={edgesRef}
-        position={[boxX, boxY, boxZ]}
-        visible={showBox}
-      >
-        <edgesGeometry
-          args={[new THREE.BoxGeometry(boxW * 2, boxH * 2, 0.01)]}
-        />
-        <lineBasicMaterial color="#8B84FF" transparent opacity={0.7} />
-      </lineSegments>
 
       {/* ── Obstacle (stone) — rendered only in "Visible" mode ─────────── */}
       <mesh
         ref={obstacleRef}
-        position={[obstacleX, obstacleY, boxZ + 0.02]}
+        position={[obstacleX, obstacleY, 0.02]}
         visible={obstacleMode === "Visible"}
       >
         <boxGeometry args={[obstacleW * 2, obstacleH * 2, 0.15]} />
@@ -793,7 +686,7 @@ const Audience = () => {
       {/* Obstacle glowing edges */}
       <lineSegments
         ref={obsEdgesRef}
-        position={[obstacleX, obstacleY, boxZ + 0.02]}
+        position={[obstacleX, obstacleY, 0.02]}
         visible={obstacleMode === "Visible"}
       >
         <edgesGeometry
@@ -804,5 +697,76 @@ const Audience = () => {
     </group>
   );
 };
+
+// ── Shaders for Custom Premium Sphere Material ──────────────────────────────
+
+const vertexShader = `
+attribute vec4 _INSTANCECOLOR;
+attribute vec4 _INSTANCEMATERIAL;
+attribute vec4 _INSTANCEUVREGION;
+attribute vec4 _INSTANCEREPEAT;
+
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec4 vInstanceColor;
+varying vec4 vInstanceMaterial;
+varying vec4 vInstanceUvRegion;
+varying vec4 vInstanceRepeat;
+
+void main() {
+  vInstanceColor = _INSTANCECOLOR;
+  vInstanceMaterial = _INSTANCEMATERIAL;
+  vInstanceUvRegion = _INSTANCEUVREGION;
+  vInstanceRepeat = _INSTANCEREPEAT;
+
+  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+  vNormal = normalize(normalMatrix * normal);
+  vViewPosition = -mvPosition.xyz;
+  gl_Position = projectionMatrix * mvPosition;
+}
+`;
+
+const fragmentShader = `
+uniform vec3 uColor;
+uniform vec3 uEmissive;
+uniform float uEmissiveIntensity;
+
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec4 vInstanceColor;
+varying vec4 vInstanceMaterial;
+varying vec4 vInstanceUvRegion;
+varying vec4 vInstanceRepeat;
+
+void main() {
+  vec3 normal = normalize(vNormal);
+  vec3 viewDir = normalize(vViewPosition);
+
+  // Simple diffuse lighting from top-right-front
+  vec3 lightDir = normalize(vec3(0.5, 0.8, 1.0));
+  float diffuse = max(dot(normal, lightDir), 0.0);
+
+  // Specular reflection (Blinn-Phong)
+  vec3 halfDir = normalize(lightDir + viewDir);
+  float spec = pow(max(dot(normal, halfDir), 0.0), 32.0);
+
+  // Fresnel / Rim lighting for premium look
+  float rim = 1.0 - max(dot(normal, viewDir), 0.0);
+  rim = pow(rim, 3.0); // sharp rim glow
+
+  // Fallback to uColor if instance color attribute is not populated or all zeros
+  vec3 sphereColor = (length(vInstanceColor.rgb) > 0.001 ? vInstanceColor.rgb : uColor);
+
+  // Combine components
+  vec3 baseColor = sphereColor * (0.3 + 0.7 * diffuse);
+  vec3 emissiveColor = (length(vInstanceColor.rgb) > 0.001 ? vInstanceColor.rgb : uEmissive) * uEmissiveIntensity;
+  vec3 specularColor = vec3(0.6) * spec;
+  vec3 rimColor = sphereColor * rim * 0.8;
+
+  vec3 finalColor = baseColor + emissiveColor + specularColor + rimColor;
+
+  gl_FragColor = vec4(finalColor, 1.0);
+}
+`;
 
 export default Audience;
