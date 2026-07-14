@@ -23,6 +23,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useControls, folder } from "leva";
 import { useMouse } from "../libs/useMouse";
+import { useGLTF } from "@react-three/drei";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Seeded deterministic random (stable across re-renders)
@@ -155,7 +156,7 @@ function resolveBoxWalls(
 ) {
   // Velocity threshold: below this speed treat as resting contact (no bounce).
   // Prevents low-energy spheres from jittering against walls at high bounce values.
-  const REST_THRESHOLD = 0.08;
+  const REST_THRESHOLD = 0.01;
 
   if (px[i] - r < boxX - halfW) {
     px[i] = boxX - halfW + r;
@@ -387,6 +388,8 @@ const Audience = () => {
 
   const { camera } = useThree();
   const { coords, updateMouse } = useMouse();
+
+  const node = useGLTF("/models/audience-position.glb");
 
   // ── Mesh refs (pre-allocated to max capacity) ─────────────────────────────
   const MAX_COUNT = 120;
