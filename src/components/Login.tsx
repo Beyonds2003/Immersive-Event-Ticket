@@ -82,7 +82,7 @@ const LoginInput = () => {
   texture.flipY = false;
 
   return (
-    <group ref={ref} scale={2} position={[2, -0.2, 1]}>
+    <group ref={ref} position={[2, -0.2, 1]}>
       <group ref={spinGroupRef}>
         {/* Email input plane — canvas texture replaces the baked text mesh */}
         <mesh

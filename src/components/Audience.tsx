@@ -357,10 +357,14 @@ const Audience = () => {
   const { camera } = useThree();
   const { coords, updateMouse } = useMouse();
 
-  const node = useGLTF("/models/audience-position.glb");
+  const node = useGLTF("/models/audience.glb");
 
   const parsedSpheres = useMemo(() => {
-    const spheres: { position: THREE.Vector3; rotation: THREE.Quaternion; scale: THREE.Vector3 }[] = [];
+    const spheres: {
+      position: THREE.Vector3;
+      rotation: THREE.Quaternion;
+      scale: THREE.Vector3;
+    }[] = [];
     if (node && node.scene) {
       node.scene.traverse((child) => {
         if ((child as THREE.InstancedMesh).isInstancedMesh) {
@@ -375,7 +379,7 @@ const Audience = () => {
             spheres.push({
               position: tempPosition.clone(),
               rotation: tempQuaternion.clone(),
-              scale: tempScale.clone(),
+              scale: tempScale.clone().addScalar(0.2),
             });
           }
         }
@@ -425,7 +429,11 @@ const Audience = () => {
 
   // ── Init / reinit physics ─────────────────────────────────────────────────
   const initPhysics = (
-    spheres: { position: THREE.Vector3; rotation: THREE.Quaternion; scale: THREE.Vector3 }[],
+    spheres: {
+      position: THREE.Vector3;
+      rotation: THREE.Quaternion;
+      scale: THREE.Vector3;
+    }[],
   ) => {
     const n = spheres.length;
     const { px, py, vx, vy, tx, ty, tz, radii, rotations } = physics.current;
@@ -468,9 +476,7 @@ const Audience = () => {
 
     const p = physics.current;
 
-    const needsReinit =
-      !p.initialised ||
-      p.prevCount !== count;
+    const needsReinit = !p.initialised || p.prevCount !== count;
 
     if (needsReinit) {
       initPhysics(parsedSpheres);
@@ -529,7 +535,11 @@ const Audience = () => {
     // Step 3 – PBD (sphere–sphere)
     for (let iter = 0; iter < pbdIterations; iter++) {
       for (let i = 0; i < count; i++) {
-        const candidates = spatialHash.current.query(px[i], py[i], radii[i] + p.maxRadius);
+        const candidates = spatialHash.current.query(
+          px[i],
+          py[i],
+          radii[i] + p.maxRadius,
+        );
         for (const j of candidates) {
           if (j <= i) continue;
           const dx = px[j] - px[i];
@@ -701,23 +711,10 @@ const Audience = () => {
 // ── Shaders for Custom Premium Sphere Material ──────────────────────────────
 
 const vertexShader = `
-attribute vec4 _INSTANCECOLOR;
-attribute vec4 _INSTANCEMATERIAL;
-attribute vec4 _INSTANCEUVREGION;
-attribute vec4 _INSTANCEREPEAT;
-
 varying vec3 vNormal;
 varying vec3 vViewPosition;
-varying vec4 vInstanceColor;
-varying vec4 vInstanceMaterial;
-varying vec4 vInstanceUvRegion;
-varying vec4 vInstanceRepeat;
 
 void main() {
-  vInstanceColor = _INSTANCECOLOR;
-  vInstanceMaterial = _INSTANCEMATERIAL;
-  vInstanceUvRegion = _INSTANCEUVREGION;
-  vInstanceRepeat = _INSTANCEREPEAT;
 
   vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
   vNormal = normalize(normalMatrix * normal);
@@ -733,10 +730,6 @@ uniform float uEmissiveIntensity;
 
 varying vec3 vNormal;
 varying vec3 vViewPosition;
-varying vec4 vInstanceColor;
-varying vec4 vInstanceMaterial;
-varying vec4 vInstanceUvRegion;
-varying vec4 vInstanceRepeat;
 
 void main() {
   vec3 normal = normalize(vNormal);
@@ -754,12 +747,11 @@ void main() {
   float rim = 1.0 - max(dot(normal, viewDir), 0.0);
   rim = pow(rim, 3.0); // sharp rim glow
 
-  // Fallback to uColor if instance color attribute is not populated or all zeros
-  vec3 sphereColor = (length(vInstanceColor.rgb) > 0.001 ? vInstanceColor.rgb : uColor);
+  vec3 sphereColor =  uColor;
 
   // Combine components
   vec3 baseColor = sphereColor * (0.3 + 0.7 * diffuse);
-  vec3 emissiveColor = (length(vInstanceColor.rgb) > 0.001 ? vInstanceColor.rgb : uEmissive) * uEmissiveIntensity;
+  vec3 emissiveColor =  uEmissive * uEmissiveIntensity;
   vec3 specularColor = vec3(0.6) * spec;
   vec3 rimColor = sphereColor * rim * 0.8;
 
