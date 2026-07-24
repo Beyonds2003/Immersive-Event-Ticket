@@ -19,7 +19,7 @@
  */
 
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useControls, folder } from "leva";
 import { useMouse } from "../libs/useMouse";
@@ -85,6 +85,9 @@ class SpatialHash {
 const _near = new THREE.Vector3();
 const _far = new THREE.Vector3();
 const _mouseWorld = new THREE.Vector3();
+const _tempMatrix = new THREE.Matrix4();
+const _tempPosition = new THREE.Vector3();
+const _tempScale = new THREE.Vector3();
 
 function unprojectMouseToZ(
   ndcX: number,
@@ -226,24 +229,6 @@ function resolveStaticAABB(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Sphere colour palette
-// ─────────────────────────────────────────────────────────────────────────────
-const PALETTE = [
-  new THREE.Color("#6C63FF"),
-  new THREE.Color("#FF6584"),
-  new THREE.Color("#43E97B"),
-  new THREE.Color("#FA8231"),
-  new THREE.Color("#A29BFE"),
-  new THREE.Color("#FD79A8"),
-  new THREE.Color("#00CEC9"),
-  new THREE.Color("#FDCB6E"),
-  new THREE.Color("#E17055"),
-  new THREE.Color("#74B9FF"),
-  new THREE.Color("#55EFC4"),
-  new THREE.Color("#FF7675"),
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
 //  Main Audience Component
 // ─────────────────────────────────────────────────────────────────────────────
 const Audience = () => {
@@ -335,7 +320,7 @@ const Audience = () => {
           label: "Width (half)",
         },
         obstacleH: {
-          value: 0.5,
+          value: 0.35,
           min: 0.05,
           max: 8,
           step: 0.05,
@@ -366,6 +351,7 @@ const Audience = () => {
       scale: THREE.Vector3;
     }[] = [];
     if (node && node.scene) {
+      node.scene.updateMatrixWorld(true);
       node.scene.traverse((child) => {
         if ((child as THREE.InstancedMesh).isInstancedMesh) {
           const instancedMesh = child as THREE.InstancedMesh;
@@ -375,13 +361,27 @@ const Audience = () => {
           const tempScale = new THREE.Vector3();
           for (let i = 0; i < instancedMesh.count; i++) {
             instancedMesh.getMatrixAt(i, tempMatrix);
-            tempMatrix.decompose(tempPosition, tempQuaternion, tempScale);
+            const worldMatrix = tempMatrix
+              .clone()
+              .premultiply(instancedMesh.matrixWorld);
+            worldMatrix.decompose(tempPosition, tempQuaternion, tempScale);
             spheres.push({
               position: tempPosition.clone(),
               rotation: tempQuaternion.clone(),
               scale: tempScale.clone().addScalar(0.2),
             });
           }
+        } else if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          const tempPosition = new THREE.Vector3();
+          const tempQuaternion = new THREE.Quaternion();
+          const tempScale = new THREE.Vector3();
+          mesh.matrixWorld.decompose(tempPosition, tempQuaternion, tempScale);
+          spheres.push({
+            position: tempPosition.clone(),
+            rotation: tempQuaternion.clone(),
+            scale: tempScale.clone().addScalar(0.2),
+          });
         }
       });
     }
@@ -404,7 +404,7 @@ const Audience = () => {
 
   // ── Mesh refs (pre-allocated to max capacity) ─────────────────────────────
   const MAX_COUNT = 120;
-  const meshRefs = useRef<(THREE.Mesh | null)[]>(Array(MAX_COUNT).fill(null));
+  const instancedMeshRef = useRef<THREE.InstancedMesh>(null);
   const obstacleRef = useRef<THREE.Mesh>(null);
   const obsEdgesRef = useRef<THREE.LineSegments>(null);
 
@@ -593,19 +593,21 @@ const Audience = () => {
       }
     }
 
-    // Step 4 – write to Three.js meshes (apply Z offset and rotations)
+    // Step 4 – write to Three.js instancedMesh (apply Z offset and rotations)
     const { rotations } = p;
-    for (let i = 0; i < count; i++) {
-      const mesh = meshRefs.current[i];
-      if (!mesh) continue;
-      mesh.position.set(px[i], py[i], tz[i]);
-      mesh.quaternion.copy(rotations[i]);
-      mesh.scale.setScalar(radii[i]);
-      mesh.visible = true;
-    }
-    for (let i = count; i < MAX_COUNT; i++) {
-      const mesh = meshRefs.current[i];
-      if (mesh) mesh.visible = false;
+    if (instancedMeshRef.current) {
+      const mesh = instancedMeshRef.current;
+      for (let i = 0; i < count; i++) {
+        _tempPosition.set(px[i], py[i], tz[i]);
+        _tempScale.setScalar(radii[i]);
+        _tempMatrix.compose(_tempPosition, rotations[i], _tempScale);
+        mesh.setMatrixAt(i, _tempMatrix);
+      }
+      for (let i = count; i < MAX_COUNT; i++) {
+        _tempMatrix.makeScale(0, 0, 0);
+        mesh.setMatrixAt(i, _tempMatrix);
+      }
+      mesh.instanceMatrix.needsUpdate = true;
     }
 
     // Sync obstacle mesh — visible only in "Visible" mode
@@ -639,41 +641,29 @@ const Audience = () => {
     g.dispose();
   }, [obstacleW, obstacleH]);
 
-  // ── Build MAX_COUNT sphere meshes once ───────────────────────────────────
-  const sphereMeshes = useMemo(
-    () =>
-      Array.from({ length: MAX_COUNT }, (_, i) => {
-        const color = PALETTE[i % PALETTE.length];
-        const uniforms = {
-          uColor: { value: color },
-          uEmissive: { value: color },
-          uEmissiveIntensity: { value: 0.22 },
-        };
-        return (
-          <mesh
-            key={i}
-            ref={(el) => {
-              meshRefs.current[i] = el;
-            }}
-            visible={false}
-            geometry={parsedGeometry || undefined}
-          >
-            {!parsedGeometry && <sphereGeometry args={[1, 28, 28]} />}
-            <shaderMaterial
-              vertexShader={vertexShader}
-              fragmentShader={fragmentShader}
-              uniforms={uniforms}
-            />
-          </mesh>
-        );
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // ── Uniforms for custom material ──────────────────────────────────────────
+  const uniforms = useMemo(
+    () => ({
+      uColor: { value: new THREE.Color("#ffffff") },
+      uEmissiveIntensity: { value: 0.22 },
+    }),
     [],
   );
 
   return (
     <group position={[groupX, groupY, groupZ]}>
-      {sphereMeshes}
+      <instancedMesh
+        ref={instancedMeshRef}
+        args={[null as any, null as any, MAX_COUNT]}
+        geometry={parsedGeometry || undefined}
+      >
+        {!parsedGeometry && <sphereGeometry args={[1, 28, 28]} />}
+        <shaderMaterial
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms}
+        />
+      </instancedMesh>
 
       {/* ── Obstacle (stone) — rendered only in "Visible" mode ─────────── */}
       <mesh
@@ -713,23 +703,31 @@ const Audience = () => {
 const vertexShader = `
 varying vec3 vNormal;
 varying vec3 vViewPosition;
+varying vec2 vOffset;
+
+attribute vec2 uv_offset;
 
 void main() {
 
-  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-  vNormal = normalize(normalMatrix * normal);
-  vViewPosition = -mvPosition.xyz;
+  vec4 localPosition = instanceMatrix * vec4(position, 1.0);
+  vec4 mvPosition = modelViewMatrix * localPosition;
+
   gl_Position = projectionMatrix * mvPosition;
+
+  // Varying
+  vViewPosition = -mvPosition.xyz;
+  vNormal = normalize(normalMatrix * mat3(instanceMatrix) * normal);
+  vOffset = uv_offset;
 }
 `;
 
 const fragmentShader = `
 uniform vec3 uColor;
-uniform vec3 uEmissive;
 uniform float uEmissiveIntensity;
 
 varying vec3 vNormal;
 varying vec3 vViewPosition;
+varying vec2 vOffset;
 
 void main() {
   vec3 normal = normalize(vNormal);
@@ -747,17 +745,18 @@ void main() {
   float rim = 1.0 - max(dot(normal, viewDir), 0.0);
   rim = pow(rim, 3.0); // sharp rim glow
 
-  vec3 sphereColor =  uColor;
+  vec3 sphereColor = uColor;
 
   // Combine components
   vec3 baseColor = sphereColor * (0.3 + 0.7 * diffuse);
-  vec3 emissiveColor =  uEmissive * uEmissiveIntensity;
+  vec3 emissiveColor = sphereColor * uEmissiveIntensity;
   vec3 specularColor = vec3(0.6) * spec;
   vec3 rimColor = sphereColor * rim * 0.8;
 
   vec3 finalColor = baseColor + emissiveColor + specularColor + rimColor;
 
   gl_FragColor = vec4(finalColor, 1.0);
+  // gl_FragColor = vec4(vec3(vOffset, 0.), 1.0);
 }
 `;
 
