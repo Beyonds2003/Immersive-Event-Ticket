@@ -14,9 +14,9 @@
 }
 
 .login-container {
-  background: radial-gradient(
+  /* background: radial-gradient(
     circle at 65% 50%,
     var(--primary-color) 0%,
     var(--secondary-color) 100%
-  );
+  ); */
 }
