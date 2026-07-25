@@ -95,7 +95,7 @@ const vertexShader = `
 
       float distanceToMouse = length(delta * aspect);
 
-      vec2 direction = delta / max(length(delta), 0.001);
+      vec2 direction = delta / max(length(delta), 0.025);
 
       float influence = smoothstep(uRadius, 0.0, distanceToMouse);
 
