@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { Leva } from "leva";
 import Input from "./Input";
 import Poster from "./Poster";
+import Gradient from "./Gradient";
 
 const Main = () => {
   return (
@@ -16,6 +17,7 @@ const Scene = () => {
   return (
     <Canvas>
       <Poster />
+      <Gradient />
       <Input />
 
       {/* <OtpInput show={showOtp} /> */}
