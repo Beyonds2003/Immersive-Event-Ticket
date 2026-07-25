@@ -20,8 +20,8 @@ const Poster = () => {
   const material = useRef<THREE.ShaderMaterial>(null);
 
   const { radius, strength } = useControls("Poster", {
-    radius: { value: 0.4, min: 0, max: 1, step: 0.01 },
-    strength: { value: 0.005, min: 0, max: 0.1, step: 0.001 },
+    radius: { value: 0.45, min: 0, max: 1, step: 0.01 },
+    strength: { value: 0.008, min: 0, max: 0.1, step: 0.001 },
   });
 
   const uniforms = useRef({
