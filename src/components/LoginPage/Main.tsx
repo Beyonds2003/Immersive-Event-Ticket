@@ -3,6 +3,7 @@ import { Leva } from "leva";
 import Input from "./Input";
 import Poster from "./Poster";
 import Gradient from "./Gradient";
+import { RingDistordRenderTarget } from "../../libs/ringDistordRenderTarget";
 
 const Main = () => {
   return (
@@ -16,6 +17,7 @@ const Main = () => {
 const Scene = () => {
   return (
     <Canvas>
+      <RingDistordRenderTarget />
       <Poster />
       <Gradient />
       <Input />

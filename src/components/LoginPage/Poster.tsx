@@ -7,6 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 
 const Poster = () => {
   const { coords, updateMouse } = useMouse();
@@ -18,6 +19,8 @@ const Poster = () => {
   tex2.minFilter = tex2.magFilter = THREE.LinearFilter;
   tex1.colorSpace = THREE.SRGBColorSpace;
   tex2.colorSpace = THREE.SRGBColorSpace;
+
+  const ringTex = useRingDistordTexture();
 
   const material = useRef<THREE.ShaderMaterial>(null);
 
@@ -40,6 +43,7 @@ const Poster = () => {
     uRadius: { value: radius },
     uStrength: { value: strength },
     uProgress: { value: 0 },
+    uRingDistordTexture: { value: ringTex },
   });
 
   // Sync Leva slider to uniform when manually scrubbing, without overwriting GSAP in useFrame
@@ -57,9 +61,9 @@ const Poster = () => {
         { value: 0 },
         {
           value: 1,
-          duration: 2.4,
-          // ease: "power2.inOut",
-          ease: CustomEase.create("custom", "M0,0 C0.2,0 0.15,1 1,1"),
+          duration: 2,
+          ease: "power2.inOut",
+          // ease: CustomEase.create("custom", "M0,0 C0.2,0 0.15,1 1,1"),
         },
       );
     };
@@ -86,6 +90,7 @@ const Poster = () => {
     material.current.uniforms.uMouse.value.set(mouseX, mouseY);
     material.current.uniforms.uRadius.value = radius;
     material.current.uniforms.uStrength.value = strength;
+    material.current.uniforms.uRingDistordTexture.value = ringTex;
   });
 
   return (
@@ -111,6 +116,8 @@ const vertexShader = `
     uniform vec2 uMouse;
     uniform vec2 uResolution;
 
+    uniform sampler2D uRingDistordTexture;
+
     varying vec2 vUv;
     varying vec2 vDistord;
     varying float vInfluence;
@@ -134,6 +141,13 @@ const vertexShader = `
       pos.x += direction.x * influence * uStrength;
       pos.y += direction.y * influence * uStrength;
 
+
+      // Ring distortion
+      vec4  ring        = texture2D(uRingDistordTexture, uv);
+      vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
+      float ringMask    = ring.b;                // grayscale ring intensity (0..1)
+      pos.xy += ringDistord * ringMask;          // only push where rings are bright
+
       vUv = uv;
       vDistord = direction * influence * uStrength;
       vInfluence = influence;
@@ -156,6 +170,8 @@ const fragmentShader = `
     uniform vec2 uMousePos;
     uniform vec2 uResolution;
 
+    uniform sampler2D uRingDistordTexture;
+
     void main() {
 
         vec2 uv = vUv;
@@ -163,16 +179,11 @@ const fragmentShader = `
         // Texture 1 (white text) moves up along Y axis as uProgress increases (0 -> 1)
         vec2 uv1 = vec2(uv.x, uv.y - uProgress);
 
-        vec4 tex1 = vec4(0.0);
-        if (uv1.y >= 0.0 && uv1.y <= 1.0) {
-            tex1 = texture2D(uTexture1, uv1);
-        }
-
-        // Texture 2 (black text)
+        vec4 tex1 = texture2D(uTexture1, uv1);
         vec4 tex2 = texture2D(uTexture2, uv);
 
         // Alpha for Texture 1
-        float a1 = (uv1.y >= 0.0 && uv1.y <= 1.0) ? tex1.a : 0.0;
+        float a1 = tex1.a;
 
         // Effective animated alpha for Texture 2
         float opacity2 = smoothstep(0.4, 1.0, uProgress);
