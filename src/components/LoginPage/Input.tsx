@@ -93,9 +93,11 @@ const Input = () => {
     // rotateEmailInput();
     // onSubmitted();
 
+    console.log(coords.x, coords.y);
+
     window.dispatchEvent(
       new CustomEvent("ripple-click", {
-        detail: { x: coords.x + 0.1, y: coords.y },
+        detail: { x: 0.34, y: 0 },
       }),
     );
 
@@ -110,11 +112,7 @@ const Input = () => {
       <group ref={ref} position={[2, -0.2, 1]} scale={0.9}>
         <group ref={spinGroupRef}>
           {/* Email input plane — canvas texture replaces the baked text mesh */}
-          <mesh
-            geometry={nodes.text.geometry}
-            onClick={() => focus()}
-            onPointerMissed={() => blur()}
-          >
+          <mesh geometry={nodes.text.geometry}>
             <meshStandardMaterial
               emissiveIntensity={0.6}
               roughness={0.3}
@@ -140,10 +138,12 @@ const Input = () => {
       <mesh
         visible={false}
         position={[1.9, -0.2, 1.5]}
+        onClick={() => focus()}
+        onPointerMissed={() => blur()}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <planeGeometry args={[3.5, 1]} />
+        <planeGeometry args={[3.8, 1]} />
         <meshBasicMaterial />
       </mesh>
     </>
