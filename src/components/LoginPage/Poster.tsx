@@ -90,6 +90,7 @@ const Poster = () => {
     material.current.uniforms.uMouse.value.set(mouseX, mouseY);
     material.current.uniforms.uRadius.value = radius;
     material.current.uniforms.uStrength.value = strength;
+    material.current.uniforms.uTexture1.value = tex1;
     material.current.uniforms.uRingDistordTexture.value = ringTex;
   });
 
