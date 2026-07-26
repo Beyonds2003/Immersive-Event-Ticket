@@ -118,7 +118,7 @@ const rtFragmentShader = /* glsl */ `
 
     // ── Three overlapping ring bands ───────────────────────────────────────
     float r1   = ring(dist, p,                uRingWidth,       uRingBlur);
-    float mask = clamp(r1, 0.0, 1.0);
+    float mask = r1;
 
     // ── Displacement direction (mirrors Poster.tsx vertex shader logic) ────
     // direction = (pixel → outward from click), aspect-corrected, normalized

@@ -26,7 +26,7 @@ const Poster = () => {
 
   const { radius, strength, progress } = useControls("Poster", {
     radius: { value: 0.4, min: 0, max: 1, step: 0.01 },
-    strength: { value: 0.005, min: 0, max: 0.1, step: 0.001 },
+    strength: { value: 0.006, min: 0, max: 0.1, step: 0.001 },
     progress: { value: 0, min: 0, max: 1, step: 0.01 },
   });
 
@@ -96,7 +96,7 @@ const Poster = () => {
 
   return (
     <mesh>
-      <planeGeometry args={[2, 2, 400, 400]} />
+      <planeGeometry args={[2, 2, 20, 20]} />
       <shaderMaterial
         ref={material}
         vertexShader={vertexShader}
@@ -175,7 +175,6 @@ const fragmentShader = `
     void main() {
 
         vec2 uv = vUv;
-
 
         // Texture 1 (white text) moves up along Y axis as uProgress increases (0 -> 1)
         vec2 uv1 = vec2(uv.x, uv.y - uProgress);
