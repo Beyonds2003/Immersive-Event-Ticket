@@ -66,21 +66,21 @@ export const useRingDistordTexture = () => useAtomValue(ringDistordTextureAtom);
 const rtVertexShader = /* glsl */ `
   varying vec2 vUv;
   void main() {
-    vUv         = uv;
-    // Full-screen quad in clip space — no projection matrix needed
     gl_Position = vec4(position.xy, 1.0, 1.0);
+
+    vUv         = uv;
   }
 `;
 
 const rtFragmentShader = /* glsl */ `
   uniform vec2  uResolution;
-  uniform float uProgress;          // 0 → 1, driven by GSAP on "ripple-click"
+  uniform float uProgress;       
   uniform vec2  uClickPos;          // NDC −1..1  (matches useMouse convention)
   uniform float uRingWidth;
   uniform float uRingBlur;
   uniform float uRingOffset;
   uniform float uRingOffset2;
-  uniform float uDistordStrength;   // UV displacement magnitude
+  uniform float uDistordStrength;  
 
   varying vec2 vUv;
 
@@ -118,9 +118,7 @@ const rtFragmentShader = /* glsl */ `
 
     // ── Three overlapping ring bands ───────────────────────────────────────
     float r1   = ring(dist, p,                uRingWidth,       uRingBlur);
-    float r2   = ring(dist, p + uRingOffset,  uRingWidth,       uRingBlur) * 0.;
-    float r3   = ring(dist, p + uRingOffset2, uRingWidth * 0.6, uRingBlur * 0.8) * 0.;
-    float mask = clamp(r1 + r2 * 0.7 + r3 * 0.4, 0.0, 1.0);
+    float mask = clamp(r1, 0.0, 1.0);
 
     // ── Displacement direction (mirrors Poster.tsx vertex shader logic) ────
     // direction = (pixel → outward from click), aspect-corrected, normalized
@@ -162,45 +160,13 @@ const debugFragmentShader = /* glsl */ `
   uniform sampler2D uTex;
   varying vec2 vUv;
   void main() {
-    gl_FragColor = texture2D(uTex, vUv);
+
+    vec4 tex = texture2D(uTex, vUv);
+
+    gl_FragColor = tex;
   }
 `;
 
-// ---------------------------------------------------------------------------
-// RingDistordRenderTarget — public component
-// ---------------------------------------------------------------------------
-
-/**
- * Place this **once** inside your <Canvas>. It is fully standalone — it does
- * not need to wrap other components. Consumers just call useRingDistordTexture().
- *
- * @example
- * // ── Main.tsx ───────────────────────────────────────────────────────────
- * import { RingDistordRenderTarget } from "../../libs/ringDistordRenderTarget";
- *
- * const Scene = () => (
- *   <Canvas>
- *     <RingDistordRenderTarget />   // ← sibling, not a wrapper
- *     <Poster />
- *     <Gradient />
- *   </Canvas>
- * );
- *
- * // ── Poster.tsx / Gradient.tsx / any component ─────────────────────────
- * import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
- *
- * const Poster = () => {
- *   const ringTex = useRingDistordTexture(); // THREE.Texture | null
- *
- *   const uniforms = useRef({
- *     uRingDistord: { value: ringTex ?? null },
- *   });
- *
- *   useFrame(() => {
- *     // texture ref is stable — no update needed after first assignment
- *   });
- * };
- */
 export const RingDistordRenderTarget = () => {
   const { gl } = useThree();
   const setTexture = useSetAtom(ringDistordTextureAtom);
@@ -211,11 +177,11 @@ export const RingDistordRenderTarget = () => {
     ringWidth,
     ringBlur,
     ringOffset,
-    ringOffset2,
     distordStrength,
     progress,
   } = useControls("RingDistord RT", {
     showDebug: { value: false, label: "Show Debug" },
+    progress: { value: 0, min: 0, max: 1, step: 0.01, label: "Progress" },
     ringWidth: {
       value: 0.02,
       min: 0,
@@ -231,13 +197,6 @@ export const RingDistordRenderTarget = () => {
       step: 0.01,
       label: "Ring Offset 1",
     },
-    ringOffset2: {
-      value: 0.16,
-      min: 0,
-      max: 0.5,
-      step: 0.01,
-      label: "Ring Offset 2",
-    },
     distordStrength: {
       value: 0.04,
       min: 0,
@@ -245,7 +204,6 @@ export const RingDistordRenderTarget = () => {
       step: 0.001,
       label: "Distord Strength",
     },
-    progress: { value: 0, min: 0, max: 1, step: 0.01, label: "Progress" },
   });
 
   // ── WebGLRenderTarget (created once, stable identity) ────────────────────
@@ -286,7 +244,6 @@ export const RingDistordRenderTarget = () => {
     uRingWidth: { value: ringWidth },
     uRingBlur: { value: ringBlur },
     uRingOffset: { value: ringOffset },
-    uRingOffset2: { value: ringOffset2 },
     uDistordStrength: { value: distordStrength },
   });
 
@@ -326,7 +283,7 @@ export const RingDistordRenderTarget = () => {
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
         duration: 2.4,
-        // delay: 0.1,
+        delay: 0.1,
         ease: "power1.out",
       });
     };
@@ -346,7 +303,6 @@ export const RingDistordRenderTarget = () => {
     uniforms.current.uRingWidth.value = ringWidth;
     uniforms.current.uRingBlur.value = ringBlur;
     uniforms.current.uRingOffset.value = ringOffset;
-    uniforms.current.uRingOffset2.value = ringOffset2;
     uniforms.current.uDistordStrength.value = distordStrength;
 
     // uniforms.current.uProgress.value = progress;

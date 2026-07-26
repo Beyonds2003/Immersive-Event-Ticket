@@ -95,7 +95,7 @@ const Poster = () => {
 
   return (
     <mesh>
-      <planeGeometry args={[2, 2, 256, 256]} />
+      <planeGeometry args={[2, 2, 400, 400]} />
       <shaderMaterial
         ref={material}
         vertexShader={vertexShader}
@@ -141,12 +141,11 @@ const vertexShader = `
       pos.x += direction.x * influence * uStrength;
       pos.y += direction.y * influence * uStrength;
 
-
-      // Ring distortion
+      // ── Per-pixel ring distortion (smooth, no vertex aliasing) ────────────
       vec4  ring        = texture2D(uRingDistordTexture, uv);
       vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
       float ringMask    = ring.b;                // grayscale ring intensity (0..1)
-      pos.xy += ringDistord * ringMask;          // only push where rings are bright
+      pos.xy               += ringDistord * ringMask; 
 
       vUv = uv;
       vDistord = direction * influence * uStrength;
@@ -175,6 +174,7 @@ const fragmentShader = `
     void main() {
 
         vec2 uv = vUv;
+
 
         // Texture 1 (white text) moves up along Y axis as uProgress increases (0 -> 1)
         vec2 uv1 = vec2(uv.x, uv.y - uProgress);
