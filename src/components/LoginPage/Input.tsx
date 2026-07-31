@@ -23,8 +23,8 @@ const Input = () => {
 
     updateMouse();
 
-    ref.current.rotation.y = remapClamp(coords.x, -1, 1, -0.2, 0.1);
-    ref.current.rotation.x = remapClamp(-coords.y, -1, 1, -0.2, 0.2);
+    ref.current.rotation.y = remapClamp(coords.x, -1, 1, -0.4, 0.1) * 0.8;
+    ref.current.rotation.x = remapClamp(-coords.y, -1, 1, -0.4, 0.2) * 0.8;
   });
 
   const handlePointerEnter = () => {
@@ -32,9 +32,9 @@ const Input = () => {
     document.body.style.cursor = "pointer";
     if (!ref.current) return;
     gsap.to(ref.current.scale, {
-      x: 1,
-      y: 1,
-      z: 1,
+      x: 1.2,
+      y: 1.2,
+      z: 1.2,
       duration: 0.8,
       ease: "back.out(1.7)",
       overwrite: "auto",
@@ -109,7 +109,7 @@ const Input = () => {
 
   return (
     <>
-      <group ref={ref} position={[2, -0.2, 1]} scale={0.9}>
+      <group ref={ref} position={[2, -0.2, 0]} scale={0.9}>
         <group ref={spinGroupRef}>
           {/* Email input plane — canvas texture replaces the baked text mesh */}
           <mesh geometry={nodes.text.geometry}>

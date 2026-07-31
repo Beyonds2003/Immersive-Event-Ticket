@@ -5,6 +5,7 @@ import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 import { useGLTF, useTexture } from "@react-three/drei";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { generateColorPair } from "../../libs/generateColorPair";
+import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 
 // ── UV Region Type ────────────────────────────────────────────────────────────
 
@@ -545,6 +546,8 @@ const SphereModel = ({
   const sphereModel = useGLTF("/models/test-sphere.glb");
   const sphereGeo = (sphereModel.scene.children[0] as THREE.Mesh).geometry;
 
+  const ringTex = useRingDistordTexture();
+
   const [diffuseTexture, normalTexture] = useTexture([
     "/sphere/diffuse.png",
     "/sphere/Normal.png",
@@ -564,8 +567,8 @@ const SphereModel = ({
     D: new THREE.Vector2(0.5, 0.0), // bottom-right
   };
 
-  const seed = 3; // change it to (3) only if and only if things turn out good
-  const [colorA, colorB] = generateColorPair(`${email} ${type}`, 0.8, seed);
+  const seed = 123; // change it to (3) only if and only if things turn out good
+  const [colorA, colorB] = generateColorPair(`${email} ${type}`, 0.3, seed);
 
   const uniforms = useRef({
     uDiffuseTexture: { value: diffuseTexture },
@@ -574,6 +577,18 @@ const SphereModel = ({
     uNormalType: { value: offsets[normalType] || offsets.A },
     uColorA: { value: colorA },
     uColorB: { value: colorB },
+    uRingTex: { value: ringTex },
+    uResolution: {
+      value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+    },
+  });
+
+  useFrame(() => {
+    uniforms.current.uRingTex.value = ringTex;
+    uniforms.current.uResolution.value.set(
+      window.innerWidth,
+      window.innerHeight,
+    );
   });
 
   return (
@@ -599,8 +614,22 @@ const SphereModel = ({
 
 const vertexShader = `
     varying vec2 vUv;
+    uniform sampler2D uRingTex;
+    uniform vec2 uResolution;
 
     void main() {
+
+      vec4 clipPos = projectionMatrix * modelViewMatrix * vec4( csm_Position, 1.0 );
+
+      vec2 ndcPos = clipPos.xy / clipPos.w;
+      vec2 screenUv = ndcPos * 0.5 + 0.5;
+
+      vec4 ring = texture2D(uRingTex, screenUv);
+      vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
+      float ringMask    = ring.b;                // grayscale ring intensity (0..1)
+
+      csm_Position.xyz *= (1. + (vec3(ringDistord, 0.) * ringMask * 1.));
+
       vUv = uv;
     }
 `;
@@ -613,6 +642,8 @@ const fragmentShader = `
 
   uniform sampler2D uDiffuseTexture;
   uniform sampler2D uNormalTexture;
+  uniform sampler2D uRingTex;
+  uniform vec2 uResolution;
 
   uniform vec3 uColorA;
   uniform vec3 uColorB;
@@ -655,7 +686,14 @@ const fragmentShader = `
       diffuseSample.r
     );
 
-    csm_DiffuseColor = vec4(color, 1.0);
+
+    // Ring Tex
+    // vec2 screenUv = gl_FragCoord.xy / gl_FragCoord.w;
+    // vec4 ring = texture2D(uRingTex, screenUv);
+    // vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
+    // float ringMask    = ring.b;                // grayscale ring intensity (0..1)
+
+    csm_DiffuseColor = vec4(vec3(color), 1.0);
 
     // normal atlas UV (2x2 grid, scale by 0.5)
     vec2 normalUV = fract(vUv) + uNormalType;

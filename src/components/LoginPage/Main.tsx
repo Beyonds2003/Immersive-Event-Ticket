@@ -17,7 +17,7 @@ const Main = () => {
 
 const Scene = () => {
   return (
-    <Canvas shadows camera={{ position: [0, 1, 9], fov: 45 }}>
+    <Canvas shadows>
       <RingDistordRenderTarget />
       <Poster />
       <Gradient />
@@ -26,8 +26,8 @@ const Scene = () => {
 
       {/* <OtpInput show={showOtp} /> */}
 
-      {/* <directionalLight position={[3, 1, 5]} intensity={8.7} color="#3457e5" />
-      <ambientLight intensity={0.4} color="#504ed8" /> */}
+      {/* <directionalLight position={[3, 1, 5]} intensity={8.7} color="#3457e5" /> */}
+      {/* <ambientLight intensity={2.8} color="#504ed8" /> */}
 
       <ambientLight intensity={2.8} />
       <directionalLight

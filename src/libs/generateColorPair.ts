@@ -20,45 +20,78 @@ function random(seed: number) {
 }
 
 /**
- * Generates two visually harmonious, vibrant colors from a text string.
- *
- * The two colors are chosen using a split-analogous strategy:
- * - A base hue is derived from the text hash.
- * - The second hue is offset by 60–120° so the pair feels distinct but harmonious.
- * - `vibrant` (0–1) controls saturation and brightness:
- *     0 = muted/pastel, 1 = fully saturated & bright (like the balls in the image).
+ * Calculates peak-chroma lightness (around 44%-54%) for maximum color vibrancy.
+ * Avoids lightness > 56% (washed-out pastel) and lightness < 40% (muddy/dark).
  */
-export function generateColorPair(text: string, vibrant = 0.8, seed = 0) {
-  // Mix the seed into the hash so each seed value yields a completely different palette.
+function getVibrantLightness(
+  hueDeg: number,
+  isSecondary: boolean,
+  randVal: number,
+): number {
+  const rad = (hueDeg * Math.PI) / 180;
+  // Perceptual innate luminance (yellow at 60° is naturally brighter than blue at 240°)
+  const innateLuminance = Math.cos(rad - (60 * Math.PI) / 180);
+
+  // Center around 48%-52% (the maximum saturation sweet-spot in HSL)
+  let lightness = 50 - innateLuminance * 5;
+
+  // Slight contrast shift between Color A and Color B
+  if (isSecondary) {
+    lightness += 3 + (randVal - 0.5) * 4;
+  } else {
+    lightness -= 3 + (randVal - 0.5) * 4;
+  }
+
+  return Math.min(56, Math.max(42, lightness));
+}
+
+/**
+ * Generates two hyper-vibrant, neon-candy color pairs dynamically.
+ *
+ * Algorithm:
+ * 1. Base hue is procedurally generated from string hash & seed.
+ * 2. Second hue uses a complementary / split-complementary offset (130°–230°).
+ * 3. Saturation is locked to peak levels (95%-100% at vibrant=1.0) for popping candy/neon tones.
+ * 4. Lightness is tuned strictly around 44%-54% (the pure chroma zone) so colors never wash out.
+ *
+ * @param text Hash input text
+ * @param vibrant Saturation & vividness multiplier (0 = soft, 1 = maximum neon pop)
+ * @param seed Seed offset for procedural variation
+ */
+export function generateColorPair(text: string, vibrant = 1.0, seed = 0) {
   const rand = random(hashString(text) ^ Math.imul(seed + 1, 2654435761));
 
-  // Base hue, fully random per text
+  // 1. Primary Hue (0° - 360°)
   const hue1 = rand() * 360;
 
-  // Second hue is offset 60–130°, direction randomly chosen.
-  // This gives analogous-to-split-complementary feel — always harmonious but distinct.
-  const offsetMagnitude = 60 + rand() * 70; // 60°–130°
+  // 2. Secondary Hue: High-contrast complementary / split-complementary offset (130° to 230°)
   const offsetSign = rand() < 0.5 ? 1 : -1;
+  const offsetMagnitude = 130 + rand() * 100;
   const hue2 = (hue1 + offsetSign * offsetMagnitude + 360) % 360;
 
-  // Saturation: vibrant=0 → ~55%, vibrant=1 → ~100%
-  const saturation = 55 + vibrant * 45;
+  // 3. Peak Saturation (95% - 100% when vibrant=1.0) for ultra-popping candy/neon tones
+  const sat1 = Math.min(
+    100,
+    Math.max(80, 80 + vibrant * 20 + (rand() - 0.5) * 5),
+  );
+  const sat2 = Math.min(
+    100,
+    Math.max(80, 80 + vibrant * 20 + (rand() - 0.5) * 5),
+  );
 
-  // Lightness: vibrant=0 → pastel (65–75%), vibrant=1 → vivid (48–58%)
-  // Higher vibrant = slightly darker so the hue pops more
-  const baseLightness = 68 - vibrant * 20;
-  const lightness1 = baseLightness + (rand() - 0.5) * 8;
-  const lightness2 = baseLightness + (rand() - 0.5) * 8;
+  // 4. Peak Chroma Lightness (42% - 56%) so colors are 100% rich and never pale
+  const lightness1 = getVibrantLightness(hue1, false, rand());
+  const lightness2 = getVibrantLightness(hue2, true, rand());
 
   const colorA = new THREE.Color().setHSL(
     hue1 / 360,
-    saturation / 100,
+    sat1 / 100,
     lightness1 / 100,
   );
 
   const colorB = new THREE.Color().setHSL(
     hue2 / 360,
-    saturation / 100,
+    sat2 / 100,
     lightness2 / 100,
   );
 
