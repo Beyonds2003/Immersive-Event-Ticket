@@ -16,11 +16,12 @@ const Poster = () => {
   const tex1 = useCanvasTextTexture({
     title: ["DISCOVER EVENT"],
     titleFontFamily: "Dingos-ExtraBold",
-    titleFontSize: 120,
+    titleFontSize: 160,
     titleColor: "#FFFFFF",
+    titleLineHeight: 1,
 
     subtitle: "YOUR GATEWAY TO UNIVERSITY EVENTS",
-    subtitleFontSize: 10,
+    subtitleFontSize: 20,
     subtitleFontFamily: "Inter",
     subtitleLetterSpacing: 2,
     subtitleColor: "#FFFFFF",
@@ -113,7 +114,7 @@ const Poster = () => {
   });
 
   return (
-    <mesh>
+    <mesh renderOrder={-1}>
       <planeGeometry args={[2, 2, 20, 20]} />
       <shaderMaterial
         ref={material}
@@ -170,7 +171,7 @@ const vertexShader = `
       vDistord = direction * influence * uStrength;
       vInfluence = influence;
 
-      gl_Position = vec4(pos.xy, 0.9, 1.0);
+      gl_Position = vec4(pos.xy, 0.99, 1.0);
     }
 
 

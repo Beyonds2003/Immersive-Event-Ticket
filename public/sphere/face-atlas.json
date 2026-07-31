@@ -1,0 +1,974 @@
+{
+  "atlasWidth": 1792,
+  "atlasHeight": 1536,
+  "cellSize": 256,
+  "atlas": "face-atlas.webp",
+  "faces": [
+    {
+      "family": "A",
+      "eye": {
+        "name": "eye_A",
+        "index": 0,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 0.8554216867469879,
+        "originalWidth": 71,
+        "originalHeight": 83,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_A",
+        "index": 17,
+        "uvOffsetX": 0.42857142857142855,
+        "uvOffsetY": 0.5,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.690909090909091,
+        "originalWidth": 186,
+        "originalHeight": 110
+      },
+      "eyeAnim": {
+        "name": "eye_A_anim",
+        "index": 1,
+        "uvOffsetX": 0.14285714285714285,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 0.8539325842696629,
+        "originalWidth": 76,
+        "originalHeight": 89
+      },
+      "mouthAnim": {
+        "name": "Mouth_A_anim",
+        "index": 18,
+        "uvOffsetX": 0.5714285714285714,
+        "uvOffsetY": 0.5,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 0.9029126213592233,
+        "originalWidth": 186,
+        "originalHeight": 206
+      }
+    },
+    {
+      "family": "B",
+      "eye": {
+        "name": "eye_B",
+        "index": 2,
+        "uvOffsetX": 0.2857142857142857,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 62,
+        "originalHeight": 62,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_B",
+        "index": 19,
+        "uvOffsetX": 0.7142857142857143,
+        "uvOffsetY": 0.5,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.2372881355932204,
+        "originalWidth": 146,
+        "originalHeight": 118
+      },
+      "eyeAnim": {
+        "name": "eye_B_anim",
+        "index": 3,
+        "uvOffsetX": 0.42857142857142855,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 62,
+        "originalHeight": 62
+      },
+      "mouthAnim": {
+        "name": "Mouth_B_anim",
+        "index": 20,
+        "uvOffsetX": 0.8571428571428571,
+        "uvOffsetY": 0.5,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.2372881355932204,
+        "originalWidth": 146,
+        "originalHeight": 118
+      }
+    },
+    {
+      "family": "C",
+      "eye": {
+        "name": "eye_C",
+        "index": 4,
+        "uvOffsetX": 0.5714285714285714,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.0192307692307692,
+        "originalWidth": 53,
+        "originalHeight": 52,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_C",
+        "index": 21,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0.33333333333333337,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.3625,
+        "originalWidth": 146,
+        "originalHeight": 32
+      },
+      "eyeAnim": null,
+      "mouthAnim": {
+        "name": "Mouth_C_anim",
+        "index": 22,
+        "uvOffsetX": 0.14285714285714285,
+        "uvOffsetY": 0.33333333333333337,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.3625,
+        "originalWidth": 151,
+        "originalHeight": 79
+      }
+    },
+    {
+      "family": "D",
+      "eye": {
+        "name": "eye_D",
+        "index": 5,
+        "uvOffsetX": 0.7142857142857143,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.0192307692307692,
+        "originalWidth": 53,
+        "originalHeight": 52,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_D",
+        "index": 23,
+        "uvOffsetX": 0.2857142857142857,
+        "uvOffsetY": 0.33333333333333337,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.3625,
+        "originalWidth": 146,
+        "originalHeight": 32
+      },
+      "eyeAnim": {
+        "name": "eye_D_anim",
+        "index": 6,
+        "uvOffsetX": 0.8571428571428571,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 36,
+        "originalHeight": 36
+      },
+      "mouthAnim": {
+        "name": "Mouth_D_anim",
+        "index": 24,
+        "uvOffsetX": 0.42857142857142855,
+        "uvOffsetY": 0.33333333333333337,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.8627450980392157,
+        "originalWidth": 146,
+        "originalHeight": 51
+      }
+    },
+    {
+      "family": "E",
+      "eye": {
+        "name": "eye_E",
+        "index": 7,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0.6666666666666667,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.015625,
+        "originalWidth": 65,
+        "originalHeight": 64,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_E",
+        "index": 25,
+        "uvOffsetX": 0.5714285714285714,
+        "uvOffsetY": 0.33333333333333337,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.294117647058823,
+        "originalWidth": 146,
+        "originalHeight": 34
+      },
+      "eyeAnim": null,
+      "mouthAnim": {
+        "name": "Mouth_E_anim",
+        "index": 26,
+        "uvOffsetX": 0.7142857142857143,
+        "uvOffsetY": 0.33333333333333337,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.6590909090909092,
+        "originalWidth": 146,
+        "originalHeight": 88
+      }
+    },
+    {
+      "family": "F",
+      "eye": {
+        "name": "eye_F",
+        "index": 8,
+        "uvOffsetX": 0.14285714285714285,
+        "uvOffsetY": 0.6666666666666667,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 0.7936507936507936,
+        "originalWidth": 50,
+        "originalHeight": 63,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_F",
+        "index": 27,
+        "uvOffsetX": 0.8571428571428571,
+        "uvOffsetY": 0.33333333333333337,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.3491803278688523,
+        "originalWidth": 186,
+        "originalHeight": 61
+      },
+      "eyeAnim": null,
+      "mouthAnim": null
+    },
+    {
+      "family": "G",
+      "eye": {
+        "name": "eye_G",
+        "index": 9,
+        "uvOffsetX": 0.2857142857142857,
+        "uvOffsetY": 0.6666666666666667,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 4.384615384615385,
+        "originalWidth": 228,
+        "originalHeight": 52,
+        "glass": true
+      },
+      "mouth": {
+        "name": "Mouth_G",
+        "index": 28,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0.16666666666666663,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 2.107142857142857,
+        "originalWidth": 118,
+        "originalHeight": 56
+      },
+      "eyeAnim": {
+        "name": "eye_G_anim",
+        "index": 10,
+        "uvOffsetX": 0.42857142857142855,
+        "uvOffsetY": 0.6666666666666667,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 3.3529411764705883,
+        "originalWidth": 228,
+        "originalHeight": 68
+      },
+      "mouthAnim": {
+        "name": "Mouth_G_anim",
+        "index": 29,
+        "uvOffsetX": 0.14285714285714285,
+        "uvOffsetY": 0.16666666666666663,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.173913043478261,
+        "originalWidth": 27,
+        "originalHeight": 23
+      }
+    },
+    {
+      "family": "H",
+      "eye": {
+        "name": "eye_H",
+        "index": 11,
+        "uvOffsetX": 0.5714285714285714,
+        "uvOffsetY": 0.6666666666666667,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.0598290598290598,
+        "originalWidth": 124,
+        "originalHeight": 117,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_H",
+        "index": 30,
+        "uvOffsetX": 0.2857142857142857,
+        "uvOffsetY": 0.16666666666666663,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.2372881355932204,
+        "originalWidth": 146,
+        "originalHeight": 118
+      },
+      "eyeAnim": null,
+      "mouthAnim": {
+        "name": "Mouth_H_anim",
+        "index": 31,
+        "uvOffsetX": 0.42857142857142855,
+        "uvOffsetY": 0.16666666666666663,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.2372881355932204,
+        "originalWidth": 146,
+        "originalHeight": 118
+      }
+    },
+    {
+      "family": "I",
+      "eye": {
+        "name": "eye_I",
+        "index": 12,
+        "uvOffsetX": 0.7142857142857143,
+        "uvOffsetY": 0.6666666666666667,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 76,
+        "originalHeight": 76,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_I",
+        "index": 32,
+        "uvOffsetX": 0.5714285714285714,
+        "uvOffsetY": 0.16666666666666663,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.2372881355932204,
+        "originalWidth": 146,
+        "originalHeight": 118
+      },
+      "eyeAnim": {
+        "name": "eye_I_anim",
+        "index": 13,
+        "uvOffsetX": 0.8571428571428571,
+        "uvOffsetY": 0.6666666666666667,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 92,
+        "originalHeight": 92
+      },
+      "mouthAnim": {
+        "name": "Mouth_I_anim",
+        "index": 33,
+        "uvOffsetX": 0.7142857142857143,
+        "uvOffsetY": 0.16666666666666663,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.3272727272727274,
+        "originalWidth": 146,
+        "originalHeight": 110
+      }
+    },
+    {
+      "family": "J",
+      "eye": {
+        "name": "eye_J",
+        "index": 14,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0.5,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 52,
+        "originalHeight": 52,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_J",
+        "index": 34,
+        "uvOffsetX": 0.8571428571428571,
+        "uvOffsetY": 0.16666666666666663,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.333333333333333,
+        "originalWidth": 256,
+        "originalHeight": 48
+      },
+      "eyeAnim": null,
+      "mouthAnim": {
+        "name": "Mouth_J_anim",
+        "index": 35,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.333333333333333,
+        "originalWidth": 256,
+        "originalHeight": 113
+      }
+    },
+    {
+      "family": "K",
+      "eye": {
+        "name": "eye_K",
+        "index": 15,
+        "uvOffsetX": 0.14285714285714285,
+        "uvOffsetY": 0.5,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.3076923076923075,
+        "originalWidth": 60,
+        "originalHeight": 26,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_K",
+        "index": 36,
+        "uvOffsetX": 0.14285714285714285,
+        "uvOffsetY": 0,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.0857142857142858,
+        "originalWidth": 75,
+        "originalHeight": 42
+      },
+      "eyeAnim": null,
+      "mouthAnim": {
+        "name": "Mouth_K_anim",
+        "index": 37,
+        "uvOffsetX": 0.2857142857142857,
+        "uvOffsetY": 0,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.2857142857142858,
+        "originalWidth": 75,
+        "originalHeight": 42
+      }
+    },
+    {
+      "family": "L",
+      "eye": {
+        "name": "eye_L",
+        "index": 16,
+        "uvOffsetX": 0.2857142857142857,
+        "uvOffsetY": 0.5,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 52,
+        "originalHeight": 52,
+        "glass": false
+      },
+      "mouth": {
+        "name": "Mouth_L",
+        "index": 38,
+        "uvOffsetX": 0.42857142857142855,
+        "uvOffsetY": 0,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.268041237113402,
+        "originalWidth": 220,
+        "originalHeight": 97
+      },
+      "eyeAnim": null,
+      "mouthAnim": {
+        "name": "Mouth_L_anim",
+        "index": 39,
+        "uvOffsetX": 0.5714285714285714,
+        "uvOffsetY": 0,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1.261904761904762,
+        "originalWidth": 221,
+        "originalHeight": 42
+      }
+    },
+    {
+      "family": "B_nomouth",
+      "eye": {
+        "name": "eye_B",
+        "index": 2,
+        "uvOffsetX": 0.2857142857142857,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 62,
+        "originalHeight": 62,
+        "glass": false
+      },
+      "mouth": null,
+      "eyeAnim": {
+        "name": "eye_B_anim",
+        "index": 3,
+        "uvOffsetX": 0.42857142857142855,
+        "uvOffsetY": 0.8333333333333334,
+        "uvRepeatX": 0.14285714285714285,
+        "uvRepeatY": 0.16666666666666666,
+        "aspectRatio": 1,
+        "originalWidth": 62,
+        "originalHeight": 62
+      },
+      "mouthAnim": null
+    }
+  ],
+  "regions": [
+    {
+      "name": "eye_A",
+      "index": 0,
+      "uvOffsetX": 0,
+      "uvOffsetY": 0.8333333333333334,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 0.8554216867469879,
+      "originalWidth": 71,
+      "originalHeight": 83
+    },
+    {
+      "name": "eye_A_anim",
+      "index": 1,
+      "uvOffsetX": 0.14285714285714285,
+      "uvOffsetY": 0.8333333333333334,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 0.8539325842696629,
+      "originalWidth": 76,
+      "originalHeight": 89
+    },
+    {
+      "name": "eye_B",
+      "index": 2,
+      "uvOffsetX": 0.2857142857142857,
+      "uvOffsetY": 0.8333333333333334,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1,
+      "originalWidth": 62,
+      "originalHeight": 62
+    },
+    {
+      "name": "eye_B_anim",
+      "index": 3,
+      "uvOffsetX": 0.42857142857142855,
+      "uvOffsetY": 0.8333333333333334,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1,
+      "originalWidth": 62,
+      "originalHeight": 62
+    },
+    {
+      "name": "eye_C",
+      "index": 4,
+      "uvOffsetX": 0.5714285714285714,
+      "uvOffsetY": 0.8333333333333334,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.0192307692307692,
+      "originalWidth": 53,
+      "originalHeight": 52
+    },
+    {
+      "name": "eye_D",
+      "index": 5,
+      "uvOffsetX": 0.7142857142857143,
+      "uvOffsetY": 0.8333333333333334,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.0192307692307692,
+      "originalWidth": 53,
+      "originalHeight": 52
+    },
+    {
+      "name": "eye_D_anim",
+      "index": 6,
+      "uvOffsetX": 0.8571428571428571,
+      "uvOffsetY": 0.8333333333333334,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1,
+      "originalWidth": 36,
+      "originalHeight": 36
+    },
+    {
+      "name": "eye_E",
+      "index": 7,
+      "uvOffsetX": 0,
+      "uvOffsetY": 0.6666666666666667,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.015625,
+      "originalWidth": 65,
+      "originalHeight": 64
+    },
+    {
+      "name": "eye_F",
+      "index": 8,
+      "uvOffsetX": 0.14285714285714285,
+      "uvOffsetY": 0.6666666666666667,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 0.7936507936507936,
+      "originalWidth": 50,
+      "originalHeight": 63
+    },
+    {
+      "name": "eye_G",
+      "index": 9,
+      "uvOffsetX": 0.2857142857142857,
+      "uvOffsetY": 0.6666666666666667,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 4.384615384615385,
+      "originalWidth": 228,
+      "originalHeight": 52
+    },
+    {
+      "name": "eye_G_anim",
+      "index": 10,
+      "uvOffsetX": 0.42857142857142855,
+      "uvOffsetY": 0.6666666666666667,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 3.3529411764705883,
+      "originalWidth": 228,
+      "originalHeight": 68
+    },
+    {
+      "name": "eye_H",
+      "index": 11,
+      "uvOffsetX": 0.5714285714285714,
+      "uvOffsetY": 0.6666666666666667,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.0598290598290598,
+      "originalWidth": 124,
+      "originalHeight": 117
+    },
+    {
+      "name": "eye_I",
+      "index": 12,
+      "uvOffsetX": 0.7142857142857143,
+      "uvOffsetY": 0.6666666666666667,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1,
+      "originalWidth": 76,
+      "originalHeight": 76
+    },
+    {
+      "name": "eye_I_anim",
+      "index": 13,
+      "uvOffsetX": 0.8571428571428571,
+      "uvOffsetY": 0.6666666666666667,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1,
+      "originalWidth": 92,
+      "originalHeight": 92
+    },
+    {
+      "name": "eye_J",
+      "index": 14,
+      "uvOffsetX": 0,
+      "uvOffsetY": 0.5,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1,
+      "originalWidth": 52,
+      "originalHeight": 52
+    },
+    {
+      "name": "eye_K",
+      "index": 15,
+      "uvOffsetX": 0.14285714285714285,
+      "uvOffsetY": 0.5,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 2.3076923076923075,
+      "originalWidth": 60,
+      "originalHeight": 26
+    },
+    {
+      "name": "eye_L",
+      "index": 16,
+      "uvOffsetX": 0.2857142857142857,
+      "uvOffsetY": 0.5,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1,
+      "originalWidth": 52,
+      "originalHeight": 52
+    },
+    {
+      "name": "Mouth_A",
+      "index": 17,
+      "uvOffsetX": 0.42857142857142855,
+      "uvOffsetY": 0.5,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.690909090909091,
+      "originalWidth": 186,
+      "originalHeight": 110
+    },
+    {
+      "name": "Mouth_A_anim",
+      "index": 18,
+      "uvOffsetX": 0.5714285714285714,
+      "uvOffsetY": 0.5,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 0.9029126213592233,
+      "originalWidth": 186,
+      "originalHeight": 206
+    },
+    {
+      "name": "Mouth_B",
+      "index": 19,
+      "uvOffsetX": 0.7142857142857143,
+      "uvOffsetY": 0.5,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.2372881355932204,
+      "originalWidth": 146,
+      "originalHeight": 118
+    },
+    {
+      "name": "Mouth_B_anim",
+      "index": 20,
+      "uvOffsetX": 0.8571428571428571,
+      "uvOffsetY": 0.5,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.2372881355932204,
+      "originalWidth": 146,
+      "originalHeight": 118
+    },
+    {
+      "name": "Mouth_C",
+      "index": 21,
+      "uvOffsetX": 0,
+      "uvOffsetY": 0.33333333333333337,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 4.5625,
+      "originalWidth": 146,
+      "originalHeight": 32
+    },
+    {
+      "name": "Mouth_C_anim",
+      "index": 22,
+      "uvOffsetX": 0.14285714285714285,
+      "uvOffsetY": 0.33333333333333337,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.9113924050632911,
+      "originalWidth": 151,
+      "originalHeight": 79
+    },
+    {
+      "name": "Mouth_D",
+      "index": 23,
+      "uvOffsetX": 0.2857142857142857,
+      "uvOffsetY": 0.33333333333333337,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 4.5625,
+      "originalWidth": 146,
+      "originalHeight": 32
+    },
+    {
+      "name": "Mouth_D_anim",
+      "index": 24,
+      "uvOffsetX": 0.42857142857142855,
+      "uvOffsetY": 0.33333333333333337,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 2.8627450980392157,
+      "originalWidth": 146,
+      "originalHeight": 51
+    },
+    {
+      "name": "Mouth_E",
+      "index": 25,
+      "uvOffsetX": 0.5714285714285714,
+      "uvOffsetY": 0.33333333333333337,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 4.294117647058823,
+      "originalWidth": 146,
+      "originalHeight": 34
+    },
+    {
+      "name": "Mouth_E_anim",
+      "index": 26,
+      "uvOffsetX": 0.7142857142857143,
+      "uvOffsetY": 0.33333333333333337,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.6590909090909092,
+      "originalWidth": 146,
+      "originalHeight": 88
+    },
+    {
+      "name": "Mouth_F",
+      "index": 27,
+      "uvOffsetX": 0.8571428571428571,
+      "uvOffsetY": 0.33333333333333337,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 3.0491803278688523,
+      "originalWidth": 186,
+      "originalHeight": 61
+    },
+    {
+      "name": "Mouth_G",
+      "index": 28,
+      "uvOffsetX": 0,
+      "uvOffsetY": 0.16666666666666663,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 2.107142857142857,
+      "originalWidth": 118,
+      "originalHeight": 56
+    },
+    {
+      "name": "Mouth_G_anim",
+      "index": 29,
+      "uvOffsetX": 0.14285714285714285,
+      "uvOffsetY": 0.16666666666666663,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.173913043478261,
+      "originalWidth": 27,
+      "originalHeight": 23
+    },
+    {
+      "name": "Mouth_H",
+      "index": 30,
+      "uvOffsetX": 0.2857142857142857,
+      "uvOffsetY": 0.16666666666666663,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.2372881355932204,
+      "originalWidth": 146,
+      "originalHeight": 118
+    },
+    {
+      "name": "Mouth_H_anim",
+      "index": 31,
+      "uvOffsetX": 0.42857142857142855,
+      "uvOffsetY": 0.16666666666666663,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.2372881355932204,
+      "originalWidth": 146,
+      "originalHeight": 118
+    },
+    {
+      "name": "Mouth_I",
+      "index": 32,
+      "uvOffsetX": 0.5714285714285714,
+      "uvOffsetY": 0.16666666666666663,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.2372881355932204,
+      "originalWidth": 146,
+      "originalHeight": 118
+    },
+    {
+      "name": "Mouth_I_anim",
+      "index": 33,
+      "uvOffsetX": 0.7142857142857143,
+      "uvOffsetY": 0.16666666666666663,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.3272727272727274,
+      "originalWidth": 146,
+      "originalHeight": 110
+    },
+    {
+      "name": "Mouth_J",
+      "index": 34,
+      "uvOffsetX": 0.8571428571428571,
+      "uvOffsetY": 0.16666666666666663,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 5.333333333333333,
+      "originalWidth": 256,
+      "originalHeight": 48
+    },
+    {
+      "name": "Mouth_J_anim",
+      "index": 35,
+      "uvOffsetX": 0,
+      "uvOffsetY": 0,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 2.265486725663717,
+      "originalWidth": 256,
+      "originalHeight": 113
+    },
+    {
+      "name": "Mouth_K",
+      "index": 36,
+      "uvOffsetX": 0.14285714285714285,
+      "uvOffsetY": 0,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.7857142857142858,
+      "originalWidth": 75,
+      "originalHeight": 42
+    },
+    {
+      "name": "Mouth_K_anim",
+      "index": 37,
+      "uvOffsetX": 0.2857142857142857,
+      "uvOffsetY": 0,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 1.7857142857142858,
+      "originalWidth": 75,
+      "originalHeight": 42
+    },
+    {
+      "name": "Mouth_L",
+      "index": 38,
+      "uvOffsetX": 0.42857142857142855,
+      "uvOffsetY": 0,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 2.268041237113402,
+      "originalWidth": 220,
+      "originalHeight": 97
+    },
+    {
+      "name": "Mouth_L_anim",
+      "index": 39,
+      "uvOffsetX": 0.5714285714285714,
+      "uvOffsetY": 0,
+      "uvRepeatX": 0.14285714285714285,
+      "uvRepeatY": 0.16666666666666666,
+      "aspectRatio": 5.261904761904762,
+      "originalWidth": 221,
+      "originalHeight": 42
+    }
+  ]
+}

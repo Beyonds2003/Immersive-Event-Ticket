@@ -1,0 +1,87 @@
+{
+  "atlasWidth": 1632,
+  "atlasHeight": 1088,
+  "cellSize": 512,
+  "gutter": 16,
+  "normalAtlas": "atlas-normal.webp",
+  "roughnessAtlas": "atlas-roughness.webp",
+  "diffuseAtlas": "atlas-diffuse.webp",
+  "diffuseAtlasWidth": 1088,
+  "diffuseAtlasHeight": 1088,
+  "regions": [
+    {
+      "name": "LavenderPlastic",
+      "index": 0,
+      "uvStartX": 0.00980392156862745,
+      "uvStartY": 0.0147058823529412,
+      "uvEndX": 0.323529411764706,
+      "uvEndY": 0.485294117647059
+    },
+    {
+      "name": "LimeDots",
+      "index": 1,
+      "uvStartX": 0.343137254901961,
+      "uvStartY": 0.0147058823529412,
+      "uvEndX": 0.656862745098039,
+      "uvEndY": 0.485294117647059
+    },
+    {
+      "name": "CyanSwirl",
+      "index": 2,
+      "uvStartX": 0.676470588235294,
+      "uvStartY": 0.0147058823529412,
+      "uvEndX": 0.990196078431373,
+      "uvEndY": 0.485294117647059
+    },
+    {
+      "name": "OrangeDripping",
+      "index": 3,
+      "uvStartX": 0.00980392156862745,
+      "uvStartY": 0.514705882352941,
+      "uvEndX": 0.323529411764706,
+      "uvEndY": 0.985294117647059
+    },
+    {
+      "name": "PeriwinkleGrainy",
+      "index": 4,
+      "uvStartX": 0.343137254901961,
+      "uvStartY": 0.514705882352941,
+      "uvEndX": 0.656862745098039,
+      "uvEndY": 0.985294117647059
+    }
+  ],
+  "diffuseRegions": [
+    {
+      "name": "noise1",
+      "index": 0,
+      "uvStartX": 0.0147058823529412,
+      "uvStartY": 0.0147058823529412,
+      "uvEndX": 0.485294117647059,
+      "uvEndY": 0.485294117647059
+    },
+    {
+      "name": "noise2",
+      "index": 1,
+      "uvStartX": 0.514705882352941,
+      "uvStartY": 0.0147058823529412,
+      "uvEndX": 0.985294117647059,
+      "uvEndY": 0.485294117647059
+    },
+    {
+      "name": "noise3",
+      "index": 2,
+      "uvStartX": 0.0147058823529412,
+      "uvStartY": 0.514705882352941,
+      "uvEndX": 0.485294117647059,
+      "uvEndY": 0.985294117647059
+    },
+    {
+      "name": "white",
+      "index": 3,
+      "uvStartX": 0.514705882352941,
+      "uvStartY": 0.514705882352941,
+      "uvEndX": 0.985294117647059,
+      "uvEndY": 0.985294117647059
+    }
+  ]
+}
