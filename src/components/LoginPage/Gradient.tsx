@@ -66,7 +66,7 @@ const Gradient = () => {
       // Ripple ring progress
       gsap.to(material.current.uniforms.uProgress, {
         value: 1,
-        duration: 2.4,
+        duration: 2.2,
         ease: "power1.out",
       });
 

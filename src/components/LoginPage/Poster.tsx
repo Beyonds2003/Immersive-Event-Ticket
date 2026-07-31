@@ -8,16 +8,34 @@ import { useControls } from "leva";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
+import { useCanvasTextTexture } from "../../libs/useCanvasTextTexture";
 
 const Poster = () => {
   const { coords, updateMouse } = useMouse();
 
-  const tex1 = useTexture("/poster.png") as any;
+  const tex1 = useCanvasTextTexture({
+    title: ["DISCOVER EVENT"],
+    titleFontFamily: "Dingos-ExtraBold",
+    titleFontSize: 120,
+    titleColor: "#FFFFFF",
+
+    subtitle: "YOUR GATEWAY TO UNIVERSITY EVENTS",
+    subtitleFontSize: 10,
+    subtitleFontFamily: "Inter",
+    subtitleLetterSpacing: 2,
+    subtitleColor: "#FFFFFF",
+
+    margin: -10,
+    padding: 5,
+    textAlign: "left",
+    textBaseline: "top",
+    responsive: true,
+  });
   const tex2 = useTexture("/home.png") as any;
 
-  tex1.minFilter = tex1.magFilter = THREE.LinearFilter;
+  // tex1.minFilter = tex1.magFilter = THREE.LinearFilter;
   tex2.minFilter = tex2.magFilter = THREE.LinearFilter;
-  tex1.colorSpace = THREE.SRGBColorSpace;
+  // tex1.colorSpace = THREE.SRGBColorSpace;
   tex2.colorSpace = THREE.SRGBColorSpace;
 
   const ringTex = useRingDistordTexture();
