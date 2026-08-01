@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @font-face {
+  font-family: "JustMeAgainDownHere";
+  src: url("/fonts/JustMeAgainDownHere.ttf");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Bebas Neue";
   src: url("/fonts/Bebas/BebasNeue-Regular.woff2") format("woff2");
   font-weight: 400;
@@ -59,4 +67,35 @@
     var(--primary-color) 0%,
     var(--secondary-color) 100%
   ); */
+}
+
+.group-member-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  user-select: none;
+}
+
+.group-member-title {
+  letter-spacing: -0.01em;
+  color: #ffffffb3;
+  white-space: nowrap;
+  font-family: Dingos, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.group-member-name {
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  white-space: nowrap;
+  font-family: JustMeAgainDownHere, sans-serif;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 140%;
 }

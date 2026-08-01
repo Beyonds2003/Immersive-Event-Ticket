@@ -215,7 +215,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   const mouseWorld = useRef(new THREE.Vector3());
 
   const scaleOffsets = useRef<number[]>(
-    Array.from({ length: 100 }, () => Math.random() * 0.2),
+    Array.from({ length: 100 }, () => Math.random() * 0.3),
   );
 
   const introScalesRef = useRef<{ scale: number }[]>([]);
@@ -718,7 +718,7 @@ const GroupOfSphere = () => {
   const [controls, setControls] = useControls("Physics Sphere", () => ({
     Physics: folder({
       sphereCount: {
-        value: 12,
+        value: 10,
         min: 1,
         max: 20,
         step: 1,
@@ -739,14 +739,14 @@ const GroupOfSphere = () => {
         label: "Position X",
       },
       positionY: {
-        value: -4.5,
+        value: -5.7,
         min: -10.0,
         max: 10.0,
         step: 0.1,
         label: "Position Y",
       },
       positionZ: {
-        value: -0.6,
+        value: -1,
         min: -10.0,
         max: 10.0,
         step: 0.1,
@@ -760,14 +760,14 @@ const GroupOfSphere = () => {
         label: "Spread X",
       },
       spreadY: {
-        value: 1.45,
+        value: 1.75,
         min: 0.0,
         max: 5.0,
         step: 0.05,
         label: "Spread Y",
       },
       spreadZ: {
-        value: 0.35,
+        value: 0.25,
         min: 0.0,
         max: 5.0,
         step: 0.05,
@@ -939,7 +939,7 @@ const GroupOfSphere = () => {
         label: "Push Distance",
       },
       delayFactor: {
-        value: 0.06,
+        value: 0.04,
         min: 0.01,
         max: 0.3,
         step: 0.01,
@@ -948,7 +948,7 @@ const GroupOfSphere = () => {
       triggerEndAnim: button(() => {
         window.dispatchEvent(
           new CustomEvent("ripple-click", {
-            detail: { x: 0.25, y: 0 },
+            detail: { x: -0.5, y: 0.5 },
           }),
         );
       }),

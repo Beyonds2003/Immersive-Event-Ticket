@@ -567,8 +567,8 @@ const SphereModel = ({
     D: new THREE.Vector2(0.5, 0.0), // bottom-right
   };
 
-  const seed = 123; // change it to (3) only if and only if things turn out good
-  const [colorA, colorB] = generateColorPair(`${email} ${type}`, 0.3, seed);
+  const seed = 1; // change it to (3) only if and only if things turn out good
+  const [colorA, colorB] = generateColorPair(`${email} ${type}`, 0.9, seed);
 
   const uniforms = useRef({
     uDiffuseTexture: { value: diffuseTexture },
@@ -683,7 +683,7 @@ const fragmentShader = `
 
     vec3 color = mix(
       uColorA,
-      uColorB * 1.2,
+      uColorB,
       diffuseSample.r
     );
 

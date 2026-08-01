@@ -20,68 +20,83 @@ function random(seed: number) {
 }
 
 /**
- * Calculates peak-chroma lightness (around 44%-54%) for maximum color vibrancy.
- * Avoids lightness > 56% (washed-out pastel) and lightness < 40% (muddy/dark).
+ * Dreamy iridescent palette hues — biased toward pinks, mints, lilacs, lavenders.
+ * These 8 anchor hues match the soft pearlescent tones seen in the reference image.
  */
-function getVibrantLightness(
+const DREAMY_HUES = [
+  310, // hot pink / magenta
+  330, // rose pink
+  280, // soft violet
+  260, // lavender / purple
+  240, // periwinkle blue
+  170, // mint / seafoam green
+  150, // soft green
+  195, // teal
+];
+
+/**
+ * Calculates lightness driven by `vibrant`:
+ *   vibrant=0 → ~70% (soft pastel)
+ *   vibrant=1 → ~55% (rich, punchy)
+ * Perceptual hue luminance and a slight A/B contrast are applied on top.
+ */
+function getDreamyLightness(
   hueDeg: number,
   isSecondary: boolean,
   randVal: number,
+  vibrant: number,
 ): number {
   const rad = (hueDeg * Math.PI) / 180;
-  // Perceptual innate luminance (yellow at 60° is naturally brighter than blue at 240°)
+  // Perceptual innate luminance — yellows sit higher, blues lower
   const innateLuminance = Math.cos(rad - (60 * Math.PI) / 180);
 
-  // Center around 48%-52% (the maximum saturation sweet-spot in HSL)
-  let lightness = 50 - innateLuminance * 5;
+  // Slide from 70% (pastel) down to 55% (vivid) as vibrant goes 0→1
+  let lightness = 70 - vibrant * 15 - innateLuminance * 4;
 
-  // Slight contrast shift between Color A and Color B
+  // Slight contrast between Color A and Color B
   if (isSecondary) {
-    lightness += 3 + (randVal - 0.5) * 4;
+    lightness += 2 + (randVal - 0.5) * 5;
   } else {
-    lightness -= 3 + (randVal - 0.5) * 4;
+    lightness -= 2 + (randVal - 0.5) * 5;
   }
 
-  return Math.min(56, Math.max(42, lightness));
+  return Math.min(74, Math.max(52, lightness));
 }
 
 /**
- * Generates two hyper-vibrant, neon-candy color pairs dynamically.
+ * Generates two soft, dreamy, iridescent color pairs — pinks, mints, lilacs, lavenders.
  *
  * Algorithm:
- * 1. Base hue is procedurally generated from string hash & seed.
- * 2. Second hue uses a complementary / split-complementary offset (130°–230°).
- * 3. Saturation is locked to peak levels (95%-100% at vibrant=1.0) for popping candy/neon tones.
- * 4. Lightness is tuned strictly around 44%-54% (the pure chroma zone) so colors never wash out.
+ * 1. Base hue is picked from a curated dreamy palette (pinks/purples/mints/teals)
+ *    with slight procedural jitter for variety.
+ * 2. Second hue uses an analogous / split-complementary offset (30°–90°) so the
+ *    pair feels harmonious and pearlescent rather than starkly contrasted.
+ * 3. Saturation is moderate (55%–85%) — vivid but soft, never neon.
+ * 4. Lightness is raised to 60%–76% for a luminous, iridescent, pastel-vivid feel.
  *
  * @param text Hash input text
- * @param vibrant Saturation & vividness multiplier (0 = soft, 1 = maximum neon pop)
+ * @param vibrant Saturation & vividness multiplier (0 = very soft pastel, 1 = full dreamy vivid)
  * @param seed Seed offset for procedural variation
  */
 export function generateColorPair(text: string, vibrant = 1.0, seed = 0) {
   const rand = random(hashString(text) ^ Math.imul(seed + 1, 2654435761));
 
-  // 1. Primary Hue (0° - 360°)
-  const hue1 = rand() * 360;
+  // 1. Pick a base hue from the dreamy palette with slight jitter (±15°)
+  const anchorIndex = Math.floor(rand() * DREAMY_HUES.length);
+  const hue1 = (DREAMY_HUES[anchorIndex] + (rand() - 0.5) * 30 + 360) % 360;
 
-  // 2. Secondary Hue: High-contrast complementary / split-complementary offset (130° to 230°)
+  // 2. Second hue: analogous offset (30°–90°) — same colour family, harmonious pairing
   const offsetSign = rand() < 0.5 ? 1 : -1;
-  const offsetMagnitude = 130 + rand() * 100;
+  const offsetMagnitude = 30 + rand() * 60;
   const hue2 = (hue1 + offsetSign * offsetMagnitude + 360) % 360;
 
-  // 3. Peak Saturation (95% - 100% when vibrant=1.0) for ultra-popping candy/neon tones
-  const sat1 = Math.min(
-    100,
-    Math.max(80, 80 + vibrant * 20 + (rand() - 0.5) * 5),
-  );
-  const sat2 = Math.min(
-    100,
-    Math.max(80, 80 + vibrant * 20 + (rand() - 0.5) * 5),
-  );
+  // 3. Saturation fully driven by vibrant: 0 → ~35% (soft pastel), 1 → ~95% (vivid pop)
+  const sat1 = Math.min(100, Math.max(20, 35 + vibrant * 60 + (rand() - 0.5) * 10));
+  const sat2 = Math.min(100, Math.max(20, 35 + vibrant * 60 + (rand() - 0.5) * 10));
 
-  // 4. Peak Chroma Lightness (42% - 56%) so colors are 100% rich and never pale
-  const lightness1 = getVibrantLightness(hue1, false, rand());
-  const lightness2 = getVibrantLightness(hue2, true, rand());
+  // 4. Lightness also driven by vibrant (70% pastel → 55% vivid)
+  const lightness1 = getDreamyLightness(hue1, false, rand(), vibrant);
+  const lightness2 = getDreamyLightness(hue2, true, rand(), vibrant);
 
   const colorA = new THREE.Color().setHSL(
     hue1 / 360,

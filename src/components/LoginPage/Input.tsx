@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { useMouse } from "../../libs/useMouse";
 import { useFrame } from "@react-three/fiber";
 import { remapClamp } from "../../libs/remapClamp";
+import { lerp } from "../../libs/lerp";
 import { useEmailInput } from "../../libs/useEmailInput";
 import gsap from "gsap";
 
@@ -23,8 +24,11 @@ const Input = () => {
 
     updateMouse();
 
-    ref.current.rotation.y = remapClamp(coords.x, -1, 1, -0.4, 0.1) * 0.8;
-    ref.current.rotation.x = remapClamp(-coords.y, -1, 1, -0.4, 0.2) * 0.8;
+    const targetY = remapClamp(coords.x, -1, 1, -0.4, 0.1) * 0.4;
+    const targetX = remapClamp(-coords.y, -1, 1, -0.4, 0.2) * 0.4;
+
+    ref.current.rotation.y = lerp(ref.current.rotation.y, targetY, 0.05);
+    ref.current.rotation.x = lerp(ref.current.rotation.x, targetX, 0.05);
   });
 
   const handlePointerEnter = () => {
@@ -46,9 +50,9 @@ const Input = () => {
     document.body.style.cursor = "auto";
     if (!ref.current) return;
     gsap.to(ref.current.scale, {
-      x: 0.9,
-      y: 0.9,
-      z: 0.9,
+      x: 1,
+      y: 1,
+      z: 1,
       duration: 0.3,
       ease: "power2.out",
       overwrite: "auto",
@@ -93,7 +97,7 @@ const Input = () => {
     // rotateEmailInput();
     // onSubmitted();
 
-    console.log(coords.x, coords.y);
+    // console.log(coords.x, coords.y);
 
     window.dispatchEvent(
       new CustomEvent("ripple-click", {
@@ -109,7 +113,7 @@ const Input = () => {
 
   return (
     <>
-      <group ref={ref} position={[2, -0.2, 0]} scale={0.9}>
+      <group ref={ref} position={[2, -0.2, -0.2]} scale={1}>
         <group ref={spinGroupRef}>
           {/* Email input plane — canvas texture replaces the baked text mesh */}
           <mesh geometry={nodes.text.geometry}>

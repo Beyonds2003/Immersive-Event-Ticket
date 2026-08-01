@@ -5,12 +5,14 @@ import Poster from "./Poster";
 import Gradient from "./Gradient";
 import { RingDistordRenderTarget } from "../../libs/ringDistordRenderTarget";
 import GroupOfSphere from "../General/GroupOfSphere";
+import GroupMember from "./GroupMember";
 
 const Main = () => {
   return (
     <div className="h-screen login-container">
       <Scene />
       <Leva collapsed />
+      <GroupMember />
     </div>
   );
 };
@@ -27,7 +29,7 @@ const Scene = () => {
       {/* <OtpInput show={showOtp} /> */}
 
       {/* <directionalLight position={[3, 1, 5]} intensity={8.7} color="#3457e5" /> */}
-      {/* <ambientLight intensity={2.8} color="#504ed8" /> */}
+      <ambientLight intensity={2.4} color="#504ed8" />
 
       <ambientLight intensity={2.8} />
       <directionalLight
