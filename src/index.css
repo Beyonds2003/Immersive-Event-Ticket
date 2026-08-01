@@ -99,3 +99,48 @@
   font-weight: 700;
   line-height: 140%;
 }
+
+.user-name {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0px 25px;
+  height: 50px;
+
+  background: black;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  border-radius: 40px; /* Half of the height */
+  user-select: none;
+}
+
+.user-message {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content; /* or width: max-content; */
+  white-space: nowrap; /* prevent wrapping */
+  padding: 0px 30px;
+  height: 50px;
+
+  color: black;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 2px solid black;
+  margin-top: 2px;
+
+  border-radius: 30px; /* Half of the height */
+  /* transform: translateX(30%); */
+  transform: translateX(-70%);
+
+  &[data-align="right"] {
+    transform: translateX(30%);
+  }
+
+  user-select: none;
+}

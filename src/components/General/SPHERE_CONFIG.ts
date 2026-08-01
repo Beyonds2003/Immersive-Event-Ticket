@@ -1,6 +1,8 @@
 export const SPHERE_CONFIGS = [
   {
     email: "olivia.morgan@example.com",
+    name: "Olivia",
+    message: "Keep going 💪",
     roughness: 0.25,
     metalness: 0.1,
     face: "L",
@@ -9,6 +11,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "liam.carter@example.com",
+    name: "Liam",
+    message: "Great vibes",
     roughness: 0.12,
     metalness: 0.9,
     face: "A",
@@ -17,6 +21,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "emma.hughes@example.com",
+    name: "Emma",
+    message: "Keep shining",
     roughness: 0.2,
     metalness: 0.8,
     face: "B",
@@ -25,6 +31,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "noah.parker@example.com",
+    name: "Noah",
+    message: "Love this 💙",
     roughness: 0.35,
     metalness: 0.3,
     face: "C",
@@ -32,15 +40,19 @@ export const SPHERE_CONFIGS = [
     normal: "B",
   },
   {
-    email: "ava.bennett@example.com",
+    email: "avaBena.bennett@example.com",
+    name: "Ava",
+    message: "Amazing day",
     roughness: 0.15,
     metalness: 0.75,
-    face: "D",
-    diffuse: "A",
-    normal: "D",
+    face: "H",
+    diffuse: "B",
+    normal: "B",
   },
   {
     email: "ethan.foster@example.com",
+    name: "Ethan",
+    message: "Let's go 🚀",
     roughness: 0.2,
     metalness: 0.8,
     face: "E",
@@ -49,6 +61,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "mia.turner@example.com",
+    name: "Addy",
+    message: "❤️",
     roughness: 0.3,
     metalness: 0.4,
     face: "F",
@@ -56,15 +70,19 @@ export const SPHERE_CONFIGS = [
     normal: "B",
   },
   {
-    email: "lucas.hayes@example.com",
+    email: "lucass.hesxa@example.com",
+    name: "Luca",
+    message: "Never stop",
     roughness: 0.18,
     metalness: 0.85,
     face: "B",
-    diffuse: "C",
+    diffuse: "D",
     normal: "D",
   },
   {
     email: "charlotte.brooks@example.com",
+    name: "Charlie",
+    message: "Hello world 👋",
     roughness: 0.22,
     metalness: 0.6,
     face: "H",
@@ -73,6 +91,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "henry.collins@example.com",
+    name: "Henry",
+    message: "Nice event",
     roughness: 0.28,
     metalness: 0.2,
     face: "I",
@@ -81,6 +101,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "amelia.ward@example.com",
+    name: "Amelia",
+    message: "Beautiful",
     roughness: 0.15,
     metalness: 0.9,
     face: "J",
@@ -89,6 +111,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "james.reed@example.com",
+    name: "James",
+    message: "Good luck 🍀",
     roughness: 0.32,
     metalness: 0.3,
     face: "K",
@@ -97,6 +121,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "harper.gray@example.com",
+    name: "Harper",
+    message: "Feeling good",
     roughness: 0.25,
     metalness: 0.7,
     face: "A",
@@ -105,6 +131,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "benjamin.price@example.com",
+    name: "Ben",
+    message: "Awesome",
     roughness: 0.1,
     metalness: 0.95,
     face: "B",
@@ -113,6 +141,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "evelyn.mitchell@example.com",
+    name: "Eve",
+    message: "Stay calm",
     roughness: 0.4,
     metalness: 0.1,
     face: "C",
@@ -121,6 +151,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "daniel.baker@example.com",
+    name: "Daniel",
+    message: "Keep going 💪",
     roughness: 0.2,
     metalness: 0.85,
     face: "D",
@@ -129,6 +161,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "sofia.long@example.com",
+    name: "Sofia",
+    message: "Dream big",
     roughness: 0.3,
     metalness: 0.5,
     face: "E",
@@ -137,6 +171,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "jackson.rivera@example.com",
+    name: "Jack",
+    message: "Enjoy it",
     roughness: 0.15,
     metalness: 0.7,
     face: "F",
@@ -145,6 +181,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "ella.scott@example.com",
+    name: "Ella",
+    message: "So lovely",
     roughness: 0.25,
     metalness: 0.4,
     face: "G",
@@ -153,6 +191,8 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "logan.cook@example.com",
+    name: "Logan",
+    message: "Amazing work 🚀",
     roughness: 0.22,
     metalness: 0.8,
     face: "H",

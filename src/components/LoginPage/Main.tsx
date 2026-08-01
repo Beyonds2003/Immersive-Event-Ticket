@@ -6,6 +6,7 @@ import Gradient from "./Gradient";
 import { RingDistordRenderTarget } from "../../libs/ringDistordRenderTarget";
 import GroupOfSphere from "../General/GroupOfSphere";
 import GroupMember from "./GroupMember";
+import EventCard from "../HomePage/EventCard";
 
 const Main = () => {
   return (
@@ -25,6 +26,7 @@ const Scene = () => {
       <Gradient />
       <Input />
       <GroupOfSphere />
+      {/* <EventCard /> */}
 
       {/* <OtpInput show={showOtp} /> */}
 

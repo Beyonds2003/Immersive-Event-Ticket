@@ -5,7 +5,7 @@ import * as THREE from "three";
 const CANVAS_W = 1024;
 const CANVAS_H = 256;
 
-const FONT = "600 56px Inter, sans-serif";
+const FONT = "700 56px Dangos, sans-serif";
 const COLOR_TEXT = "#000000";
 const COLOR_PLACEHOLDER = "#000000";
 const BACKGROUND_COLOR = "rgba(255, 255, 255, 0.7)";

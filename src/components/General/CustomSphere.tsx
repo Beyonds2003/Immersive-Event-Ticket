@@ -6,6 +6,7 @@ import { useGLTF, useTexture } from "@react-three/drei";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { generateColorPair } from "../../libs/generateColorPair";
 import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
+import Message from "./Message";
 
 // ── UV Region Type ────────────────────────────────────────────────────────────
 
@@ -440,6 +441,8 @@ const MultiSpriteFace: React.FC<MultiSpriteFaceProps> = ({
 // ── Model Component ───────────────────────────────────────────────────────────
 
 export interface ModelProps extends Omit<ThreeElements["group"], "ref"> {
+  name: string;
+  message: string;
   email: string;
   roughness: number;
   metalness: number;
@@ -460,6 +463,8 @@ export interface ModelProps extends Omit<ThreeElements["group"], "ref"> {
 export const CustomSphere = React.forwardRef<THREE.Group, ModelProps>(
   (
     {
+      name,
+      message,
       email,
       roughness,
       metalness,
@@ -520,6 +525,13 @@ export const CustomSphere = React.forwardRef<THREE.Group, ModelProps>(
           eyeDistance={eyeDistance}
           breathing={breathing}
           inkColor={inkColor}
+        />
+
+        {/* 3. Pop Up Message */}
+        <Message
+          align={Math.random() > 0.5 ? "left" : "right"}
+          name={name}
+          message={message}
         />
       </group>
     );

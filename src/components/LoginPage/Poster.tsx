@@ -21,9 +21,9 @@ const Poster = () => {
     titleLineHeight: 1,
 
     subtitle: "YOUR GATEWAY TO UNIVERSITY EVENTS",
-    subtitleFontSize: 20,
+    subtitleFontSize: 15,
     subtitleFontFamily: "Inter",
-    subtitleLetterSpacing: 2,
+    subtitleLetterSpacing: 1,
     subtitleColor: "#FFFFFF",
 
     margin: -10,
@@ -32,12 +32,23 @@ const Poster = () => {
     textBaseline: "top",
     responsive: true,
   });
-  const tex2 = useTexture("/home.png") as any;
+  const tex2 = useCanvasTextTexture({
+    title: ["EXPLORE"],
+    titleFontFamily: "Dingos-ExtraBold",
+    titleFontSize: 180,
+    titleColor: "#000000",
+    titleLineHeight: 1,
+
+    padding: 5,
+    textAlign: "left",
+    textBaseline: "top",
+    responsive: true,
+  });
 
   // tex1.minFilter = tex1.magFilter = THREE.LinearFilter;
-  tex2.minFilter = tex2.magFilter = THREE.LinearFilter;
+  // tex2.minFilter = tex2.magFilter = THREE.LinearFilter;
   // tex1.colorSpace = THREE.SRGBColorSpace;
-  tex2.colorSpace = THREE.SRGBColorSpace;
+  // tex2.colorSpace = THREE.SRGBColorSpace;
 
   const ringTex = useRingDistordTexture();
 

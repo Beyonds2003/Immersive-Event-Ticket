@@ -478,9 +478,17 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     spreadZ,
   ]);
 
+  const initialPointer = useRef(new THREE.Vector2(999, 999));
+
   useFrame(({ pointer, clock, camera }) => {
     if (isDisposedRef.current) return;
     if (!physicsWorld.current || !ballState.current || !input.current) return;
+
+    const mouse = initialPointer.current;
+
+    if (pointer.x !== 0 || pointer.y !== 0) {
+      mouse.copy(pointer);
+    }
 
     const state = ballState.current;
     const inp = input.current;
@@ -539,7 +547,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       inp[32] = 0;
     }
 
-    raycaster.current.setFromCamera(pointer, camera);
+    raycaster.current.setFromCamera(mouse, camera);
     const hit = raycaster.current.ray.intersectPlane(
       zeroPlane.current,
       mouseWorld.current,
@@ -691,6 +699,8 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
           ref={(el: any) => {
             groupRefs.current[i] = el;
           }}
+          name={cfg.name}
+          message={cfg.message}
           email={cfg.email}
           roughness={cfg.roughness}
           metalness={cfg.metalness}
@@ -849,14 +859,14 @@ const GroupOfSphere = () => {
         label: "Pos X",
       },
       obstacleY: {
-        value: -0.2,
+        value: -0.4,
         min: -10.0,
         max: 10.0,
         step: 0.1,
         label: "Pos Y",
       },
       obstacleZ: {
-        value: 0,
+        value: -0.4,
         min: -10.0,
         max: 10.0,
         step: 0.1,

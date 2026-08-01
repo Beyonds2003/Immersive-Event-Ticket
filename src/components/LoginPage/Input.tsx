@@ -7,6 +7,7 @@ import { remapClamp } from "../../libs/remapClamp";
 import { lerp } from "../../libs/lerp";
 import { useEmailInput } from "../../libs/useEmailInput";
 import gsap from "gsap";
+import { useControls } from "leva";
 
 const Input = () => {
   const { nodes, materials } = useGLTF("models/login-input.glb") as any;
@@ -18,6 +19,10 @@ const Input = () => {
   const spinGroupRef = useRef<THREE.Group>(null);
 
   const { coords, updateMouse } = useMouse();
+
+  const { color } = useControls("Input", {
+    color: "#3457e5",
+  });
 
   useFrame(() => {
     if (!ref.current || !visible) return;
@@ -39,8 +44,8 @@ const Input = () => {
       x: 1.2,
       y: 1.2,
       z: 1.2,
-      duration: 0.8,
-      ease: "back.out(1.7)",
+      duration: 0.6,
+      ease: "back.out(2)",
       overwrite: "auto",
     });
   };
@@ -53,7 +58,7 @@ const Input = () => {
       x: 1,
       y: 1,
       z: 1,
-      duration: 0.3,
+      duration: 0.4,
       ease: "power2.out",
       overwrite: "auto",
     });
@@ -120,7 +125,7 @@ const Input = () => {
             <meshStandardMaterial
               emissiveIntensity={0.6}
               roughness={0.3}
-              metalness={1}
+              metalness={0.4}
               emissiveMap={texture}
               map={texture}
               emissive={"white"}
@@ -133,8 +138,15 @@ const Input = () => {
           />
           <mesh
             geometry={nodes.Mesh_1_1.geometry}
-            material={materials.Material_0}
-          />
+            // material={materials.Material_0}
+          >
+            <meshStandardMaterial
+              emissiveIntensity={2.5}
+              roughness={0.1}
+              metalness={0.9}
+              emissive={color}
+            />
+          </mesh>
         </group>
       </group>
 
