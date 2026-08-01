@@ -628,7 +628,8 @@ const vertexShader = `
       vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
       float ringMask    = ring.b;                // grayscale ring intensity (0..1)
 
-      csm_Position.xyz *= (1. + (vec3(ringDistord, 0.) * ringMask * 1.));
+      // csm_Position.xyz *= (1. - ringMask * 1.); // Scale
+      csm_Position.xy += ringMask * 0.2;
 
       vUv = uv;
     }
@@ -686,12 +687,6 @@ const fragmentShader = `
       diffuseSample.r
     );
 
-
-    // Ring Tex
-    // vec2 screenUv = gl_FragCoord.xy / gl_FragCoord.w;
-    // vec4 ring = texture2D(uRingTex, screenUv);
-    // vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
-    // float ringMask    = ring.b;                // grayscale ring intensity (0..1)
 
     csm_DiffuseColor = vec4(vec3(color), 1.0);
 

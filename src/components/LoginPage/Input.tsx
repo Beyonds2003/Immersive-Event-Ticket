@@ -97,7 +97,7 @@ const Input = () => {
 
     window.dispatchEvent(
       new CustomEvent("ripple-click", {
-        detail: { x: 0.34, y: 0 },
+        detail: { x: 0.24, y: 0 },
       }),
     );
 

@@ -305,7 +305,7 @@ export const RingDistordRenderTarget = () => {
     uniforms.current.uRingOffset.value = ringOffset;
     uniforms.current.uDistordStrength.value = distordStrength;
 
-    uniforms.current.uProgress.value = progress;
+    // uniforms.current.uProgress.value = progress;
 
     // Resize RT if viewport changed
     if (renderTarget.width !== w || renderTarget.height !== h) {

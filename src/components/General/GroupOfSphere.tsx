@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useControls, Leva, folder } from "leva";
+import React, { useRef, useEffect, useState } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useControls, Leva, folder, button } from "leva";
 import * as THREE from "three";
 import Model from "./CustomSphere";
 import { PhysicsWorld } from "../../libs/PhysicsWorld";
@@ -151,6 +151,18 @@ interface PhysicsSceneProps {
   obstacleX: number;
   obstacleY: number;
   obstacleZ: number;
+  endAnimProgress: number;
+  pushForce: number;
+  delayFactor: number;
+  onProgressUpdate: (progress: number) => void;
+}
+
+interface EndAnimSphereState {
+  scale: number;
+  pushDist: number;
+  dirX: number;
+  dirY: number;
+  dirZ: number;
 }
 
 const PhysicsScene: React.FC<PhysicsSceneProps> = ({
@@ -187,7 +199,12 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   obstacleX,
   obstacleY,
   obstacleZ,
+  endAnimProgress,
+  pushForce,
+  delayFactor,
+  onProgressUpdate,
 }) => {
+  const { camera } = useThree();
   const groupRefs = useRef<(THREE.Group | null)[]>([]);
   const physicsWorld = useRef<PhysicsWorld | null>(null);
   const ballState = useRef<Float32Array | null>(null);
@@ -202,6 +219,11 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   );
 
   const introScalesRef = useRef<{ scale: number }[]>([]);
+  const endAnimStatesRef = useRef<EndAnimSphereState[]>([]);
+  const endAnimTlRef = useRef<gsap.core.Timeline | null>(null);
+  const isDisposedRef = useRef(false);
+  const [isDisposedState, setIsDisposedState] = useState(false);
+  const isInternalUpdateRef = useRef(false);
   const tempScale = useRef(new THREE.Vector3());
 
   // ── Intro Scale Pop Animation ───────────────────────────────────────────────
@@ -220,6 +242,181 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     }
     introScalesRef.current = scales;
   };
+
+  // ── Cleanup Physics and Geometries ──────────────────────────────────────────
+  const cleanUpScene = () => {
+    if (isDisposedRef.current) return;
+    isDisposedRef.current = true;
+
+    // Traverse and dispose THREE meshes, geometries, and materials
+    groupRefs.current.forEach((group) => {
+      if (group) {
+        group.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh;
+            if (mesh.geometry) mesh.geometry.dispose();
+            if (mesh.material) {
+              if (Array.isArray(mesh.material)) {
+                mesh.material.forEach((m) => m.dispose());
+              } else {
+                mesh.material.dispose();
+              }
+            }
+          }
+        });
+      }
+    });
+
+    groupRefs.current = [];
+    physicsWorld.current = null;
+    ballState.current = null;
+    input.current = null;
+    setIsDisposedState(true);
+  };
+
+  // ── Trigger End Animation from Click Coords ────────────────────────────────
+  const triggerEndAnimation = (
+    x: number,
+    y: number,
+    autoPlay: boolean = true,
+  ) => {
+    if (isDisposedRef.current) {
+      isDisposedRef.current = false;
+      setIsDisposedState(false);
+    }
+
+    const count = Math.min(
+      sphereCount,
+      ballState.current
+        ? Math.floor(ballState.current.length / 128)
+        : sphereCount,
+    );
+    if (count === 0) return null;
+
+    // Unproject NDC click position onto Z=0 plane
+    const clickNdc = new THREE.Vector2(x, y);
+    raycaster.current.setFromCamera(clickNdc, camera);
+    const clickWorld = new THREE.Vector3();
+    const hit = raycaster.current.ray.intersectPlane(
+      zeroPlane.current,
+      clickWorld,
+    );
+    if (!hit) {
+      clickWorld.set(x * 4, y * 4, 0);
+    }
+
+    if (endAnimTlRef.current) {
+      endAnimTlRef.current.kill();
+    }
+
+    const states: EndAnimSphereState[] = [];
+    const distances: number[] = [];
+
+    for (let i = 0; i < count; i++) {
+      let sx = positionX;
+      let sy = positionY;
+      let sz = positionZ;
+
+      if (ballState.current) {
+        const n = i * 128;
+        sx = ballState.current[n + 0];
+        sy = ballState.current[n + 1];
+        sz = ballState.current[n + 2];
+      }
+
+      const dx = sx - clickWorld.x;
+      const dy = sy - clickWorld.y;
+      const dz = sz - clickWorld.z;
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      distances.push(dist);
+
+      let dirX = 0;
+      let dirY = 1;
+      let dirZ = 0;
+      if (dist > 0.0001) {
+        dirX = dx / dist;
+        dirY = dy / dist;
+        dirZ = dz / dist;
+      }
+
+      states.push({
+        scale: 1,
+        pushDist: 0,
+        dirX,
+        dirY,
+        dirZ,
+      });
+    }
+
+    endAnimStatesRef.current = states;
+
+    const tl = gsap.timeline({
+      paused: !autoPlay,
+      onUpdate: () => {
+        isInternalUpdateRef.current = true;
+        onProgressUpdate(tl.progress());
+        isInternalUpdateRef.current = false;
+      },
+      onComplete: () => {
+        if (autoPlay) {
+          cleanUpScene();
+        }
+      },
+    });
+
+    for (let i = 0; i < count; i++) {
+      const animObj = states[i];
+      const delay = distances[i] * delayFactor;
+
+      tl.to(
+        animObj,
+        {
+          scale: 0,
+          pushDist: pushForce,
+          duration: 0.7,
+          ease: "power2.inOut",
+        },
+        delay,
+      );
+    }
+
+    endAnimTlRef.current = tl;
+    return tl;
+  };
+
+  // ── Listen to "ripple-click" CustomEvent ────────────────────────────────────
+  useEffect(() => {
+    const handleRippleClick = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      const x = typeof detail?.x === "number" ? detail.x : 0;
+      const y = typeof detail?.y === "number" ? detail.y : 0;
+      triggerEndAnimation(x, y, true);
+    };
+
+    window.addEventListener("ripple-click", handleRippleClick);
+    return () => {
+      window.removeEventListener("ripple-click", handleRippleClick);
+    };
+  }, [
+    sphereCount,
+    pushForce,
+    delayFactor,
+    camera,
+    positionX,
+    positionY,
+    positionZ,
+  ]);
+
+  // ── Sync Leva endAnimProgress Debug Slider ──────────────────────────────────
+  // useEffect(() => {
+  //   if (isInternalUpdateRef.current) return;
+
+  //   let tl = triggerEndAnimation(0.34, 0, false);
+  //   if (tl) {
+  //     tl.pause();
+  //     tl.progress(endAnimProgress);
+  //   }
+  // }, [endAnimProgress, pushForce, delayFactor]);
 
   useEffect(() => {
     const count = sphereCount;
@@ -282,6 +479,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   ]);
 
   useFrame(({ pointer, clock, camera }) => {
+    if (isDisposedRef.current) return;
     if (!physicsWorld.current || !ballState.current || !input.current) return;
 
     const state = ballState.current;
@@ -434,26 +632,42 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       }
     }
 
-    // Sync Three.js groups from physics matrix
+    // Sync Three.js groups from physics matrix + end animation push & scale
     for (let i = 0; i < count; i++) {
       const group = groupRefs.current[i];
       if (!group) continue;
 
       const introObj = introScalesRef.current[i];
-      const s = introObj ? Math.max(0, introObj.scale) : 0;
-      group.visible = s > 0.0001;
+      const endObj = endAnimStatesRef.current[i];
+
+      const introScale = introObj ? Math.max(0, introObj.scale) : 1;
+      const endScale = endObj ? Math.max(0, endObj.scale) : 1;
+      const finalScale = introScale * endScale;
+
+      group.visible = finalScale > 0.0001;
 
       const offset = i * 128 + 48;
       const mat = state.subarray(offset, offset + 16);
       if (mat.length === 16) {
         group.matrix.fromArray(mat);
-        if (s < 0.999) {
-          group.matrix.scale(tempScale.current.set(s, s, s));
+
+        if (endObj && endObj.pushDist > 0) {
+          group.matrix.elements[12] += endObj.dirX * endObj.pushDist;
+          group.matrix.elements[13] += endObj.dirY * endObj.pushDist;
+          group.matrix.elements[14] += endObj.dirZ * endObj.pushDist;
+        }
+
+        if (finalScale < 0.999) {
+          group.matrix.scale(
+            tempScale.current.set(finalScale, finalScale, finalScale),
+          );
         }
         group.matrixWorldNeedsUpdate = true;
       }
     }
   });
+
+  if (isDisposedState) return null;
 
   return (
     <>
@@ -501,7 +715,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 const GroupOfSphere = () => {
-  const [controls] = useControls("Physics Sphere", () => ({
+  const [controls, setControls] = useControls("Physics Sphere", () => ({
     Physics: folder({
       sphereCount: {
         value: 12,
@@ -709,7 +923,41 @@ const GroupOfSphere = () => {
       },
       inkColor: { value: "#111115", label: "Ink Color" },
     }),
+    "End Animation": folder({
+      endAnimProgress: {
+        value: 0,
+        min: 0,
+        max: 1,
+        step: 0.001,
+        label: "Progress (Debug)",
+      },
+      pushForce: {
+        value: 4.0,
+        min: 0.5,
+        max: 15.0,
+        step: 0.5,
+        label: "Push Distance",
+      },
+      delayFactor: {
+        value: 0.06,
+        min: 0.01,
+        max: 0.3,
+        step: 0.01,
+        label: "Delay Factor",
+      },
+      triggerEndAnim: button(() => {
+        window.dispatchEvent(
+          new CustomEvent("ripple-click", {
+            detail: { x: 0.25, y: 0 },
+          }),
+        );
+      }),
+    }),
   }));
+
+  const handleProgressUpdate = (progress: number) => {
+    setControls({ endAnimProgress: progress });
+  };
 
   return (
     <PhysicsScene
@@ -748,6 +996,10 @@ const GroupOfSphere = () => {
       obstacleX={controls.obstacleX}
       obstacleY={controls.obstacleY}
       obstacleZ={controls.obstacleZ}
+      endAnimProgress={controls.endAnimProgress}
+      pushForce={controls.pushForce}
+      delayFactor={controls.delayFactor}
+      onProgressUpdate={handleProgressUpdate}
     />
   );
 };
