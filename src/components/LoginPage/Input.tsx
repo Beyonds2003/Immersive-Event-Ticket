@@ -1,5 +1,5 @@
-import { useGLTF } from "@react-three/drei";
-import React, { useRef, useState } from "react";
+import { Html, useGLTF } from "@react-three/drei";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useMouse } from "../../libs/useMouse";
 import { useFrame } from "@react-three/fiber";
@@ -7,7 +7,10 @@ import { remapClamp } from "../../libs/remapClamp";
 import { lerp } from "../../libs/lerp";
 import { useEmailInput } from "../../libs/useEmailInput";
 import gsap from "gsap";
+import { SplitText } from "gsap/all";
 import { useControls } from "leva";
+
+gsap.registerPlugin(SplitText);
 
 const Input = () => {
   const { nodes, materials } = useGLTF("models/login-input.glb") as any;
@@ -126,8 +129,8 @@ const Input = () => {
               emissiveIntensity={0.6}
               roughness={0.3}
               metalness={0.4}
-              emissiveMap={texture}
-              map={texture}
+              // emissiveMap={texture}
+              // map={texture}
               emissive={"white"}
             />
           </mesh>
@@ -147,22 +150,100 @@ const Input = () => {
               emissive={color}
             />
           </mesh>
+
+          <InputText />
         </group>
       </group>
 
       {/* Invisible Hover Helper to prevent jitter at the edge  */}
-      <mesh
+      <Html position={[0, 0.3, 0]}>
+        <div
+          className="input-hover-helper"
+          onMouseEnter={handlePointerEnter}
+          onMouseLeave={handlePointerLeave}
+          onClick={() => focus()}
+        />
+      </Html>
+      {/* <mesh
         visible={false}
-        position={[1.9, -0.2, 1.5]}
+        position={[1.9, -0.2, 0.5]}
         onClick={() => focus()}
         onPointerMissed={() => blur()}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
       >
-        <planeGeometry args={[3.8, 1]} />
+        <planeGeometry args={[4, 1]} />
         <meshBasicMaterial />
-      </mesh>
+      </mesh> */}
     </>
+  );
+};
+const data = ["Hello", "How are you", "Enter Email"];
+const InputText = () => {
+  useEffect(() => {
+    let index = 0;
+    let delay = 3;
+
+    const play = () => {
+      const el = document.querySelector(".animate-input-text");
+
+      if (!el) return;
+
+      el.textContent = data[index];
+
+      const split = new SplitText(".animate-input-text", {
+        type: "chars",
+        charsClass: "char",
+      });
+
+      gsap
+        .timeline({
+          onComplete: () => {
+            split.revert();
+            index = (index + 1) % data.length;
+            play();
+          },
+          force3D: false,
+        })
+        .from(split.chars, {
+          // y: 30,
+          scale: 0,
+          stagger: 0.04,
+          duration: 0.4,
+          ease: "back.out(1.7)",
+          transformOrigin: "50% 80%",
+        })
+        .to(
+          split.chars,
+          {
+            // y: -30,
+            scale: 0,
+            stagger: 0.03,
+            duration: 0.2,
+            ease: "power2.in",
+            transformOrigin: "50% 80%",
+          },
+          `+=${delay}`,
+        );
+    };
+
+    const timeout = setTimeout(() => {
+      play();
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  return (
+    <Html
+      position={[0, 0, 0.2]}
+      center
+      transform
+      // occlude
+      style={{ pointerEvents: "none" }}
+    >
+      <h1 className="animate-input-text">{data[0]}</h1>
+    </Html>
   );
 };
 

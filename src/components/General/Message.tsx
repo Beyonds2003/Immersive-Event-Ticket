@@ -204,7 +204,7 @@ const Message = ({ align, name, message }: Props) => {
       as="div"
       className="message-container"
       center
-      position={[align === "left" ? 0 : 0.7, 0.5, 0]}
+      position={[align === "left" ? 0 : 0.7, 0.5, -1]}
     >
       <div
         ref={setNode}
