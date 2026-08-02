@@ -20,6 +20,7 @@ const Input = () => {
 
   const ref = useRef<THREE.Group>(null);
   const spinGroupRef = useRef<THREE.Group>(null);
+  const shakeTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
   const { coords, updateMouse } = useMouse();
 
@@ -38,6 +39,51 @@ const Input = () => {
     ref.current.rotation.y = lerp(ref.current.rotation.y, targetY, 0.05);
     ref.current.rotation.x = lerp(ref.current.rotation.x, targetX, 0.05);
   });
+
+  // Continuous idle Z-shake: bounce left→right→rest, pause 2 s, repeat
+  const SHAKE_AMPLITUDE = 0.03; // radians
+  const timeScale = 0.6;
+  useEffect(() => {
+    if (!spinGroupRef.current) return;
+
+    const target = spinGroupRef.current.rotation;
+
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 2 });
+
+    tl.fromTo(
+      target,
+      { z: 0 },
+      {
+        z: SHAKE_AMPLITUDE,
+        duration: 0.22 * timeScale,
+        ease: "sine.out",
+      },
+    );
+    tl.fromTo(
+      target,
+      { z: SHAKE_AMPLITUDE },
+      {
+        z: -SHAKE_AMPLITUDE,
+        duration: 0.22 * timeScale,
+        ease: "sine.inOut",
+        onComplete: () => {
+          window.dispatchEvent(new CustomEvent("change-text"));
+        },
+        repeat: 2,
+        yoyo: true,
+      },
+    ).to(target, {
+      z: 0,
+      duration: 0.35 * timeScale,
+      ease: "sine.out",
+    });
+
+    shakeTimelineRef.current = tl;
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
 
   const handlePointerEnter = () => {
     if (isSubmittedRef.current) return;
@@ -164,74 +210,92 @@ const Input = () => {
           onClick={() => focus()}
         />
       </Html>
-      {/* <mesh
-        visible={false}
-        position={[1.9, -0.2, 0.5]}
-        onClick={() => focus()}
-        onPointerMissed={() => blur()}
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
-      >
-        <planeGeometry args={[4, 1]} />
-        <meshBasicMaterial />
-      </mesh> */}
     </>
   );
 };
 const data = ["Hello", "How are you", "Enter Email"];
 const InputText = () => {
+  const textRef = useRef<HTMLHeadingElement>(null);
+  const indexRef = useRef(0);
+  const currentSplitRef = useRef<SplitText | null>(null);
+  const isAnimatingOutRef = useRef(false);
+
   useEffect(() => {
-    let index = 0;
-    let delay = 3;
-
     const play = () => {
-      const el = document.querySelector(".animate-input-text");
-
+      const el = textRef.current;
       if (!el) return;
 
-      el.textContent = data[index];
+      if (currentSplitRef.current) {
+        currentSplitRef.current.revert();
+        currentSplitRef.current = null;
+      }
 
-      const split = new SplitText(".animate-input-text", {
+      el.textContent = data[indexRef.current];
+
+      const split = new SplitText(el, {
         type: "chars",
         charsClass: "char",
       });
+      currentSplitRef.current = split;
+      isAnimatingOutRef.current = false;
 
-      gsap
-        .timeline({
-          onComplete: () => {
-            split.revert();
-            index = (index + 1) % data.length;
-            play();
-          },
-          force3D: false,
-        })
-        .from(split.chars, {
-          // y: 30,
-          scale: 0,
-          stagger: 0.04,
-          duration: 0.4,
-          ease: "back.out(1.7)",
-          transformOrigin: "50% 80%",
-        })
-        .to(
-          split.chars,
-          {
-            // y: -30,
-            scale: 0,
-            stagger: 0.03,
-            duration: 0.2,
-            ease: "power2.in",
-            transformOrigin: "50% 80%",
-          },
-          `+=${delay}`,
-        );
+      gsap.from(split.chars, {
+        // y: 30,
+        scale: 0,
+        stagger: 0.03,
+        duration: 0.4,
+        ease: "back.out(1.7)",
+        transformOrigin: "50% 80%",
+        force3D: false,
+      });
     };
 
-    const timeout = setTimeout(() => {
+    const timer = setTimeout(() => {
       play();
-    }, 1000);
+    }, 100);
 
-    return () => clearTimeout(timeout);
+    const handleChangeText = () => {
+      if (isAnimatingOutRef.current) return;
+
+      const el = textRef.current;
+      if (!el) return;
+
+      if (!currentSplitRef.current) {
+        indexRef.current = (indexRef.current + 1) % data.length;
+        play();
+        return;
+      }
+
+      isAnimatingOutRef.current = true;
+
+      gsap.to(currentSplitRef.current.chars, {
+        // y: -30,
+        scale: 0,
+        stagger: 0.03,
+        duration: 0.2,
+        ease: "power2.in",
+        transformOrigin: "50% 80%",
+        force3D: false,
+        onComplete: () => {
+          if (currentSplitRef.current) {
+            currentSplitRef.current.revert();
+            currentSplitRef.current = null;
+          }
+          indexRef.current = (indexRef.current + 1) % data.length;
+          play();
+        },
+      });
+    };
+
+    window.addEventListener("change-text", handleChangeText);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("change-text", handleChangeText);
+      if (currentSplitRef.current) {
+        currentSplitRef.current.revert();
+      }
+    };
   }, []);
 
   return (
@@ -240,9 +304,12 @@ const InputText = () => {
       center
       transform
       // occlude
-      style={{ pointerEvents: "none" }}
+      // style={{ pointerEvents: "none" }}
     >
-      <h1 className="animate-input-text">{data[0]}</h1>
+      <h1 ref={textRef} className="animate-input-text">
+        {data[0]}
+      </h1>
+      {/* <input type="email" placeholder="Enter Email" autoFocus /> */}
     </Html>
   );
 };

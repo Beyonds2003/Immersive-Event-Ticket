@@ -154,11 +154,6 @@
   font-family: Inter;
   overflow: hidden;
   will-change: transform;
-
-  & .char {
-    /* backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased; */
-  }
 }
 
 .input-hover-helper {
@@ -166,4 +161,9 @@
   width: 480px;
   height: 100px;
   pointer-events: auto;
+}
+
+input {
+  caret-color: transparent;
+  outline: 0;
 }

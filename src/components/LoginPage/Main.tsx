@@ -20,7 +20,7 @@ const Main = () => {
 
 const Scene = () => {
   return (
-    <Canvas shadows>
+    <Canvas shadows dpr={[1, 2]}>
       <RingDistordRenderTarget />
       <Poster />
       <Gradient />
