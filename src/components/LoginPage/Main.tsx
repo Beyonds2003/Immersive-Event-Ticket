@@ -25,7 +25,7 @@ const Scene = () => {
       <Poster />
       <Gradient />
       <Input />
-      {/* <GroupOfSphere /> */}
+      <GroupOfSphere />
       {/* <EventCard /> */}
 
       {/* <OtpInput show={showOtp} /> */}

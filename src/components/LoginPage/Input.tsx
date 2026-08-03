@@ -22,6 +22,8 @@ const Input = () => {
   const spinGroupRef = useRef<THREE.Group>(null);
   const shakeTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
+  const isUserHover = useRef(false);
+
   const { coords, updateMouse } = useMouse();
 
   const { color } = useControls("Input", {
@@ -67,7 +69,9 @@ const Input = () => {
         duration: 0.22 * timeScale,
         ease: "sine.inOut",
         onComplete: () => {
-          window.dispatchEvent(new CustomEvent("change-text"));
+          if (!isUserHover.current) {
+            window.dispatchEvent(new CustomEvent("change-text"));
+          }
         },
         repeat: 2,
         yoyo: true,
@@ -88,6 +92,19 @@ const Input = () => {
   const handlePointerEnter = () => {
     if (isSubmittedRef.current) return;
     document.body.style.cursor = "pointer";
+    isUserHover.current = true;
+
+    if (shakeTimelineRef.current) {
+      shakeTimelineRef.current.pause();
+      if (spinGroupRef.current) {
+        gsap.to(spinGroupRef.current.rotation, {
+          z: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
+    }
+
     if (!ref.current) return;
     gsap.to(ref.current.scale, {
       x: 1.2,
@@ -97,11 +114,23 @@ const Input = () => {
       ease: "back.out(2)",
       overwrite: "auto",
     });
+
+    window.dispatchEvent(
+      new CustomEvent("user-input-hover", {
+        detail: { text: "Enter Email", isHovering: true },
+      }),
+    );
   };
 
   const handlePointerLeave = () => {
     if (isSubmittedRef.current) return;
     document.body.style.cursor = "auto";
+    isUserHover.current = false;
+
+    if (shakeTimelineRef.current) {
+      shakeTimelineRef.current.resume();
+    }
+
     if (!ref.current) return;
     gsap.to(ref.current.scale, {
       x: 1,
@@ -111,6 +140,12 @@ const Input = () => {
       ease: "power2.out",
       overwrite: "auto",
     });
+
+    window.dispatchEvent(
+      new CustomEvent("user-input-hover", {
+        detail: { text: "", isHovering: false },
+      }),
+    );
   };
 
   const rotateEmailInput = () => {
@@ -213,60 +248,73 @@ const Input = () => {
     </>
   );
 };
-const data = ["Hello", "How are you", "Enter Email"];
+const data = ["Find Your Vibe", "Book It", "✨ Let the Fun Begin"];
 const InputText = () => {
   const textRef = useRef<HTMLHeadingElement>(null);
   const indexRef = useRef(0);
   const currentSplitRef = useRef<SplitText | null>(null);
-  const isAnimatingOutRef = useRef(false);
+  const isBusyRef = useRef(false);
+  const pendingTextRef = useRef<string | null>(null);
+  const isHoveredRef = useRef(false);
 
   useEffect(() => {
-    const play = () => {
+    const animateToText = (targetText: string) => {
       const el = textRef.current;
       if (!el) return;
 
-      if (currentSplitRef.current) {
-        currentSplitRef.current.revert();
-        currentSplitRef.current = null;
-      }
-
-      el.textContent = data[indexRef.current];
-
-      const split = new SplitText(el, {
-        type: "chars",
-        charsClass: "char",
-      });
-      currentSplitRef.current = split;
-      isAnimatingOutRef.current = false;
-
-      gsap.from(split.chars, {
-        // y: 30,
-        scale: 0,
-        stagger: 0.03,
-        duration: 0.4,
-        ease: "back.out(1.7)",
-        transformOrigin: "50% 80%",
-        force3D: false,
-      });
-    };
-
-    const timer = setTimeout(() => {
-      play();
-    }, 100);
-
-    const handleChangeText = () => {
-      if (isAnimatingOutRef.current) return;
-
-      const el = textRef.current;
-      if (!el) return;
-
-      if (!currentSplitRef.current) {
-        indexRef.current = (indexRef.current + 1) % data.length;
-        play();
+      if (isBusyRef.current) {
+        pendingTextRef.current = targetText;
         return;
       }
 
-      isAnimatingOutRef.current = true;
+      if (el.textContent === targetText) {
+        return;
+      }
+
+      isBusyRef.current = true;
+
+      const playIn = (text: string) => {
+        if (!textRef.current) {
+          isBusyRef.current = false;
+          return;
+        }
+
+        if (currentSplitRef.current) {
+          currentSplitRef.current.revert();
+          currentSplitRef.current = null;
+        }
+
+        textRef.current.textContent = text;
+
+        const split = new SplitText(textRef.current, {
+          type: "chars",
+          charsClass: "char",
+        });
+        currentSplitRef.current = split;
+
+        gsap.from(split.chars, {
+          // y: 30,
+          scale: 0,
+          stagger: 0.03,
+          duration: 0.4,
+          ease: "back.out(1.7)",
+          transformOrigin: "50% 80%",
+          force3D: false,
+          onComplete: () => {
+            isBusyRef.current = false;
+            if (pendingTextRef.current !== null) {
+              const nextText = pendingTextRef.current;
+              pendingTextRef.current = null;
+              animateToText(nextText);
+            }
+          },
+        });
+      };
+
+      if (!currentSplitRef.current) {
+        playIn(targetText);
+        return;
+      }
 
       gsap.to(currentSplitRef.current.chars, {
         // y: -30,
@@ -281,17 +329,49 @@ const InputText = () => {
             currentSplitRef.current.revert();
             currentSplitRef.current = null;
           }
-          indexRef.current = (indexRef.current + 1) % data.length;
-          play();
+          playIn(targetText);
         },
       });
     };
 
+    const timer = setTimeout(() => {
+      animateToText(data[indexRef.current]);
+    }, 100);
+
+    const handleChangeText = () => {
+      if (
+        isHoveredRef.current ||
+        isBusyRef.current ||
+        pendingTextRef.current !== null
+      )
+        return;
+
+      indexRef.current = (indexRef.current + 1) % data.length;
+      animateToText(data[indexRef.current]);
+    };
+
+    const handleUserHover = (e: Event) => {
+      const customEvent = e as CustomEvent<{
+        text?: string;
+        isHovering?: boolean;
+      }>;
+      const { text, isHovering } = customEvent.detail || {};
+      isHoveredRef.current = !!isHovering;
+
+      if (isHovering) {
+        animateToText(text || "Enter Email");
+      } else {
+        animateToText(data[indexRef.current]);
+      }
+    };
+
     window.addEventListener("change-text", handleChangeText);
+    window.addEventListener("user-input-hover", handleUserHover);
 
     return () => {
       clearTimeout(timer);
       window.removeEventListener("change-text", handleChangeText);
+      window.removeEventListener("user-input-hover", handleUserHover);
       if (currentSplitRef.current) {
         currentSplitRef.current.revert();
       }
