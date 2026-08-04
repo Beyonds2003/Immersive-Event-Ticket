@@ -242,7 +242,7 @@ const SpiralModel = ({
   const prevSnapped = useRef<boolean>(true);
 
   const { gl } = useThree();
-  const { coords, updateMouse } = useMouse();
+  const { coords, updateMouse, mouseMoved } = useMouse();
 
   // Spring physics for uScrollSpeed uniform
   const { tick: springTick } = useSpringValue("Spring Physics");
@@ -370,7 +370,7 @@ const SpiralModel = ({
       uInfinite: { value: controls.infiniteLoop ? 1.0 : 0.0 },
       uCardColor: { value: new THREE.Color(controls.cardColor) },
       uActiveColor: { value: new THREE.Color(controls.activeColor) },
-      uMouse: { value: new THREE.Vector2(0, 0) },
+      uMouse: { value: new THREE.Vector2(999, 999) },
       uMouseRadius: { value: controls.mouseRadius },
       uMouseStrength: { value: controls.mouseStrength },
       uResolution: {
@@ -405,6 +405,8 @@ const SpiralModel = ({
     u.uActiveColor.value.set(controls.activeColor);
     materialRef.current.wireframe = controls.wireframe;
   }, [controls]);
+
+  const mouseInit = useRef(false);
 
   // Physics Loop & Snapping Logic
   useFrame(() => {
@@ -457,9 +459,14 @@ const SpiralModel = ({
     }
 
     // Mouse Interaction
-    const mouseX = coords.x;
-    const mouseY = coords.y;
-    materialRef.current.uniforms.uMouse.value.set(mouseX, mouseY);
+    if (mouseInit.current) {
+      const mouseX = coords.x;
+      const mouseY = coords.y;
+      materialRef.current.uniforms.uMouse.value.set(mouseX, mouseY);
+    } else {
+      mouseInit.current = mouseMoved.current;
+    }
+
     materialRef.current.uniforms.uMouseRadius.value = controls.mouseRadius;
     materialRef.current.uniforms.uMouseStrength.value = controls.mouseStrength;
 
@@ -481,7 +488,7 @@ const SpiralModel = ({
       ref={meshRef}
       args={[undefined, undefined, controls.totalCards]}
       frustumCulled={false}
-      position={[0, 0, -2.5]}
+      position={[0, -0.4, -3]}
     >
       <planeGeometry args={[1.0, 1.0, 50, 50]} />
       <shaderMaterial
@@ -490,6 +497,7 @@ const SpiralModel = ({
         fragmentShader={fragmentShader}
         uniforms={uniforms}
         side={THREE.DoubleSide}
+        transparent
       />
     </instancedMesh>
   );
@@ -626,12 +634,15 @@ varying float vCardIndex;
 varying vec3 vNormal;
 varying float vInfluence;
 
+float sdRoundedBox(vec2 uv, vec2 size, float radius) {
+    vec2 p = uv - 0.5;
+    vec2 b = size * 0.5 - vec2(radius);
+    vec2 q = abs(p) - b;
+    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - radius;
+}
+
 void main() {
     vec2 uv = vUv;
-
-    // Card edge border
-    vec2 edge = abs(uv - 0.5) * 2.0;
-    float border = step(0.92, edge.x) + step(0.94, edge.y);
 
     // Highlight active centered card
     float activeFactor = 1.0 - smoothstep(0.0, 1.5, abs(vRelPos));
@@ -640,14 +651,102 @@ void main() {
     // Lighting shading
     vec3 lightDir = normalize(vec3(0.5, 1.0, 1.0));
     float diff = max(0.3, dot(vNormal, lightDir));
-    vec3 finalColor = mix(baseCol * diff, vec3(1.0), border * 0.5);
+    vec3 finalColor = baseCol * diff;
 
-    // Distance fade
-    float fade = smoothstep(12.0, 1.5, abs(vRelPos));
+    // Distance fade (edge0 < edge1 in GLSL)
+    float fade = 1.0 - smoothstep(1.5, 12.0, abs(vRelPos));
 
-    gl_FragColor = vec4(finalColor, fade);
-    // gl_FragColor = vec4(vec3(vInfluence), fade);
+    // Rounded Corner SDF
+    float radius = 0.1;
+    float sdf = sdRoundedBox(vUv, vec2(1.0), radius);
+    float cornerAlpha = 1.0 - smoothstep(0.0, 0.001, sdf);
+
+    float alpha = fade * cornerAlpha;
+
+    // Discard fully transparent fragments so they don't write depth
+    if (alpha < 0.001) discard;
+
+    gl_FragColor = vec4(finalColor, alpha);
 }
+`;
+
+const test = `
+float remap(float value, float min1, float max1, float min2, float max2) {
+  return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+   // Linear gradient
+    float linearGradientBottom = remap(vUv.y, 0.0, 0.2, 1.0, 0.0);
+    float linearGradientTop = remap(vUv.y, 0.8, 1.0, 0.0, 1.0);
+    linearGradientTop = clamp(linearGradientTop, 0.0, 1.0);
+    linearGradientBottom = clamp(linearGradientBottom, 0.0, 1.0);
+
+    float strength = linearGradientTop + linearGradientBottom;
+    strength = clamp(strength, 0.0, 1.0);
+
+    // Apply texture
+    vec4 textureColor = texture2D(tDiffuse, vUv);
+    vec3 finalColor = mix(textureColor.rgb, uFillColor, strength);
+`;
+
+const test2 = `
+
+  vec2 ratio = vec2(
+    min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
+    min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
+  );
+
+  vec2 uv = vec2(
+    vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
+    vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+  );
+
+
+  vec2 zoomedUv = (uv - 0.5) / uZoom + 0.5;
+
+  vec4 color;
+
+  if (gl_FrontFacing) {
+    color = texture2D(uTexture, zoomedUv);
+    color = mix(color, vec4(0.0, 0.0, 0.0, 1.0), uColorStrength);
+  } else {
+    float offset = 40.0 / 1024.0;
+    vec4 c = vec4(0.0);
+
+    c += texture2D(uTexture, uv + vec2(-offset, -offset)) * 1.0;
+    c += texture2D(uTexture, uv + vec2( 0.0,    -offset)) * 2.0;
+    c += texture2D(uTexture, uv + vec2( offset, -offset)) * 1.0;
+    c += texture2D(uTexture, uv + vec2(-offset,  0.0))   * 2.0;
+    c += texture2D(uTexture, uv)                         * 4.0;
+    c += texture2D(uTexture, uv + vec2( offset,  0.0))   * 2.0;
+    c += texture2D(uTexture, uv + vec2(-offset,  offset)) * 1.0;
+    c += texture2D(uTexture, uv + vec2( 0.0,     offset)) * 2.0;
+    c += texture2D(uTexture, uv + vec2( offset,  offset)) * 1.0;
+    c /= 16.0;
+
+    color = c;
+  }
+
+  float reveal = clamp(uRevealProgress, 0.0, 1.0);
+
+  // Scale fictif via alpha
+  vec2 revealSize = vec2(reveal);
+
+  // Border radius suit le reveal
+  float baseRadius = 0.05;
+  float radius = baseRadius * reveal;
+
+  // Signed Distance Field
+  float sdf = roundedRectSDF(vUv, revealSize, radius);
+
+  // Soft edge
+  float edge = 0.002;
+  float alpha = 1.0 - smoothstep(0.0, edge, sdf);
+  alpha *= smoothstep(0.1, 1.0, uRevealProgress);
+
+  // Final color
+  gl_FragColor = vec4(color.rgb, color.a * alpha);
+
+  gl_FragColor = vec4(color.rgb, alpha);
 `;
 
 export default EventCard;

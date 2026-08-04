@@ -731,6 +731,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
           matrixAutoUpdate={false}
           diffuseType={cfg.diffuse}
           normalType={cfg.normal}
+          renderOrder={2}
         />
       ))}
     </>

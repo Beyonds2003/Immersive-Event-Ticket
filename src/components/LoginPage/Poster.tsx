@@ -13,7 +13,7 @@ import { useCanvasTextTexture } from "../../libs/useCanvasTextTexture";
 const Poster = () => {
   const { coords, updateMouse, mouseMoved } = useMouse();
 
-  const tex1 = useCanvasTextTexture({
+  const tex2 = useCanvasTextTexture({
     title: ["DISCOVER EVENT"],
     titleFontFamily: "Dingos-ExtraBold",
     titleFontSize: 160,
@@ -32,7 +32,7 @@ const Poster = () => {
     textBaseline: "top",
     responsive: true,
   });
-  const tex2 = useCanvasTextTexture({
+  const tex1 = useCanvasTextTexture({
     title: ["EXPLORE"],
     titleFontFamily: "Dingos-ExtraBold",
     titleFontSize: 180,
@@ -131,7 +131,7 @@ const Poster = () => {
   });
 
   return (
-    <mesh renderOrder={-1}>
+    <mesh renderOrder={1}>
       <planeGeometry args={[2, 2, 20, 20]} />
       <shaderMaterial
         ref={material}
@@ -139,6 +139,7 @@ const Poster = () => {
         fragmentShader={fragmentShader}
         uniforms={uniforms.current}
         transparent
+        depthWrite={false}
         // wireframe
       />
     </mesh>
@@ -188,7 +189,8 @@ const vertexShader = `
       vDistord = direction * influence * uStrength;
       vInfluence = influence;
 
-      gl_Position = vec4(pos.xy, 0.99, 1.0);
+      gl_Position = vec4(pos.xy, 0.96, 1.0);
+      // gl_Position = vec4(pos.xy, 0.99, 1.0);
     }
 
 

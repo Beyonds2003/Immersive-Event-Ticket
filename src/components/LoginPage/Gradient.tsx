@@ -25,10 +25,17 @@ const Gradient = () => {
     ringOffset2,
   } = useControls("Gradient", {
     progress: { value: 0, min: 0, max: 1, step: 0.01 },
-    colorA: { value: "#06ecff" },
-    colorB: { value: "#00e1ff" },
-    colorC: { value: "#bcbcf8" },
-    colorD: { value: "#b7bbff" },
+
+    // colorA: { value: "#06ecff" },
+    // colorB: { value: "#00e1ff" },
+    // colorC: { value: "#bcbcf8" },
+    // colorD: { value: "#b7bbff" },
+
+    colorC: { value: "#06ecff" },
+    colorD: { value: "#00e1ff" },
+    colorA: { value: "#bcbcf8" },
+    colorB: { value: "#b7bbff" },
+
     ringWidth: { value: 0.05, min: 0, max: 0.5, step: 0.01 },
     ringBlur: { value: 0.1, min: 0, max: 0.5, step: 0.01 },
     ringOffset: { value: 0.08, min: 0, max: 0.5, step: 0.01 },
@@ -117,7 +124,7 @@ const Gradient = () => {
   });
 
   return (
-    <mesh>
+    <mesh renderOrder={0}>
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={material}
@@ -125,6 +132,7 @@ const Gradient = () => {
         fragmentShader={fragmentShader}
         uniforms={uniforms.current}
         transparent
+        depthWrite={false}
       />
     </mesh>
   );
@@ -136,7 +144,7 @@ const vertexShader = `
 
     void main() {
 
-        gl_Position = vec4(position.xy, 1.0, 1.0);
+        gl_Position = vec4(position.xy, 1., 1.0);
 
         // Varyings
         vUv = uv;

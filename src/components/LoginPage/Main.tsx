@@ -22,11 +22,11 @@ const Scene = () => {
   return (
     <Canvas shadows dpr={[1, 2]}>
       <RingDistordRenderTarget />
-      <Poster />
       <Gradient />
-      {/* <Input /> */}
-      {/* <GroupOfSphere /> */}
-      {/* <EventCard /> */}
+      <Poster />
+      {/* <Input />
+      <GroupOfSphere /> */}
+      <EventCard />
 
       {/* <OtpInput show={showOtp} /> */}
 
