@@ -23,7 +23,7 @@ export interface SpringConfig {
 
 const DEFAULT_CONFIG: SpringConfig = {
   stiffness: 360,
-  damping: 12,
+  damping: 7.5,
   mass: 1.0,
   inputSensitivity: 0.35,
   inputScale: 6.0,
