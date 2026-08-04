@@ -1,5 +1,5 @@
 import { Html, useGLTF } from "@react-three/drei";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import * as THREE from "three";
 import { useMouse } from "../../libs/useMouse";
 import { useFrame } from "@react-three/fiber";
@@ -16,6 +16,7 @@ const Input = () => {
   const { nodes, materials } = useGLTF("models/login-input.glb") as any;
 
   const [visible, setVisible] = useState(true);
+  const [clicked, setClicked] = useState(false);
   const isSubmittedRef = useRef(false);
 
   const ref = useRef<THREE.Group>(null);
@@ -23,6 +24,8 @@ const Input = () => {
   const shakeTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
   const isUserHover = useRef(false);
+
+  const inputTextRef = useRef<HTMLInputElement>(null);
 
   const { coords, updateMouse } = useMouse();
 
@@ -148,6 +151,12 @@ const Input = () => {
     );
   };
 
+  const handleClick = () => {
+    setClicked(true);
+    // focus is called after InputText mounts via the ref
+    setTimeout(() => inputTextRef.current?.focus(), 0);
+  };
+
   const rotateEmailInput = () => {
     if (!spinGroupRef.current) return;
 
@@ -182,21 +191,43 @@ const Input = () => {
     });
   };
 
-  const { texture, focus, blur } = useEmailInput((email) => {
-    // rotateEmailInput();
-    // onSubmitted();
+  // const { texture, focus, blur } = useEmailInput((email) => {
+  //   // rotateEmailInput();
+  //   // onSubmitted();
 
-    // console.log(coords.x, coords.y);
+  //   // console.log(coords.x, coords.y);
 
-    window.dispatchEvent(
-      new CustomEvent("ripple-click", {
-        detail: { x: 0.24, y: 0 },
-      }),
-    );
+  //   window.dispatchEvent(
+  //     new CustomEvent("ripple-click", {
+  //       detail: { x: 0.24, y: 0 },
+  //     }),
+  //   );
 
-    cleanUp();
-  });
-  texture.flipY = false;
+  //   cleanUp();
+  // });
+  // texture.flipY = false;
+
+  useEffect(() => {
+    const handleSubmit = (event: Event) => {
+      const { email } = (event as CustomEvent).detail;
+
+      // rotateEmailInput();
+
+      window.dispatchEvent(
+        new CustomEvent("ripple-click", {
+          detail: { x: 0.24, y: 0 },
+        }),
+      );
+
+      cleanUp();
+    };
+
+    window.addEventListener("user-input-submit", handleSubmit);
+
+    return () => {
+      window.removeEventListener("user-input-submit", handleSubmit);
+    };
+  }, []);
 
   if (!visible) return null;
 
@@ -232,7 +263,11 @@ const Input = () => {
             />
           </mesh>
 
-          <InputText />
+          {clicked ? (
+            <InputText ref={inputTextRef} onBlurEmpty={() => setClicked(false)} />
+          ) : (
+            <AnimateText />
+          )}
         </group>
       </group>
 
@@ -242,14 +277,64 @@ const Input = () => {
           className="input-hover-helper"
           onMouseEnter={handlePointerEnter}
           onMouseLeave={handlePointerLeave}
-          onClick={() => focus()}
+          onClick={handleClick}
         />
       </Html>
     </>
   );
 };
+
+const InputText = ({ ref, onBlurEmpty }: any) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFocus = () => {
+    inputRef.current?.focus();
+  };
+
+  useImperativeHandle(ref, () => ({
+    focus: handleFocus,
+  }));
+
+  const handleBlur = () => {
+    if (!inputRef.current?.value) {
+      onBlurEmpty?.();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const email = inputRef.current?.value;
+
+    window.dispatchEvent(
+      new CustomEvent("user-input-submit", {
+        detail: { email },
+      }),
+    );
+  };
+
+  return (
+    <Html
+      position={[0, 0, 0.2]}
+      center
+      transform
+      // occlude
+    >
+      <form onSubmit={handleSubmit}>
+        <input
+          ref={inputRef}
+          className="input"
+          type="email"
+          autoFocus
+          onBlur={handleBlur}
+        />
+      </form>
+    </Html>
+  );
+};
+
 const data = ["Find Your Vibe", "Book It", "✨ Let the Fun Begin"];
-const InputText = () => {
+const AnimateText = () => {
   const textRef = useRef<HTMLHeadingElement>(null);
   const indexRef = useRef(0);
   const currentSplitRef = useRef<SplitText | null>(null);
@@ -384,7 +469,7 @@ const InputText = () => {
       center
       transform
       // occlude
-      // style={{ pointerEvents: "none" }}
+      style={{ pointerEvents: "none" }}
     >
       <h1 ref={textRef} className="animate-input-text">
         {data[0]}

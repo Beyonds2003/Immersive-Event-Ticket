@@ -268,7 +268,10 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     });
 
     groupRefs.current = [];
-    physicsWorld.current = null;
+    if (physicsWorld.current) {
+      physicsWorld.current.terminate();
+      physicsWorld.current = null;
+    }
     ballState.current = null;
     input.current = null;
     setIsDisposedState(true);
@@ -467,6 +470,13 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     physicsWorld.current.initialSeparation(state, inp, 60);
 
     triggerIntroAnimation(count);
+
+    return () => {
+      if (physicsWorld.current) {
+        physicsWorld.current.terminate();
+        physicsWorld.current = null;
+      }
+    };
   }, [
     sphereCount,
     sphereRadius,
@@ -770,7 +780,7 @@ const GroupOfSphere = () => {
         label: "Spread X",
       },
       spreadY: {
-        value: 1.75,
+        value: 1.99,
         min: 0.0,
         max: 5.0,
         step: 0.05,
@@ -831,7 +841,7 @@ const GroupOfSphere = () => {
         label: "Mode",
       },
       obstacleWidth: {
-        value: 5.5,
+        value: 6.3,
         min: 0.5,
         max: 10.0,
         step: 0.1,
@@ -845,7 +855,7 @@ const GroupOfSphere = () => {
         label: "Height",
       },
       obstacleDepth: {
-        value: 1,
+        value: 2.2,
         min: 0.5,
         max: 10.0,
         step: 0.1,
@@ -866,7 +876,7 @@ const GroupOfSphere = () => {
         label: "Pos Y",
       },
       obstacleZ: {
-        value: -0.4,
+        value: -0.6,
         min: -10.0,
         max: 10.0,
         step: 0.1,

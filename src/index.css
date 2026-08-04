@@ -100,6 +100,11 @@
   line-height: 140%;
 }
 
+.message-container {
+  pointer-events: none;
+  user-select: none;
+}
+
 .user-name {
   display: inline-flex;
   align-items: center;
@@ -163,7 +168,20 @@
   pointer-events: auto;
 }
 
-input {
+.input {
   caret-color: transparent;
   outline: 0;
+  /* border: 1px solid black; */
+  width: 130px;
+  margin-bottom: 8px;
+  text-align: center;
+
+  color: black;
+  font-size: 0.6rem;
+  font-weight: 700;
+  font-family: Inter;
+
+  &:focus {
+    /* caret-color: black; */
+  }
 }
