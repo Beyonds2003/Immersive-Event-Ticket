@@ -184,4 +184,8 @@
   &:focus {
     /* caret-color: black; */
   }
+
+  &::selection {
+    background: #a6b2f4;
+  }
 }

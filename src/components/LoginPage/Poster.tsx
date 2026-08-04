@@ -11,7 +11,7 @@ import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 import { useCanvasTextTexture } from "../../libs/useCanvasTextTexture";
 
 const Poster = () => {
-  const { coords, updateMouse } = useMouse();
+  const { coords, updateMouse, mouseMoved } = useMouse();
 
   const tex1 = useCanvasTextTexture({
     title: ["DISCOVER EVENT"],
@@ -69,7 +69,7 @@ const Poster = () => {
     },
     uTexture1: { value: tex1 },
     uTexture2: { value: tex2 },
-    uMouse: { value: new THREE.Vector2(0, 0) },
+    uMouse: { value: new THREE.Vector2(999, 999) },
     uRadius: { value: radius },
     uStrength: { value: strength },
     uProgress: { value: 0 },
@@ -104,6 +104,7 @@ const Poster = () => {
     };
   }, []);
 
+  const mouseInit = useRef(false);
   useFrame((_state, delta) => {
     if (!material.current) return;
 
@@ -117,7 +118,12 @@ const Poster = () => {
     const mouseX = remapClamp(coords.x, -1, 1, 0, 1);
     const mouseY = remapClamp(coords.y, -1, 1, 0, 1);
 
-    material.current.uniforms.uMouse.value.set(mouseX, mouseY);
+    if (mouseInit.current) {
+      material.current.uniforms.uMouse.value.set(mouseX, mouseY);
+    } else {
+      mouseInit.current = mouseMoved.current;
+    }
+
     material.current.uniforms.uRadius.value = radius;
     material.current.uniforms.uStrength.value = strength;
     material.current.uniforms.uTexture1.value = tex1;

@@ -110,9 +110,9 @@ const Input = () => {
 
     if (!ref.current) return;
     gsap.to(ref.current.scale, {
-      x: 1.2,
-      y: 1.2,
-      z: 1.2,
+      x: 1.3,
+      y: 1.3,
+      z: 1.3,
       duration: 0.6,
       ease: "back.out(2)",
       overwrite: "auto",
@@ -264,7 +264,10 @@ const Input = () => {
           </mesh>
 
           {clicked ? (
-            <InputText ref={inputTextRef} onBlurEmpty={() => setClicked(false)} />
+            <InputText
+              ref={inputTextRef}
+              onBlurEmpty={() => setClicked(false)}
+            />
           ) : (
             <AnimateText />
           )}
@@ -324,7 +327,7 @@ const InputText = ({ ref, onBlurEmpty }: any) => {
         <input
           ref={inputRef}
           className="input"
-          type="email"
+          type="text"
           autoFocus
           onBlur={handleBlur}
         />

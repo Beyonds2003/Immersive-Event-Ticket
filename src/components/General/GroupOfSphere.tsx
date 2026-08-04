@@ -6,6 +6,7 @@ import Model from "./CustomSphere";
 import { PhysicsWorld } from "../../libs/PhysicsWorld";
 import gsap from "gsap";
 import { SPHERE_CONFIGS } from "./SPHERE_CONFIG";
+import { alea } from "seedrandom";
 
 // ── Init Sphere Positions (Stacking Layout) ──────────────────────────────────
 function initSpherePositions(
@@ -214,8 +215,11 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   const zeroPlane = useRef(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0));
   const mouseWorld = useRef(new THREE.Vector3());
 
+  // @ts-ignore
+  const rng = new alea("addy");
+
   const scaleOffsets = useRef<number[]>(
-    Array.from({ length: 100 }, () => Math.random() * 0.3),
+    Array.from({ length: 100 }, () => rng() * 0.3),
   );
 
   const introScalesRef = useRef<{ scale: number }[]>([]);
@@ -780,7 +784,7 @@ const GroupOfSphere = () => {
         label: "Spread X",
       },
       spreadY: {
-        value: 1.99,
+        value: 1.95,
         min: 0.0,
         max: 5.0,
         step: 0.05,

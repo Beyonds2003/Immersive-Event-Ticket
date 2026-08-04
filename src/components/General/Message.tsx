@@ -9,7 +9,7 @@ interface Props {
 }
 
 // Hardcoded variable to control how many messages to show on screen at once
-const showAmount = 3;
+const showAmount = 2;
 
 // Module-level manager to coordinate message bubble animations across all instances
 type Controller = {

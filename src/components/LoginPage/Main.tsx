@@ -24,8 +24,8 @@ const Scene = () => {
       <RingDistordRenderTarget />
       <Poster />
       <Gradient />
-      <Input />
-      <GroupOfSphere />
+      {/* <Input /> */}
+      {/* <GroupOfSphere /> */}
       {/* <EventCard /> */}
 
       {/* <OtpInput show={showOtp} /> */}

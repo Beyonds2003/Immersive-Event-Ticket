@@ -284,7 +284,7 @@ export const RingDistordRenderTarget = () => {
         value: 1,
         duration: 2.2,
         ease: "power1.out",
-        delay: 0.1,
+        delay: 0.2,
       });
     };
 
