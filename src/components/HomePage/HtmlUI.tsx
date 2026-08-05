@@ -1,12 +1,38 @@
 import { Html } from "@react-three/drei";
 import React, { useRef, useState } from "react";
 import { createRipple } from "../../libs/createRipple";
+import Arrow from "../Icons/Arrow";
 
 const HtmlUI = () => {
   return (
     <Html fullscreen>
       <Tab />
+      <Navigation />
     </Html>
+  );
+};
+
+const Navigation = () => {
+  return (
+    <div className="navigation-container">
+      <button className="navigation-item left" aria-label="Previous slide">
+        <Arrow
+          direction="left"
+          aria-hidden="true"
+          focusable="false"
+          size={30}
+        />
+      </button>
+
+      <button className="navigation-item right" aria-label="Next slide">
+        <Arrow
+          direction="right"
+          aria-hidden="true"
+          focusable="false"
+          size={30}
+        />
+      </button>
+    </div>
   );
 };
 

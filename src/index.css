@@ -250,3 +250,35 @@
   bottom: 5px;
   left: 5px;
 }
+
+.navigation-item {
+  position: absolute;
+  top: 58%;
+  background: white;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  transform: translateY(-58%);
+  transition: transform 0.3s ease;
+  transform-origin: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &.left {
+    left: 30px;
+  }
+
+  &.right {
+    right: 30px;
+  }
+
+  &:hover {
+    transform: translateY(-58%) scale(1.1);
+  }
+
+  &:active {
+    transform: translateY(-58%) scale(0.9);
+  }
+}
