@@ -271,7 +271,7 @@ export const RingDistordRenderTarget = () => {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      const { x, y } = (e as CustomEvent).detail as { x: number; y: number };
+      const { x, y, isPageTransition } = (e as CustomEvent).detail;
 
       // Store NDC click position (−1..1)
       clickPos.current.set(x, y);
@@ -282,9 +282,9 @@ export const RingDistordRenderTarget = () => {
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
-        duration: 2.2,
+        duration: isPageTransition ? 2.2 : 1.6,
         ease: "power1.out",
-        delay: 0.2,
+        delay: isPageTransition ? 0.2 : 0,
       });
     };
 

@@ -1,5 +1,6 @@
 import { Html } from "@react-three/drei";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { createRipple } from "../../libs/createRipple";
 
 const HtmlUI = () => {
   return (
@@ -9,11 +10,28 @@ const HtmlUI = () => {
   );
 };
 
+const colorA = "#06ecff";
+const colorB = "#00e1ff";
+const colorC = "#fff170";
+const colorD = "#efda21";
+
 const Tab = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const prevIndexRef = useRef(0);
 
   const handleTabClick = (tabIndex: number) => {
-    setActiveTab(tabIndex);
+    if (tabIndex === prevIndexRef.current) return;
+
+    prevIndexRef.current = tabIndex;
+    createRipple({
+      coord: { x: 0, y: 0 },
+      isPageTransition: false,
+      colorA: activeTab === 0 ? colorC : colorA,
+      colorB: activeTab === 0 ? colorD : colorB,
+    });
+    setTimeout(() => {
+      setActiveTab(tabIndex);
+    }, 1000);
   };
 
   return (

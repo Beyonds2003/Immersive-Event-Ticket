@@ -31,7 +31,7 @@ const Scene = () => {
       <RingDistordRenderTarget />
       <Gradient />
       <Poster />
-      {/* <Input /> 
+      {/* <Input />
       <GroupOfSphere /> */}
       <EventCard />
 

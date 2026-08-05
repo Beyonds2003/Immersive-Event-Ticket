@@ -9,6 +9,7 @@ import { useEmailInput } from "../../libs/useEmailInput";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import { useControls } from "leva";
+import { createRipple } from "../../libs/createRipple";
 
 gsap.registerPlugin(SplitText);
 
@@ -213,11 +214,17 @@ const Input = () => {
 
       // rotateEmailInput();
 
-      window.dispatchEvent(
-        new CustomEvent("ripple-click", {
-          detail: { x: 0.24, y: 0 },
-        }),
-      );
+      createRipple({
+        coord: { x: 0.24, y: 0 },
+        isPageTransition: true,
+        colorA: "#06ecff",
+        colorB: "#00e1ff",
+      });
+      // window.dispatchEvent(
+      //   new CustomEvent("ripple-click", {
+      //     detail: { x: 0.24, y: 0 },
+      //   }),
+      // );
 
       cleanUp();
     };

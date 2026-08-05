@@ -84,18 +84,23 @@ const Poster = () => {
   // }, [progress]);
 
   useEffect(() => {
-    const handleRippleClick = () => {
+    const handleRippleClick = (e: Event) => {
       if (!material.current) return;
-      gsap.fromTo(
-        material.current.uniforms.uProgress,
-        { value: 0 },
-        {
-          value: 1,
-          duration: 2,
-          ease: "power2.inOut",
-          // ease: CustomEase.create("custom", "M0,0 C0.2,0 0.15,1 1,1"),
-        },
-      );
+
+      const { isPageTransition } = (e as CustomEvent).detail;
+
+      if (isPageTransition) {
+        gsap.fromTo(
+          material.current.uniforms.uProgress,
+          { value: 0 },
+          {
+            value: 1,
+            duration: 2,
+            ease: "power2.inOut",
+            // ease: CustomEase.create("custom", "M0,0 C0.2,0 0.15,1 1,1"),
+          },
+        );
+      }
     };
 
     window.addEventListener("ripple-click", handleRippleClick);

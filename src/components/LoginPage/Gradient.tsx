@@ -7,6 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { oklab } from "../../libs/glsl/oklab";
 import gsap from "gsap";
+import { pageColor } from "../../libs/config/pageColor";
 
 const Gradient = () => {
   const { coords, updateMouse } = useMouse();
@@ -31,10 +32,10 @@ const Gradient = () => {
     // colorC: { value: "#bcbcf8" },
     // colorD: { value: "#b7bbff" },
 
-    colorC: { value: "#06ecff" },
-    colorD: { value: "#00e1ff" },
     colorA: { value: "#bcbcf8" },
     colorB: { value: "#b7bbff" },
+    colorC: { value: "#06ecff" },
+    colorD: { value: "#00e1ff" },
 
     ringWidth: { value: 0.05, min: 0, max: 0.5, step: 0.01 },
     ringBlur: { value: 0.1, min: 0, max: 0.5, step: 0.01 },
@@ -44,15 +45,17 @@ const Gradient = () => {
 
   const clickPos = useRef(new THREE.Vector2(0, 0));
 
+  const pColor = pageColor.Home;
+
   const uniforms = useRef({
     time: { value: 0 },
     uResolution: {
       value: new THREE.Vector2(window.innerWidth, window.innerHeight),
     },
-    uProgress: { value: progress },
+    uProgress: { value: 1 },
     uClickPos: { value: new THREE.Vector2(0, 0) },
-    uColorA: { value: new THREE.Color(colorA) },
-    uColorB: { value: new THREE.Color(colorB) },
+    uColorA: { value: new THREE.Color(pColor.colorA) },
+    uColorB: { value: new THREE.Color(pColor.colorB) },
     uColorC: { value: new THREE.Color(colorC) },
     uColorD: { value: new THREE.Color(colorD) },
     uRingWidth: { value: ringWidth },
@@ -61,37 +64,34 @@ const Gradient = () => {
     uRingOffset2: { value: ringOffset2 },
   });
 
-  const distordTween = useRef<gsap.core.Tween | null>(null);
-
   useEffect(() => {
     const handler = (e: Event) => {
       if (!material.current) return;
 
-      const { x, y } = (e as CustomEvent).detail;
+      const { x, y, colorA, colorB, isPageTransition } = (e as CustomEvent)
+        .detail;
       clickPos.current.set(x, y);
+
+      // Copy current visible colors (uColorA/uColorB) into background base (uColorC/uColorD)
+      material.current.uniforms.uColorC.value.copy(
+        material.current.uniforms.uColorA.value,
+      );
+      material.current.uniforms.uColorD.value.copy(
+        material.current.uniforms.uColorB.value,
+      );
+
+      // Set new target colors to reveal in uColorA/uColorB
+      material.current.uniforms.uColorA.value.set(colorA);
+      material.current.uniforms.uColorB.value.set(colorB);
+
+      // Reset progress to 0 so the ripple starts seamlessly from the click point
+      material.current.uniforms.uProgress.value = 0;
 
       // Ripple ring progress
       gsap.to(material.current.uniforms.uProgress, {
         value: 1,
-        duration: 2.2,
+        duration: isPageTransition ? 2.2 : 1.6,
         ease: "power1.out",
-      });
-
-      // Kill any running distord tween then do push → spring-back
-      distordTween.current?.kill();
-      material.current.uniforms.uDistord.value = 0;
-      distordTween.current = gsap.to(material.current.uniforms.uDistord, {
-        value: 1,
-        duration: 0.25,
-        ease: "power2.in",
-        onComplete: () => {
-          if (!material.current) return;
-          distordTween.current = gsap.to(material.current.uniforms.uDistord, {
-            value: 0,
-            duration: 1.4,
-            ease: "elastic.out(1, 0.75)",
-          });
-        },
       });
     };
     window.addEventListener("ripple-click", handler);
@@ -113,10 +113,12 @@ const Gradient = () => {
     // material.current.uniforms.uProgress.value = progress;
 
     material.current.uniforms.uClickPos.value.copy(clickPos.current);
-    material.current.uniforms.uColorA.value.set(colorA);
-    material.current.uniforms.uColorB.value.set(colorB);
-    material.current.uniforms.uColorC.value.set(colorC);
-    material.current.uniforms.uColorD.value.set(colorD);
+
+    // material.current.uniforms.uColorA.value.set(colorA);
+    // material.current.uniforms.uColorB.value.set(colorB);
+    // material.current.uniforms.uColorC.value.set(colorC);
+    // material.current.uniforms.uColorD.value.set(colorD);
+
     material.current.uniforms.uRingWidth.value = ringWidth;
     material.current.uniforms.uRingBlur.value = ringBlur;
     material.current.uniforms.uRingOffset.value = ringOffset;
@@ -157,7 +159,6 @@ const fragmentShader = `
     uniform float time;
     uniform vec2 uResolution;
     uniform float uProgress;
-    uniform float uDistord;
 
     // -1 0 1
     uniform vec2 uClickPos;
