@@ -13,9 +13,21 @@ const HtmlUI = () => {
 };
 
 const Navigation = () => {
+  const handleClick = (direction: "left" | "right") => {
+    window.dispatchEvent(
+      new CustomEvent("navigation-click", {
+        detail: { direction },
+      }),
+    );
+  };
+
   return (
     <div className="navigation-container">
-      <button className="navigation-item left" aria-label="Previous slide">
+      <button
+        onClick={() => handleClick("left")}
+        className="navigation-item left"
+        aria-label="Previous slide"
+      >
         <Arrow
           direction="left"
           aria-hidden="true"
@@ -24,7 +36,11 @@ const Navigation = () => {
         />
       </button>
 
-      <button className="navigation-item right" aria-label="Next slide">
+      <button
+        onClick={() => handleClick("right")}
+        className="navigation-item right"
+        aria-label="Next slide"
+      >
         <Arrow
           direction="right"
           aria-hidden="true"
@@ -43,10 +59,15 @@ const colorD = "#efda21";
 
 const Tab = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(false);
   const prevIndexRef = useRef(0);
 
   const handleTabClick = (tabIndex: number) => {
     if (tabIndex === prevIndexRef.current) return;
+    if (isDisabled) return;
+
+    // 1.5s disable button for animation and prevent spam click
+    setIsDisabled(true);
 
     prevIndexRef.current = tabIndex;
     createRipple({
@@ -55,9 +76,20 @@ const Tab = () => {
       colorA: activeTab === 0 ? colorC : colorA,
       colorB: activeTab === 0 ? colorD : colorB,
     });
+
+    window.dispatchEvent(
+      new CustomEvent("tab-click", {
+        detail: {
+          tabIndex,
+        },
+      }),
+    );
+
+    setActiveTab(tabIndex);
+
     setTimeout(() => {
-      setActiveTab(tabIndex);
-    }, 1000);
+      setIsDisabled(false);
+    }, 1700);
   };
 
   return (
@@ -68,8 +100,12 @@ const Tab = () => {
           aria-hidden
           style={{ "--active-day": activeTab } as React.CSSProperties}
         />
-        <button onClick={() => handleTabClick(0)}>New</button>
-        <button onClick={() => handleTabClick(1)}>Own</button>
+        <button disabled={isDisabled} onClick={() => handleTabClick(0)}>
+          New
+        </button>
+        <button disabled={isDisabled} onClick={() => handleTabClick(1)}>
+          Own
+        </button>
       </div>
     </div>
   );

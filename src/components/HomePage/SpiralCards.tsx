@@ -4,6 +4,8 @@ import * as THREE from "three";
 import VirtualScroll from "virtual-scroll";
 import { useMouse } from "../../libs/useMouse";
 import { useSpringValue } from "../../libs/useSpringValue";
+import { useTexturePoolManager } from "./useTexturePoolManager";
+import { ticketData } from "./ticketData";
 
 export interface SpiralCardsProps {
   controls: any;
@@ -20,6 +22,7 @@ export const SpiralCards = ({
 }: SpiralCardsProps) => {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
+  const textureAttrRef = useRef<THREE.InstancedBufferAttribute>(null!);
 
   const scrollProgress = useRef<number>(0);
   const targetScroll = useRef<number>(0);
@@ -37,6 +40,15 @@ export const SpiralCards = ({
   // Spring physics for uScrollSpeed uniform
   const { tick: springTick } = useSpringValue("Spring Physics");
 
+  // Texture Pool Manager (Zero useState, uses 4 CanvasTextures pool)
+  const { textures, textureIndexBuffer, updateTexturePool } =
+    useTexturePoolManager({
+      data: ticketData,
+      totalCards: controls.totalCards,
+      cardGap: controls.cardGap,
+      infiniteLoop: controls.infiniteLoop,
+    });
+
   const clampTarget = useCallback(
     (val: number) => {
       if (!controls.infiniteLoop) {
@@ -48,15 +60,35 @@ export const SpiralCards = ({
     [controls.infiniteLoop, controls.totalCards],
   );
 
-  // Handle external button updates
+  // Handle change tab
   useEffect(() => {
-    setTargetScrollRef.current = (val: number | ((prev: number) => number)) => {
-      const nextVal =
-        typeof val === "function" ? val(targetScroll.current) : val;
-      targetScroll.current = clampTarget(nextVal);
+    const handleClick = (event: Event) => {
+      targetScroll.current = clampTarget(0);
+    };
+
+    window.addEventListener("tab-click", handleClick);
+
+    return () => window.removeEventListener("tab-click", handleClick);
+  }, [clampTarget, setTargetScrollRef]);
+
+  // Handle left and right button updates
+  useEffect(() => {
+    const handleClick = (event: Event) => {
+      const { direction } = (event as CustomEvent).detail;
+
+      if (direction === "left") {
+        targetScroll.current = clampTarget(targetScroll.current - 1);
+      } else if (direction === "right") {
+        targetScroll.current = clampTarget(targetScroll.current + 1);
+      }
+
       isInteracting.current = true;
       lastScrollTime.current = performance.now();
     };
+
+    window.addEventListener("navigation-click", handleClick);
+
+    return () => window.removeEventListener("navigation-click", handleClick);
   }, [clampTarget, setTargetScrollRef]);
 
   // Virtual Scroll + Drag + Keyboard Handlers
@@ -167,8 +199,9 @@ export const SpiralCards = ({
         value: new THREE.Vector2(window.innerWidth, window.innerHeight),
       },
       uScrollSpeed: { value: 0 },
+      uTextures: { value: textures },
     }),
-    [],
+    [textures],
   );
 
   // Synchronize uniforms on Leva GUI tweak
@@ -270,6 +303,12 @@ export const SpiralCards = ({
       scrollSpeed,
       1 / 60,
     );
+
+    // Dynamic 4-texture pool update based on scroll direction & position
+    const attrChanged = updateTexturePool(scrollProgress.current);
+    if (attrChanged && textureAttrRef.current) {
+      textureAttrRef.current.needsUpdate = true;
+    }
   });
 
   return (
@@ -279,7 +318,13 @@ export const SpiralCards = ({
       frustumCulled={false}
       position={[0, -0.4, -3]}
     >
-      <planeGeometry args={[1.0, 1.0, 50, 50]} />
+      <planeGeometry args={[1.0, 1.0, 50, 50]}>
+        <instancedBufferAttribute
+          ref={textureAttrRef}
+          attach="attributes-aTextureIndex"
+          args={[textureIndexBuffer, 1]}
+        />
+      </planeGeometry>
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}
@@ -296,6 +341,8 @@ export const SpiralCards = ({
 // Vertex Shader: Fixed Gap Spacing Math along Helical Path
 // -----------------------------------------------------------
 const vertexShader = `
+attribute float aTextureIndex;
+
 uniform float uProgress;
 uniform float uTotalCards;
 uniform float uRadius;
@@ -320,6 +367,7 @@ varying float vRelPos;
 varying float vCardIndex;
 varying vec3 vNormal;
 varying float vInfluence;
+varying float vTextureIndex;
 
 const float PI = 3.141592653589793;
 const float TWO_PI = 6.283185307179586;
@@ -327,6 +375,7 @@ const float HALF_PI = 1.5707963267948966;
 
 void main() {
     vUv = uv;
+    vTextureIndex = aTextureIndex;
     float id = float(gl_InstanceID);
     vCardIndex = id;
 
@@ -408,12 +457,14 @@ void main() {
 const fragmentShader = `
 uniform vec3 uCardColor;
 uniform vec3 uActiveColor;
+uniform sampler2D uTextures[4];
 
 varying vec2 vUv;
 varying float vRelPos;
 varying float vCardIndex;
 varying vec3 vNormal;
 varying float vInfluence;
+varying float vTextureIndex;
 
 float sdRoundedBox(vec2 uv, vec2 size, float radius) {
     vec2 p = uv - 0.5;
@@ -429,10 +480,30 @@ void main() {
     float activeFactor = 1.0 - smoothstep(0.0, 1.5, abs(vRelPos));
     vec3 baseCol = mix(uCardColor, uActiveColor, activeFactor);
 
-    // Lighting shading
+    // Lighting shading (orient normal based on front/back facing)
+    vec3 normal = gl_FrontFacing ? vNormal : -vNormal;
     vec3 lightDir = normalize(vec3(0.5, 1.0, 1.0));
-    float diff = max(0.3, dot(vNormal, lightDir));
+    float diff = max(0.3, dot(normal, lightDir));
+
     vec3 finalColor = baseCol * diff;
+
+    // Sample dynamic texture slot (0..3) ONLY on the front face
+    if (gl_FrontFacing && vTextureIndex >= -0.5) {
+        int texIdx = int(vTextureIndex + 0.5);
+        vec4 texColor = vec4(1.0);
+        if (texIdx == 0) {
+            texColor = texture2D(uTextures[0], vUv);
+        } else if (texIdx == 1) {
+            texColor = texture2D(uTextures[1], vUv);
+        } else if (texIdx == 2) {
+            texColor = texture2D(uTextures[2], vUv);
+        } else if (texIdx == 3) {
+            texColor = texture2D(uTextures[3], vUv);
+        }
+
+        // Blend texture content onto card surface
+        finalColor = mix(finalColor, texColor.rgb, texColor.a);
+    }
 
     // Distance fade (edge0 < edge1 in GLSL)
     float fade = 1.0 - smoothstep(1.5, 12.0, abs(vRelPos));
@@ -442,11 +513,16 @@ void main() {
     float sdf = sdRoundedBox(vUv, vec2(1.0), radius);
     float cornerAlpha = 1.0 - smoothstep(0.0, 0.001, sdf);
 
+    // Mouse Interaction
+    // float mouseArea = clamp(vInfluence, 0.0, 1.0);
+    // finalColor += vec3(1.0, 0., 0.) * 0.5 * mouseArea;
+
     float alpha = fade * cornerAlpha;
 
     // Discard fully transparent fragments so they don't write depth
     if (alpha < 0.001) discard;
 
-    gl_FragColor = vec4(finalColor, fade);
+    gl_FragColor = vec4(finalColor, alpha);
+    // gl_FragColor = vec4(vec3(mouseArea), alpha);
 }
 `;

@@ -220,11 +220,6 @@ const Input = () => {
         colorA: "#06ecff",
         colorB: "#00e1ff",
       });
-      // window.dispatchEvent(
-      //   new CustomEvent("ripple-click", {
-      //     detail: { x: 0.24, y: 0 },
-      //   }),
-      // );
 
       cleanUp();
     };
