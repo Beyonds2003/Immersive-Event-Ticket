@@ -35,7 +35,7 @@ export const SpiralCards = ({
   const prevSnapped = useRef<boolean>(true);
 
   const { gl } = useThree();
-  const { coords, updateMouse, mouseMoved } = useMouse();
+  const { coords, updateMouse, mouseMoved } = useMouse(gl.domElement);
 
   // Spring physics for uScrollSpeed uniform
   const { tick: springTick } = useSpringValue("Spring Physics");
@@ -59,17 +59,6 @@ export const SpiralCards = ({
     },
     [controls.infiniteLoop, controls.totalCards],
   );
-
-  // Handle change tab
-  useEffect(() => {
-    const handleClick = (event: Event) => {
-      targetScroll.current = clampTarget(0);
-    };
-
-    window.addEventListener("tab-click", handleClick);
-
-    return () => window.removeEventListener("tab-click", handleClick);
-  }, [clampTarget, setTargetScrollRef]);
 
   // Handle left and right button updates
   useEffect(() => {
@@ -191,7 +180,6 @@ export const SpiralCards = ({
       uCardScale: { value: controls.cardScale },
       uInfinite: { value: controls.infiniteLoop ? 1.0 : 0.0 },
       uCardColor: { value: new THREE.Color(controls.cardColor) },
-      uActiveColor: { value: new THREE.Color(controls.activeColor) },
       uMouse: { value: new THREE.Vector2(999, 999) },
       uMouseRadius: { value: controls.mouseRadius },
       uMouseStrength: { value: controls.mouseStrength },
@@ -203,6 +191,29 @@ export const SpiralCards = ({
     }),
     [textures],
   );
+
+  const currentTabIndex = useRef<number>(0);
+  // Handle change tab
+  useEffect(() => {
+    const handleClick = (event: Event) => {
+      const tabIndex = (event as CustomEvent).detail.tabIndex;
+
+      const cardColor =
+        tabIndex === 0 ? controls.cardColor : controls.activeColor;
+
+      // Change color based on tab
+      uniforms.uCardColor.value.set(cardColor);
+
+      // Reset
+      targetScroll.current = clampTarget(0);
+
+      currentTabIndex.current = tabIndex;
+    };
+
+    window.addEventListener("tab-click", handleClick);
+
+    return () => window.removeEventListener("tab-click", handleClick);
+  }, [clampTarget, setTargetScrollRef]);
 
   // Synchronize uniforms on Leva GUI tweak
   useEffect(() => {
@@ -224,8 +235,9 @@ export const SpiralCards = ({
     u.uUpMix.value.set(controls.upMixX, controls.upMixY, controls.upMixZ);
     u.uCardScale.value = controls.cardScale;
     u.uInfinite.value = controls.infiniteLoop ? 1.0 : 0.0;
-    u.uCardColor.value.set(controls.cardColor);
-    u.uActiveColor.value.set(controls.activeColor);
+    u.uCardColor.value.set(
+      currentTabIndex.current === 0 ? controls.cardColor : controls.activeColor,
+    );
     materialRef.current.wireframe = controls.wireframe;
   }, [controls]);
 
@@ -293,9 +305,12 @@ export const SpiralCards = ({
     materialRef.current.uniforms.uMouseRadius.value = controls.mouseRadius;
     materialRef.current.uniforms.uMouseStrength.value = controls.mouseStrength;
 
+    // Use the canvas's own size so uResolution matches the same coordinate
+    // space as clipPos.xy / clipPos.w and the mouse NDC from useMouse.
+    const canvas = gl.domElement;
     materialRef.current.uniforms.uResolution.value.set(
-      window.innerWidth,
-      window.innerHeight,
+      canvas.clientWidth,
+      canvas.clientHeight,
     );
 
     // Drive uScrollSpeed through spring physics for a bounce effect
@@ -437,11 +452,13 @@ void main() {
     float distanceToMouse = length(delta * aspect);
     float influence = 1. - smoothstep(uMouseRadius, -0., distanceToMouse);
 
+    vInfluence = 1. - (influence) * focusFactor;
+
     influence = influence * ((1. - influence) * uMouseStrength);
     influence = clamp(influence, 0.0, 1.0);
 
     worldPos.z += (1. - influence) * focusFactor * 1.;
-    vInfluence = 1. - influence;
+
 
     // Scroll Wobble
     float focusFactor2 = 1.0 - smoothstep(0.0, 0.8 * uCardGap, abs(cardOffset));
@@ -458,6 +475,8 @@ const fragmentShader = `
 uniform vec3 uCardColor;
 uniform vec3 uActiveColor;
 uniform sampler2D uTextures[4];
+uniform vec2 uMouse;
+uniform vec2 uResolution;
 
 varying vec2 vUv;
 varying float vRelPos;
@@ -514,15 +533,18 @@ void main() {
     float cornerAlpha = 1.0 - smoothstep(0.0, 0.001, sdf);
 
     // Mouse Interaction
-    // float mouseArea = clamp(vInfluence, 0.0, 1.0);
-    // finalColor += vec3(1.0, 0., 0.) * 0.5 * mouseArea;
+    vec3 mouseColor = uCardColor;
+
+    finalColor += mouseColor * vInfluence * 0.1;
+ 
 
     float alpha = fade * cornerAlpha;
 
     // Discard fully transparent fragments so they don't write depth
     if (alpha < 0.001) discard;
 
+    // Blend mouse hover circle as a bright highlight on top of the card
     gl_FragColor = vec4(finalColor, alpha);
-    // gl_FragColor = vec4(vec3(mouseArea), alpha);
+    // gl_FragColor = vec4(vec3(vInfluence), alpha);
 }
 `;

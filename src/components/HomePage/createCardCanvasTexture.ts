@@ -106,17 +106,19 @@ export function updateCardCanvasTexture(
   ctx.fillText(dateStr, w * 0.5, h * 0.16);
 
   // 4. Middle Main Text: Event Title (e.g., "Event Title" / "React Conf")
-  ctx.font = "900 52px sans-serif";
+  ctx.font = "900 52px Dingos-Bold, sans-serif";
   ctx.textBaseline = "middle";
   ctx.fillText(titleStr, w * 0.5, h * 0.44);
 
   // 5. Middle Sub Text: Location (e.g., "Yangon")
-  ctx.font = "400 34px sans-serif";
+  ctx.font = "200 32px Dingos, sans-serif";
+  ctx.fillStyle = "#7e7c7c";
   ctx.textBaseline = "middle";
   ctx.fillText(locationStr, w * 0.5, h * 0.56);
 
   // 6. Bottom Text: Time (e.g., "6:30 PM - 9:00 PM")
   ctx.font = "700 24px sans-serif";
+  ctx.fillStyle = "#000000";
   ctx.textBaseline = "middle";
   ctx.fillText(timeStr, w * 0.5, h * 0.86);
 
