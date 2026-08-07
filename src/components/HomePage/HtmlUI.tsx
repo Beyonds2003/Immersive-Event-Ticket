@@ -5,9 +5,11 @@ import Arrow from "../Icons/Arrow";
 
 const HtmlUI = () => {
   return (
-    <Html fullscreen>
-      <Tab />
-      <Navigation />
+    <Html fullscreen style={{ pointerEvents: "none" }}>
+      <div className="z-[-10px]">
+        <Tab />
+        <Navigation />
+      </div>
     </Html>
   );
 };

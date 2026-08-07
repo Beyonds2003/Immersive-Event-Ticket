@@ -1,0 +1,4 @@
+import { atom } from "jotai";
+
+/** Synced from React Router location.pathname into the R3F canvas via Jotai */
+export const pathnameAtom = atom<string>(window.location.pathname);

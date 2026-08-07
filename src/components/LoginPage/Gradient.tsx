@@ -8,8 +8,11 @@ import { useControls } from "leva";
 import { oklab } from "../../libs/glsl/oklab";
 import gsap from "gsap";
 import { pageColor } from "../../libs/config/pageColor";
+import { useAtomValue } from "jotai";
+import { pathnameAtom } from "../../libs/atoms";
 
 const Gradient = () => {
+  const pathname = useAtomValue(pathnameAtom);
   const { coords, updateMouse } = useMouse();
 
   const material = useRef<THREE.ShaderMaterial>(null);
@@ -45,7 +48,8 @@ const Gradient = () => {
 
   const clickPos = useRef(new THREE.Vector2(0, 0));
 
-  const pColor = pageColor.Home;
+  const pColor =
+    pathname === "/login" ? pageColor.Login : pageColor.Home;
 
   const uniforms = useRef({
     time: { value: 0 },
@@ -63,6 +67,21 @@ const Gradient = () => {
     uRingOffset: { value: ringOffset },
     uRingOffset2: { value: ringOffset2 },
   });
+
+  // Handle color besed on user route
+  useEffect(() => {
+    if (!material.current) return;
+
+    const targetColor =
+      pathname === "/login" ? pageColor.Login : pageColor.Home;
+
+    material.current.uniforms.uColorA.value = new THREE.Color(
+      targetColor.colorA,
+    );
+    material.current.uniforms.uColorB.value = new THREE.Color(
+      targetColor.colorB,
+    );
+  }, [pathname]);
 
   useEffect(() => {
     const handler = (e: Event) => {

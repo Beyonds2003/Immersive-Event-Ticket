@@ -1,0 +1,131 @@
+.menu-container {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  width: 60px;
+  height: 60px;
+  /* background: black; */
+  isolation: isolate;
+  cursor: pointer;
+
+  &.close {
+    background: white;
+    z-index: 1;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.menu-container .close-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+
+  color: black;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  border: none;
+
+  transform: rotate(0deg);
+  transition:
+    color 0.25s,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  & span {
+    font-size: 25px;
+    font-family: math;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  &:hover {
+    color: #f1e8dd;
+    transform: scale(1.25) rotate(-90deg);
+  }
+}
+
+.wobble-menu-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -2;
+}
+
+.menu-container .humbager {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-container .humbager span {
+  width: 50%;
+  height: 3px;
+  margin: 3px 0;
+  background: white;
+}
+
+.menu-content-container {
+  width: 580px;
+  max-width: calc(100vw - 80px);
+  height: calc(100vh - 40px);
+  border-radius: 40px;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: black;
+  overflow: hidden;
+  /* transform-origin: 0 100%;
+  will-change: transform, opacity, clip-path; */
+}
+
+.nav-items nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 3rem;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: white;
+
+  & button {
+    text-transform: uppercase;
+    font-family: "Dingos-Bold";
+    cursor: pointer;
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: left center;
+  }
+
+  & button:hover {
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(1.5);
+  }
+
+  /* left neighbor */
+  /* & button:has(+ button:hover) {
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(1.15);
+  } */
+
+  /*  right neighbor */
+  /* & button:hover + button {
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(1.15);
+  } */
+}
+
+.buy-ticket-btn-container {
+  position: absolute;
+  bottom: 2%;
+  left: 40%;
+  transform: translateX(-50%);
+}

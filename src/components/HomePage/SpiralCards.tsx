@@ -102,7 +102,7 @@ export const SpiralCards = ({
     const handlePointerDown = (e: PointerEvent) => {
       dragStartY.current = e.clientY;
       dragStartScroll.current = targetScroll.current;
-      domElement.style.cursor = "grabbing";
+      // domElement.style.cursor = "grabbing";
 
       const handlePointerMove = (moveEvent: PointerEvent) => {
         const delta =
@@ -114,7 +114,7 @@ export const SpiralCards = ({
       };
 
       const handlePointerUp = () => {
-        domElement.style.cursor = "grab";
+        // domElement.style.cursor = "grab";
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);
       };
@@ -123,7 +123,7 @@ export const SpiralCards = ({
       window.addEventListener("pointerup", handlePointerUp);
     };
 
-    domElement.style.cursor = "grab";
+    // domElement.style.cursor = "grab";
     domElement.addEventListener("pointerdown", handlePointerDown);
 
     // Keyboard Arrow Keys

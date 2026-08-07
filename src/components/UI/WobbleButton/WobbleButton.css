@@ -1,0 +1,55 @@
+/* ─── WobbleButton styles ───────────────────────────────────────────── */
+
+.wobbly-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  /* overflow must be visible so the SVG can bleed outside */
+  overflow: visible;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The SVG sits behind everything, bleeding outward by canvasInset on each side */
+.wobbly-btn__svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Particles layer */
+.wobbly-btn__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 10;
+}
+
+/* Text content layer */
+.wobbly-btn__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+/* Each character span must be inline-block for transform to work */
+.wobbly-btn__char {
+  display: inline-block;
+  white-space: pre;
+}

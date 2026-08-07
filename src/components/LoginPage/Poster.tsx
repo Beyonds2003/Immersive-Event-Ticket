@@ -9,46 +9,21 @@ import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 import { useCanvasTextTexture } from "../../libs/useCanvasTextTexture";
+import { useAtomValue } from "jotai";
+import { pathnameAtom } from "../../libs/atoms";
+import { posterConfigs } from "../../libs/config/posterConfig";
 
 const Poster = () => {
+  const pathname = useAtomValue(pathnameAtom);
+  const pageZ = pathname === "/" ? 0.99 : 1;
   const { coords, updateMouse, mouseMoved } = useMouse();
 
-  const tex2 = useCanvasTextTexture({
-    title: ["DISCOVER EVENT"],
-    titleFontFamily: "Dingos-ExtraBold",
-    titleFontSize: 160,
-    titleColor: "#FFFFFF",
-    titleLineHeight: 1,
+  const currentConfig = posterConfigs[pathname] || posterConfigs["/"];
+  const alternatePath = pathname === "/login" ? "/" : "/login";
+  const nextConfig = posterConfigs[alternatePath] || posterConfigs["/login"];
 
-    subtitle: "YOUR GATEWAY TO UNIVERSITY EVENTS",
-    subtitleFontSize: 15,
-    subtitleFontFamily: "Inter",
-    subtitleLetterSpacing: 1,
-    subtitleColor: "#FFFFFF",
-
-    margin: -10,
-    padding: 5,
-    textAlign: "left",
-    textBaseline: "top",
-    responsive: true,
-  });
-  const tex1 = useCanvasTextTexture({
-    title: ["EXPLORE"],
-    titleFontFamily: "Dingos-ExtraBold",
-    titleFontSize: 180,
-    titleColor: "#000000",
-    titleLineHeight: 1,
-
-    padding: 5,
-    textAlign: "left",
-    textBaseline: "top",
-    responsive: true,
-  });
-
-  // tex1.minFilter = tex1.magFilter = THREE.LinearFilter;
-  // tex2.minFilter = tex2.magFilter = THREE.LinearFilter;
-  // tex1.colorSpace = THREE.SRGBColorSpace;
-  // tex2.colorSpace = THREE.SRGBColorSpace;
+  const tex1 = useCanvasTextTexture(currentConfig);
+  const tex2 = useCanvasTextTexture(nextConfig);
 
   const ringTex = useRingDistordTexture();
 
@@ -74,14 +49,16 @@ const Poster = () => {
     uStrength: { value: strength },
     uProgress: { value: 0 },
     uRingDistordTexture: { value: ringTex },
+    uPageZ: { value: pageZ },
   });
 
-  // Sync Leva slider to uniform when manually scrubbing, without overwriting GSAP in useFrame
-  // useEffect(() => {
-  //   if (material.current) {
-  //     material.current.uniforms.uProgress.value = progress;
-  //   }
-  // }, [progress]);
+  // Kill any running GSAP tween on uProgress and reset when route changes
+  useEffect(() => {
+    if (material.current) {
+      gsap.killTweensOf(material.current.uniforms.uProgress);
+      material.current.uniforms.uProgress.value = 0;
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const handleRippleClick = (e: Event) => {
@@ -132,7 +109,9 @@ const Poster = () => {
     material.current.uniforms.uRadius.value = radius;
     material.current.uniforms.uStrength.value = strength;
     material.current.uniforms.uTexture1.value = tex1;
+    material.current.uniforms.uTexture2.value = tex2;
     material.current.uniforms.uRingDistordTexture.value = ringTex;
+    material.current.uniforms.uPageZ.value = pageZ;
   });
 
   return (
@@ -158,6 +137,7 @@ const vertexShader = `
     uniform float uStrength;
     uniform vec2 uMouse;
     uniform vec2 uResolution;
+    uniform float uPageZ;
 
     uniform sampler2D uRingDistordTexture;
 
@@ -194,8 +174,7 @@ const vertexShader = `
       vDistord = direction * influence * uStrength;
       vInfluence = influence;
 
-      gl_Position = vec4(pos.xy, 0.96, 1.0);
-      // gl_Position = vec4(pos.xy, 0.99, 1.0);
+      gl_Position = vec4(pos.xy, uPageZ, 1.0);
     }
 
 

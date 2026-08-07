@@ -10,10 +10,13 @@ import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import { useControls } from "leva";
 import { createRipple } from "../../libs/createRipple";
+import { useNavigate } from "react-router";
+import { pageColor } from "../../libs/config/pageColor";
 
 gsap.registerPlugin(SplitText);
 
 const Input = () => {
+  const navigate = useNavigate();
   const { nodes, materials } = useGLTF("models/login-input.glb") as any;
 
   const [visible, setVisible] = useState(true);
@@ -209,18 +212,17 @@ const Input = () => {
   // texture.flipY = false;
 
   useEffect(() => {
-    const handleSubmit = (event: Event) => {
-      const { email } = (event as CustomEvent).detail;
-
+    const handleSubmit = (_event: Event) => {
       // rotateEmailInput();
 
       createRipple({
         coord: { x: 0.24, y: 0 },
         isPageTransition: true,
-        colorA: "#06ecff",
-        colorB: "#00e1ff",
+        colorA: pageColor.Home.colorA,
+        colorB: pageColor.Home.colorB,
       });
 
+      window.setTimeout(() => navigate("/"), 1300);
       cleanUp();
     };
 
@@ -229,7 +231,7 @@ const Input = () => {
     return () => {
       window.removeEventListener("user-input-submit", handleSubmit);
     };
-  }, []);
+  }, [navigate]);
 
   if (!visible) return null;
 
