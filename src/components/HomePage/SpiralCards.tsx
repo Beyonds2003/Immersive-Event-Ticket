@@ -331,7 +331,7 @@ export const SpiralCards = ({
       ref={meshRef}
       args={[undefined, undefined, controls.totalCards]}
       frustumCulled={false}
-      position={[0, -0.4, -3]}
+      position={[0, -0.45, -3]}
     >
       <planeGeometry args={[1.0, 1.0, 50, 50]}>
         <instancedBufferAttribute
