@@ -3,7 +3,7 @@ import { useControls, folder } from "leva";
 import { useRef, useState } from "react";
 import { SpiralCards } from "./SpiralCards";
 import { PostProcessingPass } from "./PostProcessingPass";
-import HtmlUI from "./HtmlUI";
+import EventCardUi from "./EventCardUi";
 
 const EventCard = () => {
   const [, setActiveCardIndex] = useState<number>(0);
@@ -236,9 +236,6 @@ const Scene = ({
         enablePan={false}
         enableRotate={false}
       />
-
-      {/* UI */}
-      <HtmlUI />
     </>
   );
 };

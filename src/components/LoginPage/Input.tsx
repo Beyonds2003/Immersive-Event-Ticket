@@ -222,7 +222,7 @@ const Input = () => {
         colorB: pageColor.Home.colorB,
       });
 
-      window.setTimeout(() => navigate("/"), 1300);
+      window.setTimeout(() => navigate("/"), 1100);
       cleanUp();
     };
 

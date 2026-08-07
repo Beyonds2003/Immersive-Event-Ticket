@@ -18,6 +18,10 @@
   }
 }
 
+.menu-container.close {
+  z-index: 102;
+}
+
 .menu-container .close-btn {
   display: flex;
   justify-content: center;
@@ -83,6 +87,7 @@
   left: 20px;
   background: black;
   overflow: hidden;
+  z-index: 100;
   /* transform-origin: 0 100%;
   will-change: transform, opacity, clip-path; */
 }

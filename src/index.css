@@ -302,3 +302,10 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   }
 }
+
+.page-ui-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}

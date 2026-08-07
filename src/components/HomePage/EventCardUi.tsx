@@ -3,14 +3,12 @@ import React, { useRef, useState } from "react";
 import { createRipple } from "../../libs/createRipple";
 import Arrow from "../Icons/Arrow";
 
-const HtmlUI = () => {
+const EventCardUi = () => {
   return (
-    <Html fullscreen style={{ pointerEvents: "none" }}>
-      <div className="z-[-10px]">
-        <Tab />
-        <Navigation />
-      </div>
-    </Html>
+    <div className="">
+      <Tab />
+      <Navigation />
+    </div>
   );
 };
 
@@ -113,4 +111,4 @@ const Tab = () => {
   );
 };
 
-export default HtmlUI;
+export default EventCardUi;
