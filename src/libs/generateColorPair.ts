@@ -15,98 +15,95 @@ function random(seed: number) {
   return () => {
     seed = Math.imul(seed ^ (seed >>> 15), 1 | seed);
     seed ^= seed + Math.imul(seed ^ (seed >>> 7), 61 | seed);
+
     return ((seed ^ (seed >>> 14)) >>> 0) / 4294967296;
   };
 }
 
 /**
- * Dreamy iridescent palette hues — biased toward pinks, mints, lilacs, lavenders.
- * These 8 anchor hues match the soft pearlescent tones seen in the reference image.
+ * More natural material colors.
+ * Avoids pure neon colors.
  */
-const DREAMY_HUES = [
-  310, // hot pink / magenta
-  330, // rose pink
-  280, // soft violet
-  260, // lavender / purple
-  240, // periwinkle blue
-  170, // mint / seafoam green
-  150, // soft green
-  195, // teal
+const COLOR_ANCHORS = [
+  0, // red
+  25, // orange
+  45, // yellow
+  90, // green
+  150, // turquoise
+  190, // cyan
+  220, // blue
+  260, // violet
+  300, // purple
+  330, // pink
 ];
 
-/**
- * Calculates lightness driven by `vibrant`:
- *   vibrant=0 → ~70% (soft pastel)
- *   vibrant=1 → ~55% (rich, punchy)
- * Perceptual hue luminance and a slight A/B contrast are applied on top.
- */
-function getDreamyLightness(
-  hueDeg: number,
-  isSecondary: boolean,
-  randVal: number,
-  vibrant: number,
-): number {
-  const rad = (hueDeg * Math.PI) / 180;
-  // Perceptual innate luminance — yellows sit higher, blues lower
-  const innateLuminance = Math.cos(rad - (60 * Math.PI) / 180);
-
-  // Slide from 70% (pastel) down to 55% (vivid) as vibrant goes 0→1
-  let lightness = 70 - vibrant * 15 - innateLuminance * 4;
-
-  // Slight contrast between Color A and Color B
-  if (isSecondary) {
-    lightness += 2 + (randVal - 0.5) * 5;
-  } else {
-    lightness -= 2 + (randVal - 0.5) * 5;
-  }
-
-  return Math.min(74, Math.max(52, lightness));
+function clamp(v: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, v));
 }
 
 /**
- * Generates two soft, dreamy, iridescent color pairs — pinks, mints, lilacs, lavenders.
- *
- * Algorithm:
- * 1. Base hue is picked from a curated dreamy palette (pinks/purples/mints/teals)
- *    with slight procedural jitter for variety.
- * 2. Second hue uses an analogous / split-complementary offset (30°–90°) so the
- *    pair feels harmonious and pearlescent rather than starkly contrasted.
- * 3. Saturation is moderate (55%–85%) — vivid but soft, never neon.
- * 4. Lightness is raised to 60%–76% for a luminous, iridescent, pastel-vivid feel.
- *
- * @param text Hash input text
- * @param vibrant Saturation & vividness multiplier (0 = very soft pastel, 1 = full dreamy vivid)
- * @param seed Seed offset for procedural variation
+ * Similar idea to previous code:
+ * create a second color by shifting hue.
  */
-export function generateColorPair(text: string, vibrant = 1.0, seed = 0) {
+function createHarmony(hue: number, rand: () => number) {
+  const shift = (rand() < 0.5 ? -1 : 1) * (30 + rand() * 70);
+
+  return (hue + shift + 360) % 360;
+}
+
+/**
+ * Generates random material pair.
+ *
+ * Example:
+ *
+ * purple ---> mint
+ * orange ---> pink
+ * blue ---> violet
+ *
+ */
+export function generateColorPair(text: string, vibrant = 0.8, seed = 0) {
   const rand = random(hashString(text) ^ Math.imul(seed + 1, 2654435761));
 
-  // 1. Pick a base hue from the dreamy palette with slight jitter (±15°)
-  const anchorIndex = Math.floor(rand() * DREAMY_HUES.length);
-  const hue1 = (DREAMY_HUES[anchorIndex] + (rand() - 0.5) * 30 + 360) % 360;
+  // Base hue
+  const base = COLOR_ANCHORS[Math.floor(rand() * COLOR_ANCHORS.length)];
 
-  // 2. Second hue: analogous offset (30°–90°) — same colour family, harmonious pairing
-  const offsetSign = rand() < 0.5 ? 1 : -1;
-  const offsetMagnitude = 30 + rand() * 60;
-  const hue2 = (hue1 + offsetSign * offsetMagnitude + 360) % 360;
+  // Add organic variation
+  const hue1 = (base + (rand() - 0.5) * 40 + 360) % 360;
 
-  // 3. Saturation fully driven by vibrant: 0 → ~35% (soft pastel), 1 → ~95% (vivid pop)
-  const sat1 = Math.min(100, Math.max(20, 35 + vibrant * 60 + (rand() - 0.5) * 10));
-  const sat2 = Math.min(100, Math.max(20, 35 + vibrant * 60 + (rand() - 0.5) * 10));
+  // Harmonized second color
+  const hue2 = createHarmony(hue1, rand);
 
-  // 4. Lightness also driven by vibrant (70% pastel → 55% vivid)
-  const lightness1 = getDreamyLightness(hue1, false, rand(), vibrant);
-  const lightness2 = getDreamyLightness(hue2, true, rand(), vibrant);
+  /**
+   * Saturation
+   *
+   * low:
+   * pastel plastic
+   *
+   * high:
+   * candy color
+   */
+  const saturation1 = clamp(35 + vibrant * 45 + rand() * 15, 25, 90);
+
+  const saturation2 = clamp(saturation1 + (rand() - 0.5) * 20, 25, 90);
+
+  /**
+   * Lightness
+   *
+   * Keep material bright.
+   */
+  const lightness1 = clamp(65 - vibrant * 10 + (rand() - 0.5) * 8, 50, 75);
+
+  const lightness2 = clamp(lightness1 + (rand() - 0.5) * 12, 50, 75);
 
   const colorA = new THREE.Color().setHSL(
     hue1 / 360,
-    sat1 / 100,
+    saturation1 / 100,
     lightness1 / 100,
   );
 
   const colorB = new THREE.Color().setHSL(
     hue2 / 360,
-    sat2 / 100,
+    saturation2 / 100,
     lightness2 / 100,
   );
 

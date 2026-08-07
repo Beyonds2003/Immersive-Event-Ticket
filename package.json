@@ -21,6 +21,7 @@
     "lucide-react": "^1.28.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-router": "^8.3.0",
     "seedrandom": "^3.0.5",
     "stats.js": "^0.17.0",
     "tailwindcss": "^4.3.2",

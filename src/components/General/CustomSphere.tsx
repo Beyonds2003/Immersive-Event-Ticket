@@ -579,7 +579,7 @@ const SphereModel = ({
     D: new THREE.Vector2(0.5, 0.0), // bottom-right
   };
 
-  const seed = 1; // change it to (3) only if and only if things turn out good
+  const seed = 2; // change it to (3) only if and only if things turn out good
   const [colorA, colorB] = generateColorPair(`${email} ${type}`, 0.9, seed);
 
   const uniforms = useRef({

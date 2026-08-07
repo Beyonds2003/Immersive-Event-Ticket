@@ -82,7 +82,8 @@ export function useTexturePoolManager({
         const totalExtent = count * cardGap;
         const halfExtent = totalExtent * 0.5;
         cardOffset =
-          (((cardOffset + halfExtent) % totalExtent) + totalExtent) % totalExtent -
+          ((((cardOffset + halfExtent) % totalExtent) + totalExtent) %
+            totalExtent) -
           halfExtent;
       }
 
