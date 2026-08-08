@@ -333,7 +333,7 @@ export const SpiralCards = ({
       frustumCulled={false}
       position={[0, -0.45, -3]}
     >
-      <planeGeometry args={[1.0, 1.0, 50, 50]}>
+      <planeGeometry args={[1.0, 1.0, 25, 25]}>
         <instancedBufferAttribute
           ref={textureAttrRef}
           attach="attributes-aTextureIndex"

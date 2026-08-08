@@ -48,8 +48,7 @@ const Gradient = () => {
 
   const clickPos = useRef(new THREE.Vector2(0, 0));
 
-  const pColor =
-    pathname === "/login" ? pageColor.Login : pageColor.Home;
+  const pColor = pathname === "/login" ? pageColor.Login : pageColor.Home;
 
   const uniforms = useRef({
     time: { value: 0 },
@@ -66,6 +65,9 @@ const Gradient = () => {
     uRingBlur: { value: ringBlur },
     uRingOffset: { value: ringOffset },
     uRingOffset2: { value: ringOffset2 },
+    uRadialCoord: {
+      value: new THREE.Vector2(pColor.coord[0], pColor.coord[1]),
+    },
   });
 
   // Handle color besed on user route
@@ -80,6 +82,11 @@ const Gradient = () => {
     );
     material.current.uniforms.uColorB.value = new THREE.Color(
       targetColor.colorB,
+    );
+
+    material.current.uniforms.uRadialCoord.value.set(
+      targetColor.coord[0],
+      targetColor.coord[1],
     );
   }, [pathname]);
 
@@ -178,6 +185,7 @@ const fragmentShader = `
     uniform float time;
     uniform vec2 uResolution;
     uniform float uProgress;
+    uniform vec2 uRadialCoord;
 
     // -1 0 1
     uniform vec2 uClickPos;
@@ -244,8 +252,8 @@ const fragmentShader = `
         uv.x *= uResolution.x / uResolution.y; // aspect correction
 
         // Gradient
-        float radial = length(uv - vec2(1.4, 0.4));
-        radial = smoothstep(0.0, 0.8, radial);
+        float radial = length(uv - uRadialCoord);
+        radial = smoothstep(0., 0.8, radial);
 
         vec3 texA = mixOKLab(uColorA, uColorB, radial);
         vec3 texB = mixOKLab(uColorC, uColorD, radial);
@@ -299,7 +307,7 @@ const fragmentShader = `
         final += grain * 0.03;
 
         gl_FragColor = vec4(vec3(final), 1.);
-      //  gl_FragColor = vec4(vec3(mouseDistord), 1.);
+      //  gl_FragColor = vec4(vec3(radial), 1.);
     }
 
 `;

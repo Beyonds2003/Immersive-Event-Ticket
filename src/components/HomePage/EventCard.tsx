@@ -30,7 +30,7 @@ const EventCard = () => {
         label: "Spiral Radius (u3)",
       },
       pitch: {
-        value: 10.0,
+        value: 7.5,
         min: 0.0,
         max: 30.0,
         step: 0.1,
@@ -76,7 +76,7 @@ const EventCard = () => {
         label: "Card Height",
       },
       cardScale: {
-        value: 0.9,
+        value: 0.8,
         min: 0.3,
         max: 3.0,
         step: 0.05,
