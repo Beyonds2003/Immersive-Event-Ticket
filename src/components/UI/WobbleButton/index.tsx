@@ -237,8 +237,8 @@ const WobbleButton: React.FC<WobbleButtonProps> = ({
   // ── Physics state (never triggers re-renders) ─────────────────────────────
   const points = useRef<Point[]>([]);
   const charOffsets = useRef<CharOffset[]>([]);
-  const centerX = useRef(0);
-  const centerY = useRef(0);
+  const centerX = useRef(100);
+  const centerY = useRef(100);
   const sleeping = useRef(true);
   const isUpdating = useRef(false);
   const deactivateQueued = useRef(false);

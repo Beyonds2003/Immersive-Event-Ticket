@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import WobbleButton from "../WobbleButton";
 import "./index.css";
 import gsap from "gsap";
@@ -137,6 +137,50 @@ type MenuContentProps = {
 };
 
 const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
+  const navRef = useRef<HTMLElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const buttons = navRef.current?.querySelectorAll("button");
+
+    if (!buttons) return;
+
+    buttons.forEach((button) => {
+      const rect = button.getBoundingClientRect();
+
+      const dx = Math.max(rect.left - e.clientX, 0, e.clientX - rect.right) * 0;
+      const dy = Math.max(rect.top - e.clientY, 0, e.clientY - rect.bottom);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      const maxDistance = 60;
+
+      // 1 = inside or touching the button, 0 = beyond maxDistance
+      const proximity = Math.max(0, 1 - distance / maxDistance);
+
+      // Quadratic ease → natural gravity-like dropoff for neighbors
+      const easedProximity = proximity * proximity;
+
+      const scale = gsap.utils.interpolate(1, 1.5, easedProximity);
+
+      gsap.to(button, {
+        scale,
+        duration: 0.15,
+        ease: "expo.out",
+        overwrite: true,
+      });
+    });
+  };
+
+  const handleMouseLeave = () => {
+    const buttons = navRef.current?.querySelectorAll("button");
+
+    if (!buttons) return;
+
+    gsap.to(buttons, {
+      scale: 1,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  };
   const enterAnimation = () => {
     gsap.killTweensOf([
       ".menu-content-container",
@@ -213,7 +257,11 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
   return (
     <div className="menu-content-container">
       <div className="nav-items">
-        <nav>
+        <nav
+          ref={navRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
           <button onClick={() => handleNavigate("/")}>Home</button>
           <button>NFC Card</button>
           <button>Live</button>
