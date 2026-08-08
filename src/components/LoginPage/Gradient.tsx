@@ -48,7 +48,13 @@ const Gradient = () => {
 
   const clickPos = useRef(new THREE.Vector2(0, 0));
 
-  const pColor = pathname === "/login" ? pageColor.Login : pageColor.Home;
+  const routeColorMap: Record<string, keyof typeof pageColor> = {
+    "/": "Home",
+    "/login": "Login",
+    "/detail": "Detail",
+  };
+
+  const pColor = pageColor[routeColorMap[pathname] ?? "Home"];
 
   const uniforms = useRef({
     time: { value: 0 },
@@ -74,8 +80,7 @@ const Gradient = () => {
   useEffect(() => {
     if (!material.current) return;
 
-    const targetColor =
-      pathname === "/login" ? pageColor.Login : pageColor.Home;
+    const targetColor = pageColor[routeColorMap[pathname] ?? "Home"];
 
     material.current.uniforms.uColorA.value = new THREE.Color(
       targetColor.colorA,
@@ -116,7 +121,7 @@ const Gradient = () => {
       // Ripple ring progress
       gsap.to(material.current.uniforms.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.2 : 1.6,
+        duration: isPageTransition ? 2.2 : 1.7,
         ease: "power1.out",
       });
     };

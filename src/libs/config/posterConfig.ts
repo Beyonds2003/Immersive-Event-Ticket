@@ -48,4 +48,16 @@ export const posterConfigs: Record<string, PosterConfig> = {
     textBaseline: "top",
     responsive: true,
   },
+  "/detail": {
+    title: ["TICKET DETAIL"],
+    titleFontFamily: "Dingos-ExtraBold",
+    titleFontSize: 100,
+    titleColor: "#000000",
+    titleLineHeight: 1,
+
+    padding: 100,
+    textAlign: "center",
+    textBaseline: "top",
+    responsive: true,
+  },
 };

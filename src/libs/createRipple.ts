@@ -4,6 +4,7 @@ export type Params = {
   colorA: string;
   colorB: string;
   addDistord?: boolean;
+  nextPathname?: string;
 };
 
 export const createRipple = ({
@@ -12,6 +13,7 @@ export const createRipple = ({
   colorA,
   colorB,
   addDistord = true,
+  nextPathname,
 }: Params) => {
   window.dispatchEvent(
     new CustomEvent("ripple-click", {
@@ -22,6 +24,7 @@ export const createRipple = ({
         colorA,
         colorB,
         addDistord,
+        nextPathname,
       },
     }),
   );

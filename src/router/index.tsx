@@ -8,13 +8,15 @@ import {
 } from "react-router";
 import HomePage from "../components/HomePage";
 import LoginPage from "../components/LoginPage";
+import TicketDetail from "../components/TicketDetail";
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+      {/* <Route path="/" element={<Navigate to="/detail" replace />} /> */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
+      <Route path="/detail" element={<TicketDetail />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

@@ -18,9 +18,10 @@ const Poster = () => {
   const pageZ = pathname === "/" ? 0.96 : 1;
   const { coords, updateMouse, mouseMoved } = useMouse();
 
-  const currentConfig = posterConfigs[pathname] || posterConfigs["/"];
-  const alternatePath = pathname === "/login" ? "/" : "/login";
-  const nextConfig = posterConfigs[alternatePath] || posterConfigs["/login"];
+  const currentConfig = posterConfigs[pathname] ?? posterConfigs["/"];
+
+  const nextPathnameRef = useRef<string>(pathname);
+  const nextConfig = posterConfigs[nextPathnameRef.current] ?? posterConfigs["/"];
 
   const tex1 = useCanvasTextTexture(currentConfig);
   const tex2 = useCanvasTextTexture(nextConfig);
@@ -64,7 +65,11 @@ const Poster = () => {
     const handleRippleClick = (e: Event) => {
       if (!material.current) return;
 
-      const { isPageTransition } = (e as CustomEvent).detail;
+      const { isPageTransition, nextPathname } = (e as CustomEvent).detail;
+
+      if (nextPathname) {
+        nextPathnameRef.current = nextPathname;
+      }
 
       if (isPageTransition) {
         gsap.fromTo(

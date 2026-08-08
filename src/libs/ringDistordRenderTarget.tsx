@@ -282,7 +282,7 @@ export const RingDistordRenderTarget = () => {
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.2 : 1.6,
+        duration: isPageTransition ? 2.2 : 1.7,
         ease: "power1.out",
         delay: isPageTransition ? 0.2 : 0,
       });
