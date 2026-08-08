@@ -69,6 +69,16 @@
   ); */
 }
 
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .group-member-container {
   position: fixed;
   bottom: 30px;
@@ -364,10 +374,57 @@
 .rating-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
 
   & span {
     font-size: 2rem;
     font-family: Dingos-Bold, sans-serif;
+    margin-bottom: -8px;
   }
+}
+
+.rate-btn {
+  width: 68px;
+  height: 68px;
+  background: white;
+  padding: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.ticket-detail-content {
+  background-color: #3fe571;
+  border-radius: 28px;
+  padding: 20px;
+
+  & .date {
+    font-size: 1.2rem;
+    font-family: Dingos, sans-serif;
+  }
+
+  & .title {
+    font-size: 2rem;
+    font-family: Dingos-Bold, sans-serif;
+  }
+}
+
+.buy-ticket-btn-container {
+  position: absolute;
+  top: 24px;
+  right: 20px;
+  pointer-events: auto;
+
+  & button {
+    cursor: pointer;
+  }
+}
+
+.ticket-detail-description {
+  background: #dddddd;
+  height: stretch;
+  width: 100%;
+  border-radius: 28px 28px 0 0;
+  padding: 20px;
+  overflow: auto;
 }

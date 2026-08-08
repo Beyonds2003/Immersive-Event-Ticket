@@ -141,7 +141,7 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
     gsap.killTweensOf([
       ".menu-content-container",
       ".nav-items nav button",
-      ".buy-ticket-btn-container",
+      ".buy-nfc-btn-container",
     ]);
 
     const tl = gsap.timeline();
@@ -162,7 +162,7 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
       "-=0.6",
     );
     tl.fromTo(
-      ".buy-ticket-btn-container",
+      ".buy-nfc-btn-container",
       { x: -80, opacity: 0 },
       { x: 0, opacity: 1, ease: "power1.out", duration: 0.6 },
       "-=0.7",
@@ -173,7 +173,7 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
     gsap.killTweensOf([
       ".menu-content-container",
       ".nav-items nav button",
-      ".buy-ticket-btn-container",
+      ".buy-nfc-btn-container",
     ]);
 
     const tl = gsap.timeline({
@@ -221,7 +221,7 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
           <button>FAQ</button>
         </nav>
       </div>
-      <div className="buy-ticket-btn-container">
+      <div className="buy-nfc-btn-container">
         <WobbleButton
           text="BUY NFC"
           hoverText="LET GO!"
