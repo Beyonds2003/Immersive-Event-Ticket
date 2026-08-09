@@ -50,8 +50,9 @@ const TicketDetailUi = () => {
             textA="About"
             textB="Review"
             className="ticket-detail-tab"
-            rippleCoord={[-0.3, 0.1]}
             initialTab={tabComponentIndex}
+            isRippleFromClick={true}
+            // rippleDirection="in"
           />
           <div className="rating-container">
             <span>4</span>

@@ -56,7 +56,7 @@ const EventCard = () => {
     "Card Dimensions & Spacing": folder({
       cardGap: {
         value: 1.7,
-        min: 0.1,
+        min: 0.01,
         max: 5.0,
         step: 0.05,
         label: "Card Gap / Spacing",

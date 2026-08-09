@@ -12,6 +12,8 @@ type Props = {
   rippleCoord?: [number, number];
   /** 0-based index of the initially active tab (default: 0) */
   initialTab?: number;
+  isRippleFromClick?: boolean;
+  rippleDirection?: "out" | "in";
 };
 
 const Tab = ({
@@ -24,24 +26,42 @@ const Tab = ({
   textB,
   rippleCoord = [0, 0],
   initialTab = 0,
+  isRippleFromClick = false,
+  rippleDirection = "out",
 }: Props) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isDisabled, setIsDisabled] = useState(false);
-  const prevIndexRef = useRef(0);
+  const prevIndexRef = useRef(initialTab);
 
-  const handleTabClick = (tabIndex: number) => {
+  const handleTabClick = (
+    tabIndex: number,
+    e?: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     if (tabIndex === prevIndexRef.current) return;
     if (isDisabled) return;
 
     // 1.5s disable button for animation and prevent spam click
     setIsDisabled(true);
 
+    let x = rippleCoord[0];
+    let y = rippleCoord[1];
+
+    if (e?.currentTarget && isRippleFromClick) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      x = (centerX / window.innerWidth) * 2 - 1;
+      y = -(centerY / window.innerHeight) * 2 + 1;
+    }
+
     prevIndexRef.current = tabIndex;
     createRipple({
-      coord: { x: rippleCoord[0], y: rippleCoord[1] },
+      coord: { x, y },
       isPageTransition: false,
       colorA: activeTab === 0 ? colorC : colorA,
       colorB: activeTab === 0 ? colorD : colorB,
+      rippleDirection,
     });
 
     window.dispatchEvent(
@@ -67,10 +87,10 @@ const Tab = ({
           aria-hidden
           style={{ "--active-day": activeTab } as React.CSSProperties}
         />
-        <button disabled={isDisabled} onClick={() => handleTabClick(0)}>
+        <button disabled={isDisabled} onClick={(e) => handleTabClick(0, e)}>
           {textA}
         </button>
-        <button disabled={isDisabled} onClick={() => handleTabClick(1)}>
+        <button disabled={isDisabled} onClick={(e) => handleTabClick(1, e)}>
           {textB}
         </button>
       </div>

@@ -16,6 +16,7 @@ const EventCardUi = () => {
         colorD={colorD}
         textA="New"
         textB="Own"
+        rippleCoord={[0, -0]}
       />
       <Navigation />
     </div>

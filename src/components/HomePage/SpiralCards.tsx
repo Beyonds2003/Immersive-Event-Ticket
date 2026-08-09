@@ -10,6 +10,7 @@ import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 import { createRipple } from "../../libs/createRipple";
 import { pageColor } from "../../libs/config/pageColor";
 import { useNavigate } from "react-router";
+import gsap from "gsap";
 
 export interface SpiralCardsProps {
   controls: any;
@@ -347,6 +348,15 @@ export const SpiralCards = ({
       colorB: pageColor.Detail.colorB,
       rippleDirection: "in",
     });
+
+    if (materialRef.current) {
+      gsap.to(materialRef.current.uniforms.uCardGap, {
+        value: 0.01,
+        delay: 0.05,
+        duration: 0.8,
+        ease: "power1.in",
+      });
+    }
 
     window.setTimeout(() => navigate("/detail"), 1100);
   };
