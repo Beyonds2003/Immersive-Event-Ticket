@@ -4,9 +4,17 @@ import { useControls, Leva, folder, button } from "leva";
 import * as THREE from "three";
 import Model from "./CustomSphere";
 import { PhysicsWorld } from "../../libs/PhysicsWorld";
-import gsap from "gsap";
+import { useAtomValue } from "jotai";
+import { pathnameAtom } from "../../libs/atoms";
+import {
+  pageSphere,
+  routeSphereMap,
+  defaultSphereConfig,
+  type SphereConfig,
+} from "../../libs/config/pageSphere";
 import { SPHERE_CONFIGS } from "./SPHERE_CONFIG";
 import { alea } from "seedrandom";
+import gsap from "gsap"
 
 // ── Init Sphere Positions (Stacking Layout) ──────────────────────────────────
 function initSpherePositions(
@@ -155,6 +163,7 @@ interface PhysicsSceneProps {
   endAnimProgress: number;
   pushForce: number;
   delayFactor: number;
+  configOffset: number;
   onProgressUpdate: (progress: number) => void;
 }
 
@@ -203,6 +212,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   endAnimProgress,
   pushForce,
   delayFactor,
+  configOffset,
   onProgressUpdate,
 }) => {
   const { camera } = useThree();
@@ -707,7 +717,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
           />
         </mesh>
       )}
-      {SPHERE_CONFIGS.slice(0, sphereCount).map((cfg, i) => (
+      {SPHERE_CONFIGS.slice(configOffset, configOffset + sphereCount).map((cfg, i) => (
         <Model
           key={i}
           ref={(el: any) => {
@@ -738,9 +748,23 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   );
 };
 
+export interface GroupOfSphereProps {
+  configKey?: string;
+  config?: Partial<SphereConfig>;
+  configOffset?: number;
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
-const GroupOfSphere = () => {
-  const [controls, setControls] = useControls("Physics Sphere", () => ({
+const GroupOfSphere = ({ configKey, config, configOffset = 0 }: GroupOfSphereProps = {}) => {
+  const pathname = useAtomValue(pathnameAtom);
+  const activeKey = configKey ?? routeSphereMap[pathname] ?? "Home";
+  const pageConfig = config ?? pageSphere[activeKey];
+
+  const controlsName = configKey
+    ? `Physics Sphere (${configKey})`
+    : "Physics Sphere";
+
+  const [controls, setControls] = useControls(controlsName, () => ({
     Physics: folder({
       sphereCount: {
         value: 10,
@@ -980,6 +1004,12 @@ const GroupOfSphere = () => {
     }),
   }));
 
+  useEffect(() => {
+    if (pageConfig) {
+      setControls(pageConfig);
+    }
+  }, [pathname, pageConfig, setControls]);
+
   const handleProgressUpdate = (progress: number) => {
     setControls({ endAnimProgress: progress });
   };
@@ -1024,6 +1054,7 @@ const GroupOfSphere = () => {
       endAnimProgress={controls.endAnimProgress}
       pushForce={controls.pushForce}
       delayFactor={controls.delayFactor}
+      configOffset={configOffset}
       onProgressUpdate={handleProgressUpdate}
     />
   );

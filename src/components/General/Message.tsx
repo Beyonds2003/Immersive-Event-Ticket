@@ -1,6 +1,8 @@
 import { Html } from "@react-three/drei";
 import React, { useEffect, useRef, useState, useId } from "react";
 import gsap from "gsap";
+import { useAtomValue } from "jotai";
+import { pathnameAtom } from "../../libs/atoms";
 
 interface Props {
   align: "left" | "right";
@@ -198,6 +200,9 @@ const Message = ({ align, name, message }: Props) => {
       window.removeEventListener("ripple-click", handleRippleClick);
     };
   }, [isActive, node, id]);
+
+  const pathname = useAtomValue(pathnameAtom);
+  if (pathname === "/detail") return null;
 
   return (
     <Html

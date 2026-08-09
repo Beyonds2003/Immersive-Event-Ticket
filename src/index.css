@@ -332,7 +332,7 @@
   z-index: 100;
   --top-gap: var(--site-title-band, 14vw);
   padding-top: var(--top-gap);
-  /* pointer-events: none; */
+  pointer-events: none;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   touch-action: pan-y;

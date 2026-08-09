@@ -12,7 +12,7 @@ import { pathnameAtom } from "./libs/atoms";
 import { useEffect } from "react";
 import MenuButton from "./components/UI/WobbleMenu";
 import PageHtmlUi from "./components/General/PageHtmlUi";
-import { OrthographicCamera } from "@react-three/drei";
+import { PageCameraController } from "./components/General/PageCameraController";
 
 /** Syncs React Router location into the Jotai atom so R3F canvas can read it */
 const LocationSync = () => {
@@ -49,6 +49,7 @@ const Scene = () => {
   return (
     <Canvas shadows dpr={[1, 2]}>
       <RouterBridge>
+        <PageCameraController />
         <RingDistordRenderTarget />
         <Gradient />
         <Poster />
