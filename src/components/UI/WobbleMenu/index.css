@@ -7,6 +7,8 @@
   /* background: black; */
   isolation: isolate;
   cursor: pointer;
+  pointer-events: auto;
+  z-index: 1000;
 
   &.close {
     background: white;
@@ -19,7 +21,7 @@
 }
 
 .menu-container.close {
-  z-index: 102;
+  z-index: 1002;
 }
 
 .menu-container .close-btn {
@@ -87,7 +89,7 @@
   left: 20px;
   background: black;
   overflow: hidden;
-  z-index: 100;
+  z-index: 1000;
   /* transform-origin: 0 100%;
   will-change: transform, opacity, clip-path; */
 }

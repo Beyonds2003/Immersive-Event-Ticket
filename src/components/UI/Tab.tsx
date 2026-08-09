@@ -10,6 +10,8 @@ type Props = {
   textA: string;
   textB: string;
   rippleCoord?: [number, number];
+  /** 0-based index of the initially active tab (default: 0) */
+  initialTab?: number;
 };
 
 const Tab = ({
@@ -21,8 +23,9 @@ const Tab = ({
   textA,
   textB,
   rippleCoord = [0, 0],
+  initialTab = 0,
 }: Props) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [isDisabled, setIsDisabled] = useState(false);
   const prevIndexRef = useRef(0);
 

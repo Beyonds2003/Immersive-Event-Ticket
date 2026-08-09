@@ -13,9 +13,7 @@ const PageHtmlUi = () => {
   const pathname = useAtomValue(pathnameAtom);
 
   return (
-    <div className="page-ui-container">
-      {routeUiMap[pathname] ?? null}
-    </div>
+    <div className="page-ui-containers">{routeUiMap[pathname] ?? null}</div>
   );
 };
 

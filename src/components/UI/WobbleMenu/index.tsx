@@ -151,7 +151,7 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
       const dy = Math.max(rect.top - e.clientY, 0, e.clientY - rect.bottom);
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      const maxDistance = 60;
+      const maxDistance = 20;
 
       // 1 = inside or touching the button, 0 = beyond maxDistance
       const proximity = Math.max(0, 1 - distance / maxDistance);
@@ -159,7 +159,7 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
       // Quadratic ease → natural gravity-like dropoff for neighbors
       const easedProximity = proximity * proximity;
 
-      const scale = gsap.utils.interpolate(1, 1.5, easedProximity);
+      const scale = gsap.utils.interpolate(1, 1.3, easedProximity);
 
       gsap.to(button, {
         scale,

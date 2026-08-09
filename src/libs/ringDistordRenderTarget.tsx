@@ -81,6 +81,7 @@ const rtFragmentShader = /* glsl */ `
   uniform float uRingOffset;
   uniform float uRingOffset2;
   uniform float uDistordStrength;  
+  uniform float uDirection;
 
   varying vec2 vUv;
 
@@ -126,6 +127,9 @@ const rtFragmentShader = /* glsl */ `
     vec2 rawDiff   = vUv - mouse;
     rawDiff.x     *= aspect;
     vec2 direction = rawDiff / max(length(rawDiff), 0.001);
+
+    // Secrect Sauce
+    direction *= uDirection;
 
     // UV-space displacement = outward direction × ring intensity × strength
     vec2 displacement = direction * mask * uDistordStrength;
@@ -245,6 +249,7 @@ export const RingDistordRenderTarget = () => {
     uRingBlur: { value: ringBlur },
     uRingOffset: { value: ringOffset },
     uDistordStrength: { value: distordStrength },
+    uDirection: { value: 1 },
   });
 
   // ── Build offscreen quad mesh once ───────────────────────────────────────
@@ -271,7 +276,8 @@ export const RingDistordRenderTarget = () => {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      const { x, y, isPageTransition } = (e as CustomEvent).detail;
+      const { x, y, isPageTransition, rippleDirection } = (e as CustomEvent)
+        .detail;
 
       // Store NDC click position (−1..1)
       clickPos.current.set(x, y);
@@ -279,6 +285,7 @@ export const RingDistordRenderTarget = () => {
       // Kill running animation, reset to 0, then drive to 1
       progressTween.current?.kill();
       uniforms.current.uProgress.value = 0;
+      uniforms.current.uDirection.value = rippleDirection === "in" ? -1 : 1;
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
