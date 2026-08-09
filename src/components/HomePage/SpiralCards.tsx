@@ -348,10 +348,6 @@ export const SpiralCards = ({
       rippleDirection: "in",
     });
 
-    // window.setTimeout(() => {
-    //   meshRef.current.visible = false;
-    // }, 900);
-
     window.setTimeout(() => navigate("/detail"), 1100);
   };
 
@@ -519,7 +515,7 @@ void main() {
     vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
     float ringMask    = ring.b;                // grayscale ring intensity (0..1)
 
-    worldPos.xy += ringDistord * ringMask; 
+    worldPos.xy += ringDistord * ringMask * 1.5; 
 
     vRing = ringMask;
 

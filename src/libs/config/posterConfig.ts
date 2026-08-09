@@ -49,7 +49,7 @@ export const posterConfigs: Record<string, PosterConfig> = {
     responsive: true,
   },
   "/detail": {
-    title: ["TICKET DETAIL"],
+    title: ["DETAIL"],
     titleFontFamily: "Dingos-ExtraBold",
     titleFontSize: 100,
     titleColor: "#000000",

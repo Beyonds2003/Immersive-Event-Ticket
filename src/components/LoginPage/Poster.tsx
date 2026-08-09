@@ -21,7 +21,8 @@ const Poster = () => {
   const currentConfig = posterConfigs[pathname] ?? posterConfigs["/"];
 
   const nextPathnameRef = useRef<string>(pathname);
-  const nextConfig = posterConfigs[nextPathnameRef.current] ?? posterConfigs["/"];
+  const nextConfig =
+    posterConfigs[nextPathnameRef.current] ?? posterConfigs["/"];
 
   const tex1 = useCanvasTextTexture(currentConfig);
   const tex2 = useCanvasTextTexture(nextConfig);
@@ -32,7 +33,7 @@ const Poster = () => {
 
   const { radius, strength, progress } = useControls("Poster", {
     radius: { value: 0.4, min: 0, max: 1, step: 0.01 },
-    strength: { value: 0.006, min: 0, max: 0.1, step: 0.001 },
+    strength: { value: 0.01, min: 0, max: 0.1, step: 0.001 },
     progress: { value: 0, min: 0, max: 1, step: 0.01 },
   });
 

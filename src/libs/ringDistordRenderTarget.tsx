@@ -202,7 +202,7 @@ export const RingDistordRenderTarget = () => {
       label: "Ring Offset 1",
     },
     distordStrength: {
-      value: 0.04,
+      value: 0.05,
       min: 0,
       max: 0.1,
       step: 0.001,
@@ -289,7 +289,7 @@ export const RingDistordRenderTarget = () => {
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.2 : 1.7,
+        duration: isPageTransition ? 2.2 : 1.7 + 0.2,
         ease: "power1.out",
         delay: isPageTransition ? 0 : 0,
       });
