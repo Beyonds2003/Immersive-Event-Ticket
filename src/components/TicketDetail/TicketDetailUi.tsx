@@ -116,6 +116,8 @@ const Review = () => {
       <div className="review-container">
         <h1>hello</h1>
       </div>
+
+      <div className="ticket-detail-description"></div>
     </section>
   );
 };

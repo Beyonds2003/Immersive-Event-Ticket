@@ -1,4 +1,4 @@
-import { useFrame, useThree } from "@react-three/fiber";
+import { type ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useCallback } from "react";
 import * as THREE from "three";
 import VirtualScroll from "virtual-scroll";
@@ -6,6 +6,10 @@ import { useMouse } from "../../libs/useMouse";
 import { useSpringValue } from "../../libs/useSpringValue";
 import { useTexturePoolManager } from "./useTexturePoolManager";
 import { ticketData } from "./ticketData";
+import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
+import { createRipple } from "../../libs/createRipple";
+import { pageColor } from "../../libs/config/pageColor";
+import { useNavigate } from "react-router";
 
 export interface SpiralCardsProps {
   controls: any;
@@ -36,6 +40,8 @@ export const SpiralCards = ({
 
   const { gl } = useThree();
   const { coords, updateMouse, mouseMoved } = useMouse(gl.domElement);
+
+  const ringTex = useRingDistordTexture();
 
   // Spring physics for uScrollSpeed uniform
   const { tick: springTick } = useSpringValue("Spring Physics");
@@ -188,6 +194,7 @@ export const SpiralCards = ({
       },
       uScrollSpeed: { value: 0 },
       uTextures: { value: textures },
+      uRingTexture: { value: ringTex },
     }),
     [textures],
   );
@@ -324,31 +331,71 @@ export const SpiralCards = ({
     if (attrChanged && textureAttrRef.current) {
       textureAttrRef.current.needsUpdate = true;
     }
+
+    materialRef.current.uniforms.uRingTexture.value = ringTex;
   });
 
+  const navigate = useNavigate();
+  const handleCardClick = (e: ThreeEvent<MouseEvent>) => {
+    const x = e.pointer?.x ?? coords.x;
+    const y = e.pointer?.y ?? coords.y;
+
+    createRipple({
+      coord: { x, y },
+      isPageTransition: true,
+      colorA: pageColor.Detail.colorA,
+      colorB: pageColor.Detail.colorB,
+      rippleDirection: "in",
+    });
+
+    // window.setTimeout(() => {
+    //   meshRef.current.visible = false;
+    // }, 900);
+
+    window.setTimeout(() => navigate("/detail"), 1100);
+  };
+
   return (
-    <instancedMesh
-      ref={meshRef}
-      args={[undefined, undefined, controls.totalCards]}
-      frustumCulled={false}
-      position={[0, -0.45, -3]}
-    >
-      <planeGeometry args={[1.0, 1.0, 25, 25]}>
-        <instancedBufferAttribute
-          ref={textureAttrRef}
-          attach="attributes-aTextureIndex"
-          args={[textureIndexBuffer, 1]}
+    <>
+      <instancedMesh
+        ref={meshRef}
+        args={[undefined, undefined, controls.totalCards]}
+        frustumCulled={false}
+        position={[0, -0.45, -3]}
+      >
+        <planeGeometry args={[1.0, 1.0, 25, 25]}>
+          <instancedBufferAttribute
+            ref={textureAttrRef}
+            attach="attributes-aTextureIndex"
+            args={[textureIndexBuffer, 1]}
+          />
+        </planeGeometry>
+        <shaderMaterial
+          ref={materialRef}
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms}
+          side={THREE.DoubleSide}
+          transparent
         />
-      </planeGeometry>
-      <shaderMaterial
-        ref={materialRef}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        side={THREE.DoubleSide}
-        transparent
-      />
-    </instancedMesh>
+      </instancedMesh>
+
+      {/* Click Plane */}
+      <mesh
+        position={[0, -0.4, 3]}
+        scale={[1.2, 1.5, 1]}
+        onClick={handleCardClick}
+        onPointerOver={() => {
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = "auto";
+        }}
+      >
+        <planeGeometry args={[1.0, 1.0, 25, 25]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+    </>
   );
 };
 
@@ -376,6 +423,7 @@ uniform float uMouseRadius;
 uniform float uMouseStrength;
 uniform vec2 uResolution;
 uniform float uScrollSpeed;
+uniform sampler2D uRingTexture;
 
 varying vec2 vUv;
 varying float vRelPos;
@@ -383,6 +431,7 @@ varying float vCardIndex;
 varying vec3 vNormal;
 varying float vInfluence;
 varying float vTextureIndex;
+varying float vRing;
 
 const float PI = 3.141592653589793;
 const float TWO_PI = 6.283185307179586;
@@ -464,6 +513,16 @@ void main() {
     float focusFactor2 = 1.0 - smoothstep(0.0, 0.8 * uCardGap, abs(cardOffset));
     worldPos.x += sin(uv.y * PI) * 2. * uScrollSpeed * 0.25 * (focusFactor2 * 0.5);
 
+    // Click Wobble
+    vec2 screenUv = ndc * 0.5 + 0.5;
+    vec4 ring = texture2D(uRingTexture, screenUv);
+    vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
+    float ringMask    = ring.b;                // grayscale ring intensity (0..1)
+
+    worldPos.xy += ringDistord * ringMask; 
+
+    vRing = ringMask;
+
     gl_Position = projectionMatrix * viewMatrix * worldPos;
 }
 `;
@@ -484,6 +543,7 @@ varying float vCardIndex;
 varying vec3 vNormal;
 varying float vInfluence;
 varying float vTextureIndex;
+varying float vRing;
 
 float sdRoundedBox(vec2 uv, vec2 size, float radius) {
     vec2 p = uv - 0.5;
@@ -545,6 +605,6 @@ void main() {
 
     // Blend mouse hover circle as a bright highlight on top of the card
     gl_FragColor = vec4(finalColor, alpha);
-    // gl_FragColor = vec4(vec3(vInfluence), alpha);
+    // gl_FragColor = vec4(vec3(vRing), alpha);
 }
 `;

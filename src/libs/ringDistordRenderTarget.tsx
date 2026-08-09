@@ -249,7 +249,7 @@ export const RingDistordRenderTarget = () => {
     uRingBlur: { value: ringBlur },
     uRingOffset: { value: ringOffset },
     uDistordStrength: { value: distordStrength },
-    uDirection: { value: 1 },
+    uDirection: { value: -1 },
   });
 
   // ── Build offscreen quad mesh once ───────────────────────────────────────
@@ -291,7 +291,7 @@ export const RingDistordRenderTarget = () => {
         value: 1,
         duration: isPageTransition ? 2.2 : 1.7,
         ease: "power1.out",
-        delay: isPageTransition ? 0.2 : 0,
+        delay: isPageTransition ? 0 : 0,
       });
     };
 
