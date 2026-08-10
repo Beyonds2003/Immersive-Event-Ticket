@@ -99,8 +99,9 @@ const Gradient = () => {
     const handler = (e: Event) => {
       if (!material.current) return;
 
-      const { x, y, colorA, colorB, isPageTransition } = (e as CustomEvent)
-        .detail;
+      const { x, y, colorA, colorB, isPageTransition, timeScale } = (
+        e as CustomEvent
+      ).detail;
       clickPos.current.set(x, y);
 
       // Copy current visible colors (uColorA/uColorB) into background base (uColorC/uColorD)
@@ -119,11 +120,13 @@ const Gradient = () => {
       material.current.uniforms.uProgress.value = 0;
 
       // Ripple ring progress
-      gsap.to(material.current.uniforms.uProgress, {
+      const tween = gsap.to(material.current.uniforms.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.2 : 1.7,
+        duration: isPageTransition ? 2.2 : 1.6,
         ease: "power1.out",
       });
+
+      tween.timeScale(timeScale);
     };
     window.addEventListener("ripple-click", handler);
     return () => window.removeEventListener("ripple-click", handler);

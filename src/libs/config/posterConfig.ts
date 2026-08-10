@@ -39,7 +39,7 @@ export const posterConfigs: Record<string, PosterConfig> = {
   "/": {
     title: ["EXPLORE"],
     titleFontFamily: "Dingos-ExtraBold",
-    titleFontSize: 179,
+    titleFontSize: 160,
     titleColor: "#000000",
     titleLineHeight: 1,
 

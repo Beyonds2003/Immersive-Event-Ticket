@@ -1,30 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import GroupOfSphere from "../General/GroupOfSphere";
-import * as THREE from "three";
 
-const index = () => {
+const TicketDetail = () => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const time = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setShow(true);
-    }, 1000);
+    }, 500);
 
     return () => {
-      window.clearTimeout(time);
+      window.clearTimeout(timer);
     };
   }, []);
 
   return (
-    <>
+    <Suspense fallback={null}>
       {show && (
         <group>
           <GroupOfSphere configKey="Detail" configOffset={0} />
           <GroupOfSphere configKey="Detail2" configOffset={3} />
         </group>
       )}
-    </>
+    </Suspense>
   );
 };
 
-export default index;
+export default TicketDetail;

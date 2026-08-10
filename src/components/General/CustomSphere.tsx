@@ -640,8 +640,8 @@ const vertexShader = `
       vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
       float ringMask    = ring.b;                // grayscale ring intensity (0..1)
 
-      // csm_Position.xyz *= (1. - ringMask * 1.); // Scale
-      csm_Position.xy += ringMask * 0.2;
+      csm_Position.xyz *= (1. - ringMask * 0.1); // Scale
+      csm_Position.xy += ringDistord *  4.;
 
       vUv = uv;
     }
@@ -713,5 +713,9 @@ const fragmentShader = `
     csm_FragNormal = applyNormalMap(vNormal, normalColor, vUv, -vViewPosition);
   }
 `;
+
+useGLTF.preload("/models/test-sphere.glb");
+useTexture.preload("/sphere/diffuse.png");
+useTexture.preload("/sphere/Normal.png");
 
 export default CustomSphere;

@@ -52,7 +52,8 @@ const TicketDetailUi = () => {
             className="ticket-detail-tab"
             initialTab={tabComponentIndex}
             isRippleFromClick={true}
-            // rippleDirection="in"
+            rippleDirection="out"
+            timeScale={1}
           />
           <div className="rating-container">
             <span>4</span>
@@ -106,8 +107,68 @@ const About = () => {
           />
         </div>
       </div>
-      <div className="ticket-detail-description"></div>
+
+      <AboutDescription />
+
+      <div className="buy-ticket-btn-container-2">
+        <WobbleButton
+          text="Buy Ticket"
+          hoverText="Enjoy!"
+          fillColor="black"
+          textColor="white"
+          width={200}
+          height={60}
+          fontSize={1.15}
+          bulgeAmount={3}
+          stiffness={0.04}
+          damping={0.96}
+          fontFamily="Dingos-Bold"
+          proximityThreshold={70}
+        />
+      </div>
     </section>
+  );
+};
+
+const AboutDescription = () => {
+  return (
+    <div className="ticket-detail-description">
+      <div className="ticket-detail-qa-container">
+        <h4 className="ticket-detail-q">Architect scenes that scale</h4>
+        <p className="ticket-detail-a">
+          The patterns the maintainers actually use - component design, state
+          management and reconciler internals that keep large scenes
+          maintainable, not fragile.
+        </p>
+      </div>
+
+      <div className="ticket-detail-qa-container">
+        <h4 className="ticket-detail-q">Architect scenes that scale</h4>
+        <p className="ticket-detail-a">
+          The patterns the maintainers actually use - component design, state
+          management and reconciler internals that keep large scenes
+          maintainable, not fragile.
+        </p>
+        <ul className="ticket-detail-bullets">
+          <li>
+            <strong>WebGPU</strong> - the modern rendering path, and when it's
+            worth the jump from WebGL.
+          </li>
+          <li>
+            <strong>Instancing &amp; draw-call batching</strong> - turning
+            thousands of objects into a handful of calls.
+          </li>
+          <li>
+            <strong>Compute shaders</strong> - moving heavy per-frame work off
+            the CPU and onto the GPU.
+          </li>
+          <li>
+            <strong>Memory budgets &amp; profiling</strong> - the workflow that
+            catches regressions before they ship.
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 };
 

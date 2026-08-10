@@ -6,6 +6,7 @@ export type Params = {
   addDistord?: boolean;
   nextPathname?: string;
   rippleDirection?: "out" | "in";
+  timeScale?: number;
 };
 
 export const createRipple = ({
@@ -16,6 +17,7 @@ export const createRipple = ({
   addDistord = true,
   nextPathname,
   rippleDirection = "out",
+  timeScale = 1,
 }: Params) => {
   window.dispatchEvent(
     new CustomEvent("ripple-click", {
@@ -28,6 +30,7 @@ export const createRipple = ({
         addDistord,
         nextPathname,
         rippleDirection,
+        timeScale,
       },
     }),
   );

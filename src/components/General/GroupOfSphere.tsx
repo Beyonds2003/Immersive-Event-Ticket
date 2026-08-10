@@ -14,7 +14,7 @@ import {
 } from "../../libs/config/pageSphere";
 import { SPHERE_CONFIGS } from "./SPHERE_CONFIG";
 import { alea } from "seedrandom";
-import gsap from "gsap"
+import gsap from "gsap";
 
 // ── Init Sphere Positions (Stacking Layout) ──────────────────────────────────
 function initSpherePositions(
@@ -407,7 +407,10 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       const detail = (e as CustomEvent).detail;
       const x = typeof detail?.x === "number" ? detail.x : 0;
       const y = typeof detail?.y === "number" ? detail.y : 0;
-      triggerEndAnimation(x, y, true);
+
+      if (detail.isPageTransition) {
+        triggerEndAnimation(x, y, true);
+      }
     };
 
     window.addEventListener("ripple-click", handleRippleClick);
@@ -503,14 +506,30 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   ]);
 
   const initialPointer = useRef(new THREE.Vector2(999, 999));
+  const windowPointer = useRef(new THREE.Vector2(999, 999));
+  const smoothedMouseWorld = useRef(new THREE.Vector3(999, 999, 0));
+
+  useEffect(() => {
+    const handlePointerMove = (e: PointerEvent) => {
+      windowPointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      windowPointer.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    };
+    window.addEventListener("pointermove", handlePointerMove);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, []);
 
   useFrame(({ pointer, clock, camera }) => {
     if (isDisposedRef.current) return;
     if (!physicsWorld.current || !ballState.current || !input.current) return;
 
-    const mouse = initialPointer.current;
+    const mouse =
+      windowPointer.current.x !== 999
+        ? windowPointer.current
+        : initialPointer.current;
 
-    if (pointer.x !== 0 || pointer.y !== 0) {
+    if (windowPointer.current.x === 999 && (pointer.x !== 0 || pointer.y !== 0)) {
       mouse.copy(pointer);
     }
 
@@ -577,8 +596,13 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       mouseWorld.current,
     );
     if (hit) {
-      inp[2] = mouseWorld.current.x;
-      inp[3] = mouseWorld.current.y;
+      if (smoothedMouseWorld.current.x === 999) {
+        smoothedMouseWorld.current.copy(mouseWorld.current);
+      } else {
+        smoothedMouseWorld.current.lerp(mouseWorld.current, 0.4);
+      }
+      inp[2] = smoothedMouseWorld.current.x;
+      inp[3] = smoothedMouseWorld.current.y;
     }
 
     physicsWorld.current.step(state, inp);
@@ -717,33 +741,35 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
           />
         </mesh>
       )}
-      {SPHERE_CONFIGS.slice(configOffset, configOffset + sphereCount).map((cfg, i) => (
-        <Model
-          key={i}
-          ref={(el: any) => {
-            groupRefs.current[i] = el;
-          }}
-          name={cfg.name}
-          message={cfg.message}
-          email={cfg.email}
-          roughness={cfg.roughness}
-          metalness={cfg.metalness}
-          face={cfg.face}
-          baseRadius={1.0}
-          autoRotate={false}
-          autoBlink={autoBlink}
-          allowAnim={allowAnim}
-          mouseTracking={mouseTracking}
-          breathing={breathing}
-          eyeSize={eyeSize}
-          eyeDistance={eyeDistance}
-          inkColor={inkColor}
-          matrixAutoUpdate={false}
-          diffuseType={cfg.diffuse}
-          normalType={cfg.normal}
-          renderOrder={2}
-        />
-      ))}
+      {SPHERE_CONFIGS.slice(configOffset, configOffset + sphereCount).map(
+        (cfg, i) => (
+          <Model
+            key={i}
+            ref={(el: any) => {
+              groupRefs.current[i] = el;
+            }}
+            name={cfg.name}
+            message={cfg.message}
+            email={cfg.email}
+            roughness={cfg.roughness}
+            metalness={cfg.metalness}
+            face={cfg.face}
+            baseRadius={1.0}
+            autoRotate={false}
+            autoBlink={autoBlink}
+            allowAnim={allowAnim}
+            mouseTracking={mouseTracking}
+            breathing={breathing}
+            eyeSize={eyeSize}
+            eyeDistance={eyeDistance}
+            inkColor={inkColor}
+            matrixAutoUpdate={false}
+            diffuseType={cfg.diffuse}
+            normalType={cfg.normal}
+            renderOrder={2}
+          />
+        ),
+      )}
     </>
   );
 };
@@ -755,7 +781,11 @@ export interface GroupOfSphereProps {
 }
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
-const GroupOfSphere = ({ configKey, config, configOffset = 0 }: GroupOfSphereProps = {}) => {
+const GroupOfSphere = ({
+  configKey,
+  config,
+  configOffset = 0,
+}: GroupOfSphereProps = {}) => {
   const pathname = useAtomValue(pathnameAtom);
   const activeKey = configKey ?? routeSphereMap[pathname] ?? "Home";
   const pageConfig = config ?? pageSphere[activeKey];

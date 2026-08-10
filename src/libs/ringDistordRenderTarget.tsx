@@ -276,8 +276,9 @@ export const RingDistordRenderTarget = () => {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      const { x, y, isPageTransition, rippleDirection } = (e as CustomEvent)
-        .detail;
+      const { x, y, isPageTransition, rippleDirection, timeScale } = (
+        e as CustomEvent
+      ).detail;
 
       // Store NDC click position (−1..1)
       clickPos.current.set(x, y);
@@ -289,10 +290,12 @@ export const RingDistordRenderTarget = () => {
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.2 : 1.7 + 0.2,
+        duration: isPageTransition ? 2.2 : 1.6 + 0.2,
         ease: "power1.out",
         delay: isPageTransition ? 0 : 0,
       });
+
+      progressTween.current.timeScale(timeScale);
     };
 
     window.addEventListener("ripple-click", handler);

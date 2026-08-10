@@ -14,6 +14,7 @@ type Props = {
   initialTab?: number;
   isRippleFromClick?: boolean;
   rippleDirection?: "out" | "in";
+  timeScale?: number;
 };
 
 const Tab = ({
@@ -28,6 +29,7 @@ const Tab = ({
   initialTab = 0,
   isRippleFromClick = false,
   rippleDirection = "out",
+  timeScale = 1,
 }: Props) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -62,6 +64,7 @@ const Tab = ({
       colorA: activeTab === 0 ? colorC : colorA,
       colorB: activeTab === 0 ? colorD : colorB,
       rippleDirection,
+      timeScale,
     });
 
     window.dispatchEvent(

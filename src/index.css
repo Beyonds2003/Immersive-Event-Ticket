@@ -210,7 +210,7 @@
   margin: 0 auto;
   display: flex;
   position: absolute;
-  top: clamp(170px, 27vh, 300px);
+  top: clamp(170px, 24vh, 300px);
   left: 0;
   right: 0;
 }
@@ -372,6 +372,7 @@
   display: flex;
   position: relative;
   box-shadow: 0 30px 80px #00000047;
+  pointer-events: auto;
 }
 
 .ticket-detail-about-tab {
@@ -456,12 +457,13 @@
 
 .ticket-detail-description {
   background: #ffffff;
-  height: 2000px;
+  height: auto;
   width: 100%;
   border-radius: 28px;
-  padding: 20px;
+  padding: 10px 40px;
   overflow: auto;
-  margin-bottom: 80px;
+  margin-bottom: 60px;
+  padding-bottom: 50px;
 }
 
 .review-container {
@@ -487,4 +489,48 @@
 
 .tab-panel {
   animation: tab-slide-up 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ticket-detail-qa-container {
+  padding: 20px 0px;
+  border-bottom: 1px solid #211c3b1f;
+}
+
+.ticket-detail-q {
+  color: #211c3b;
+  flex: auto;
+  font-family: Inter, Dingos, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 2;
+}
+
+.ticket-detail-a {
+  color: #211c3b;
+  margin: 0;
+  font-family: Inter, Dingos, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.ticket-detail-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: outside;
+
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+
+.buy-ticket-btn-container-2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -30px 0 80px 0;
 }

@@ -9,7 +9,7 @@ import { BrowserRouter, useLocation } from "react-router";
 import AppRoutes, { RouterBridge } from "./router";
 import { useSetAtom } from "jotai";
 import { pathnameAtom } from "./libs/atoms";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import MenuButton from "./components/UI/WobbleMenu";
 import PageHtmlUi from "./components/General/PageHtmlUi";
 import { PageCameraController } from "./components/General/PageCameraController";
@@ -54,7 +54,9 @@ const Scene = () => {
         <Gradient />
         <Poster />
 
-        <AppRoutes />
+        <Suspense fallback={null}>
+          <AppRoutes />
+        </Suspense>
 
         {/* <OtpInput show={showOtp} /> */}
         {/* <directionalLight position={[3, 1, 5]} intensity={8.7} color="#3457e5" /> */}
