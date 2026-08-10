@@ -4,6 +4,7 @@ import Heart from "../Icons/Heart";
 import WobbleButton from "../UI/WobbleButton";
 import { pageColor } from "../../libs/config/pageColor";
 import { useSearchParams } from "react-router";
+import gsap from "gsap";
 
 const colorA = pageColor.Detail.colorA;
 const colorB = pageColor.Detail.colorB;
@@ -38,6 +39,20 @@ const TicketDetailUi = () => {
     return () => window.removeEventListener("tab-click", handleTabClick);
   }, [setSearchParams]);
 
+  // Listen menu close
+  useEffect(() => {
+    const handleMenuClose = () => {
+      gsap.to(".ticket-detail-container", {
+        opacity: 0,
+        duration: 0.6,
+        ease: "cubic-bezier(0.22, 1, 0.36, 1)",
+      });
+    };
+
+    window.addEventListener("menu-click", handleMenuClose);
+    return () => window.removeEventListener("menu-click", handleMenuClose);
+  }, []);
+
   return (
     <div className="ticket-detail-overlay">
       <div className="ticket-detail-container">
@@ -53,7 +68,7 @@ const TicketDetailUi = () => {
             initialTab={tabComponentIndex}
             isRippleFromClick={true}
             rippleDirection="out"
-            timeScale={1}
+            timeScale={0.9}
           />
           <div className="rating-container">
             <span>4</span>

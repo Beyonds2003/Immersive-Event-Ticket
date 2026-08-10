@@ -3,6 +3,10 @@ import WobbleButton from "../WobbleButton";
 import "./index.css";
 import gsap from "gsap";
 import { GSDevTools } from "gsap/GSDevTools";
+import { useNavigate, useLocation } from "react-router";
+import { useMouse } from "../../../libs/useMouse";
+import { createRipple } from "../../../libs/createRipple";
+import { pageColor } from "../../../libs/config/pageColor";
 
 gsap.registerPlugin(GSDevTools);
 
@@ -43,6 +47,7 @@ const Main = () => {
           <MenuContent
             isClosing={isClosing}
             onCloseComplete={handleCloseComplete}
+            onClose={handleClose}
           />
         </>
       )}
@@ -134,9 +139,14 @@ const CloseMenuButton = ({
 type MenuContentProps = {
   isClosing: boolean;
   onCloseComplete: () => void;
+  onClose: () => void;
 };
 
-const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
+const MenuContent = ({
+  isClosing,
+  onCloseComplete,
+  onClose,
+}: MenuContentProps) => {
   const navRef = useRef<HTMLElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -252,7 +262,51 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
     }
   }, [isClosing]);
 
-  const handleNavigate = (path: string) => {};
+  const navigate = useNavigate();
+  const { coords } = useMouse();
+
+  const location = useLocation();
+
+  const handleNavigate = (
+    path: string,
+    e?: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    // Prevent navigating to the page the user is already on
+    if (location.pathname === path) {
+      onClose();
+      return;
+    }
+
+    const x = e ? (e.clientX / window.innerWidth) * 2 - 1 : coords.x;
+    const y = e ? -(e.clientY / window.innerHeight) * 2 + 1 : coords.y;
+
+    onClose();
+
+    window.dispatchEvent(
+      new CustomEvent("menu-click", { detail: { path: path } }),
+    );
+
+    const targetColor =
+      path === "/detail"
+        ? pageColor.Detail
+        : path === "/login"
+          ? pageColor.Login
+          : pageColor.Home;
+
+    window.setTimeout(() => {
+      createRipple({
+        coord: { x, y },
+        isPageTransition: true,
+        colorA: targetColor.colorA,
+        colorB: targetColor.colorB,
+        rippleDirection: "out",
+      });
+    }, 500);
+
+    window.setTimeout(() => {
+      navigate(path);
+    }, 1500);
+  };
 
   return (
     <div className="menu-content-container">
@@ -262,11 +316,13 @@ const MenuContent = ({ isClosing, onCloseComplete }: MenuContentProps) => {
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          <button onClick={() => handleNavigate("/")}>Home</button>
-          <button>NFC Card</button>
-          <button>Live</button>
-          <button>Profile</button>
-          <button>FAQ</button>
+          <button onClick={(e) => handleNavigate("/", e)}>Home</button>
+          <button onClick={(e) => handleNavigate("/nfc", e)}>NFC Card</button>
+          <button onClick={(e) => handleNavigate("/live", e)}>Live</button>
+          <button onClick={(e) => handleNavigate("/profile", e)}>
+            Profile
+          </button>
+          <button onClick={(e) => handleNavigate("/faq", e)}>FAQ</button>
         </nav>
       </div>
       <div className="buy-nfc-btn-container">
