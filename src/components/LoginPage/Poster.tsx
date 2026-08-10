@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMouse } from "../../libs/useMouse";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -20,9 +20,13 @@ const Poster = () => {
 
   const currentConfig = posterConfigs[pathname] ?? posterConfigs["/"];
 
+  // nextPathname drives tex2 preloading — kept as state so a re-render
+  // is triggered as soon as the ripple-click animation starts in Gradient,
+  // ensuring the destination texture is ready before PageNavigator navigates.
+  const [nextPathname, setNextPathname] = useState<string>(pathname);
   const nextPathnameRef = useRef<string>(pathname);
   const nextConfig =
-    posterConfigs[nextPathnameRef.current] ?? posterConfigs["/"];
+    posterConfigs[nextPathname] ?? posterConfigs["/"];
 
   const tex1 = useCanvasTextTexture(currentConfig);
   const tex2 = useCanvasTextTexture(nextConfig);
@@ -70,6 +74,9 @@ const Poster = () => {
 
       if (nextPathname) {
         nextPathnameRef.current = nextPathname;
+        // Trigger re-render so useCanvasTextTexture picks up the new config
+        // and starts building tex2 while the Gradient animation is running.
+        setNextPathname(nextPathname);
       }
 
       if (isPageTransition) {

@@ -300,12 +300,10 @@ const MenuContent = ({
         colorA: targetColor.colorA,
         colorB: targetColor.colorB,
         rippleDirection: "out",
+        nextPathname: path,
+        transitionFireAt: 0.5,
       });
     }, 500);
-
-    window.setTimeout(() => {
-      navigate(path);
-    }, 1500);
   };
 
   return (

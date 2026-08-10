@@ -347,6 +347,8 @@ export const SpiralCards = ({
       colorA: pageColor.Detail.colorA,
       colorB: pageColor.Detail.colorB,
       rippleDirection: "in",
+      nextPathname: "/detail",
+      transitionFireAt: 0.5,
     });
 
     if (materialRef.current) {
@@ -358,7 +360,7 @@ export const SpiralCards = ({
       });
     }
 
-    window.setTimeout(() => navigate("/detail"), 1100);
+    // window.setTimeout(() => navigate("/detail"), 1100);
   };
 
   return (

@@ -1,13 +1,25 @@
-export type Params = {
+type BaseParams = {
   coord: { x: number; y: number };
-  isPageTransition: boolean;
   colorA: string;
   colorB: string;
   addDistord?: boolean;
-  nextPathname?: string;
   rippleDirection?: "out" | "in";
   timeScale?: number;
+  /**
+   * Progress fraction (0–1) at which the "page-transition-end" event is fired.
+   */
+  transitionFireAt?: number;
 };
+
+export type Params =
+  | (BaseParams & {
+      isPageTransition: true;
+      nextPathname: string;
+    })
+  | (BaseParams & {
+      isPageTransition: false;
+      nextPathname?: never;
+    });
 
 export const createRipple = ({
   coord,
@@ -18,6 +30,7 @@ export const createRipple = ({
   nextPathname,
   rippleDirection = "out",
   timeScale = 1,
+  transitionFireAt = 1,
 }: Params) => {
   window.dispatchEvent(
     new CustomEvent("ripple-click", {
@@ -31,6 +44,7 @@ export const createRipple = ({
         nextPathname,
         rippleDirection,
         timeScale,
+        transitionFireAt,
       },
     }),
   );

@@ -218,11 +218,13 @@ const Input = () => {
       createRipple({
         coord: { x: 0.24, y: 0 },
         isPageTransition: true,
+        nextPathname: "/",
         colorA: pageColor.Home.colorA,
         colorB: pageColor.Home.colorB,
+        transitionFireAt: 0.5,
       });
 
-      window.setTimeout(() => navigate("/"), 1100);
+      // window.setTimeout(() => navigate("/"), 1100);
       cleanUp();
     };
 

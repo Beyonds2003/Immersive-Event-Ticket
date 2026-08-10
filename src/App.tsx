@@ -13,6 +13,7 @@ import { Suspense, useEffect } from "react";
 import MenuButton from "./components/UI/WobbleMenu";
 import PageHtmlUi from "./components/General/PageHtmlUi";
 import { PageCameraController } from "./components/General/PageCameraController";
+import PageNavigator from "./components/General/PageNavigator";
 
 /** Syncs React Router location into the Jotai atom so R3F canvas can read it */
 const LocationSync = () => {
@@ -51,6 +52,8 @@ const Scene = () => {
       <RouterBridge>
         <PageCameraController />
         <RingDistordRenderTarget />
+        <PageNavigator />
+
         <Gradient />
         <Poster />
 

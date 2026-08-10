@@ -99,9 +99,16 @@ const Gradient = () => {
     const handler = (e: Event) => {
       if (!material.current) return;
 
-      const { x, y, colorA, colorB, isPageTransition, timeScale } = (
-        e as CustomEvent
-      ).detail;
+      const {
+        x,
+        y,
+        colorA,
+        colorB,
+        isPageTransition,
+        timeScale,
+        nextPathname,
+        transitionFireAt = 1,
+      } = (e as CustomEvent).detail;
       clickPos.current.set(x, y);
 
       // Copy current visible colors (uColorA/uColorB) into background base (uColorC/uColorD)
@@ -119,11 +126,35 @@ const Gradient = () => {
       // Reset progress to 0 so the ripple starts seamlessly from the click point
       material.current.uniforms.uProgress.value = 0;
 
+      // Guard: ensures page-transition-end is dispatched only once per ripple.
+      let transitionFired = false;
+
+      const fireTransition = () => {
+        if (!transitionFired && isPageTransition) {
+          transitionFired = true;
+          window.dispatchEvent(
+            new CustomEvent("page-transition-end", {
+              detail: { nextPathname },
+            }),
+          );
+        }
+      };
+
       // Ripple ring progress
       const tween = gsap.to(material.current.uniforms.uProgress, {
         value: 1,
         duration: isPageTransition ? 2.2 : 1.6,
         ease: "power1.out",
+        onUpdate() {
+          // Fire early when the tween crosses the transitionFireAt threshold.
+          if (transitionFireAt < 1 && this.progress() >= transitionFireAt) {
+            fireTransition();
+          }
+        },
+        onComplete: () => {
+          // Fallback for default case (transitionFireAt === 1) or any missed early fire.
+          // fireTransition();
+        },
       });
 
       tween.timeScale(timeScale);
