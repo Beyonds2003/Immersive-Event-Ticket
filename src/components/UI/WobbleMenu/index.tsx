@@ -291,7 +291,9 @@ const MenuContent = ({
         ? pageColor.Detail
         : path === "/login"
           ? pageColor.Login
-          : pageColor.Home;
+          : path === "/nfc"
+            ? pageColor.Nfc
+            : pageColor.Home;
 
     window.setTimeout(() => {
       createRipple({

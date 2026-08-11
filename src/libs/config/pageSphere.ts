@@ -122,6 +122,17 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
     sphereRadius: 1,
     obstacleState: "remove",
   },
+  Nfc: {
+    ...defaultSphereConfig,
+    positionX: 0,
+    positionY: -4,
+    positionZ: -0.2,
+    spreadX: 16.8,
+    spreadY: 0.05,
+    sphereCount: 18,
+    sphereRadius: 1,
+    obstacleState: "remove",
+  },
   // Home is intentionally left undefined
 };
 

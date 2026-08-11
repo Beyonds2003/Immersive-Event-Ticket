@@ -25,8 +25,7 @@ const Poster = () => {
   // ensuring the destination texture is ready before PageNavigator navigates.
   const [nextPathname, setNextPathname] = useState<string>(pathname);
   const nextPathnameRef = useRef<string>(pathname);
-  const nextConfig =
-    posterConfigs[nextPathname] ?? posterConfigs["/"];
+  const nextConfig = posterConfigs[nextPathname] ?? posterConfigs["/"];
 
   const tex1 = useCanvasTextTexture(currentConfig);
   const tex2 = useCanvasTextTexture(nextConfig);
@@ -119,6 +118,8 @@ const Poster = () => {
       mouseInit.current = mouseMoved.current;
     }
 
+    // material.current.uniforms.uProgress.value = progress;
+
     material.current.uniforms.uRadius.value = radius;
     material.current.uniforms.uStrength.value = strength;
     material.current.uniforms.uTexture1.value = tex1;
@@ -207,25 +208,32 @@ const fragmentShader = `
 
     uniform sampler2D uRingDistordTexture;
 
+    // Remap value from [inMin, inMax] to [0, 1], clamped
+    float remap(float value, float inMin, float inMax) {
+        return clamp((value - inMin) / (inMax - inMin), 0.0, 1.0);
+    }
+
     void main() {
 
         vec2 uv = vUv;
 
-        // Texture 1 (white text) moves up along Y axis as uProgress increases (0 -> 1)
-        vec2 uv1 = vec2(uv.x, uv.y - uProgress);
+        // --- tex1 slide-up: active during uProgress 0.0 -> 0.6 ---
+        float slideProgress = remap(uProgress, 0.0, 0.6);
+        vec2 uv1 = vec2(uv.x, uv.y - slideProgress);
 
         vec4 tex1 = texture2D(uTexture1, uv1);
         vec4 tex2 = texture2D(uTexture2, uv);
 
-        // Alpha for Texture 1
+        // Alpha for Texture 1 (slides out as it moves up)
         float a1 = tex1.a;
 
-        // Effective animated alpha for Texture 2
-        float opacity2 = smoothstep(0.4, 1.0, uProgress);
+        // --- tex2 fade-in: active during uProgress 0.6 -> 1.0 ---
+        float fadeProgress = remap(uProgress, 0.4, 1.0);
+        float opacity2 = fadeProgress;
         float a2 = tex2.a * opacity2;
 
         // Discard if neither texture is visible at this pixel
-        if (a1 < 0.6 && a2 < 0.6) {
+        if (a1 < 0.01 && a2 < 0.01) {
             discard;
         }
 

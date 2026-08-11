@@ -507,7 +507,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
 
   const initialPointer = useRef(new THREE.Vector2(999, 999));
   const windowPointer = useRef(new THREE.Vector2(999, 999));
-  const smoothedMouseWorld = useRef(new THREE.Vector3(999, 999, 0));
+  const smoothedMouseWorld = useRef(new THREE.Vector3(999, 999, 999));
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
@@ -529,7 +529,10 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
         ? windowPointer.current
         : initialPointer.current;
 
-    if (windowPointer.current.x === 999 && (pointer.x !== 0 || pointer.y !== 0)) {
+    if (
+      windowPointer.current.x === 999 &&
+      (pointer.x !== 0 || pointer.y !== 0)
+    ) {
       mouse.copy(pointer);
     }
 

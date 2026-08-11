@@ -60,4 +60,23 @@ export const posterConfigs: Record<string, PosterConfig> = {
     textBaseline: "top",
     responsive: true,
   },
+  "/nfc": {
+    title: ["NFC STICKER"],
+    titleFontFamily: "Dingos-ExtraBold",
+    titleFontSize: 100,
+    titleColor: "#000000",
+    titleLineHeight: 1,
+
+    subtitle: "TAP YOUR WAY INTO CAMPUS EVENTS AND EXPERIENCES",
+    subtitleFontSize: 10,
+    subtitleFontFamily: "Inter",
+    subtitleLetterSpacing: 1,
+    subtitleColor: "#000000",
+
+    margin: -10,
+    padding: 20,
+    textAlign: "left",
+    textBaseline: "top",
+    responsive: true,
+  },
 };
