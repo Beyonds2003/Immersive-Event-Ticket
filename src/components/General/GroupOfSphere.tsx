@@ -593,19 +593,25 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       inp[32] = 0;
     }
 
-    raycaster.current.setFromCamera(mouse, camera);
-    const hit = raycaster.current.ray.intersectPlane(
-      zeroPlane.current,
-      mouseWorld.current,
-    );
-    if (hit) {
-      if (smoothedMouseWorld.current.x === 999) {
-        smoothedMouseWorld.current.copy(mouseWorld.current);
-      } else {
-        smoothedMouseWorld.current.lerp(mouseWorld.current, 0.4);
+    if (mouse.x !== 999) {
+      raycaster.current.setFromCamera(mouse, camera);
+      const hit = raycaster.current.ray.intersectPlane(
+        zeroPlane.current,
+        mouseWorld.current,
+      );
+      if (hit) {
+        if (smoothedMouseWorld.current.x === 999) {
+          smoothedMouseWorld.current.copy(mouseWorld.current);
+        } else {
+          smoothedMouseWorld.current.lerp(mouseWorld.current, 0.4);
+        }
+        inp[2] = smoothedMouseWorld.current.x;
+        inp[3] = smoothedMouseWorld.current.y;
       }
-      inp[2] = smoothedMouseWorld.current.x;
-      inp[3] = smoothedMouseWorld.current.y;
+    } else {
+      smoothedMouseWorld.current.set(999, 999, 999);
+      inp[2] = 999;
+      inp[3] = 999;
     }
 
     physicsWorld.current.step(state, inp);
@@ -767,6 +773,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
             eyeDistance={eyeDistance}
             inkColor={inkColor}
             matrixAutoUpdate={false}
+            visible={false}
             diffuseType={cfg.diffuse}
             normalType={cfg.normal}
             renderOrder={2}

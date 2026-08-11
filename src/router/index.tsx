@@ -14,7 +14,6 @@ import NfcPage from "../components/NfcPage";
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* <Route path="/" element={<Navigate to="/detail" replace />} /> */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/detail" element={<TicketDetailPage />} />

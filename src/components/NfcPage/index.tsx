@@ -35,7 +35,7 @@ const index = () => {
   });
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<></>}>
       {show && (
         <group ref={ref}>
           <GroupOfSphere configKey="Nfc" configOffset={0} />
