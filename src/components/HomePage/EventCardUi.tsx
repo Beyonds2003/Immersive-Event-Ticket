@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import Arrow from "../Icons/Arrow";
 import Tab from "../UI/Tab";
+import gsap from "gsap";
 
 const colorA = "#06ecff";
 const colorB = "#00e1ff";
@@ -7,8 +9,24 @@ const colorC = "#fff170";
 const colorD = "#efda21";
 
 const EventCardUi = () => {
+  // Handle Menu Click
+  useEffect(() => {
+    const handleClick = () => {
+      gsap.to(".ticket-detail-page-ui", {
+        opacity: 0,
+        duration: 0.1,
+      });
+    };
+
+    window.addEventListener("menu-click", handleClick);
+
+    return () => {
+      window.removeEventListener("menu-click", handleClick);
+    };
+  });
+
   return (
-    <div className="">
+    <div className="ticket-detail-page-ui">
       <Tab
         colorA={colorA}
         colorB={colorB}

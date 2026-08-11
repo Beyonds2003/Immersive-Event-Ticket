@@ -363,6 +363,19 @@ export const SpiralCards = ({
     // window.setTimeout(() => navigate("/detail"), 1100);
   };
 
+  // Handle Menu Click
+  useEffect(() => {
+    const handleClick = () => {
+      if (meshRef.current) {
+        meshRef.current.visible = false;
+      }
+    };
+
+    window.addEventListener("menu-click", handleClick);
+
+    return () => window.removeEventListener("menu-click", handleClick);
+  });
+
   return (
     <>
       <instancedMesh
