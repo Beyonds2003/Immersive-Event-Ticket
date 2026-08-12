@@ -5,6 +5,7 @@ import WobbleButton from "../UI/WobbleButton";
 import { pageColor } from "../../libs/config/pageColor";
 import { useSearchParams } from "react-router";
 import gsap from "gsap";
+import Review from "./Review";
 
 const colorA = pageColor.Detail.colorA;
 const colorB = pageColor.Detail.colorB;
@@ -70,13 +71,13 @@ const TicketDetailUi = () => {
             rippleDirection="out"
             timeScale={0.9}
           />
-          <div className="rating-container">
+          <button className="rating-container">
             <span>4</span>
-            <button className="rate-btn">
+            <div className="rate-btn">
               <Heart />
               <span className="visually-hidden">Like this event</span>
-            </button>
-          </div>
+            </div>
+          </button>
         </div>
 
         <div key={activeTab} className="tab-panel">
@@ -184,18 +185,6 @@ const AboutDescription = () => {
         </ul>
       </div>
     </div>
-  );
-};
-
-const Review = () => {
-  return (
-    <section className="ticket-detail-review-tab">
-      <div className="review-container">
-        <h1>hello</h1>
-      </div>
-
-      <div className="ticket-detail-description"></div>
-    </section>
   );
 };
 
