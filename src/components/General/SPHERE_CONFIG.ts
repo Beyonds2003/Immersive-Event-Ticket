@@ -61,7 +61,7 @@ export const SPHERE_CONFIGS = [
   },
   {
     email: "mia.turner@example.com",
-    name: "Addy",
+    name: "Mouse",
     message: "❤️",
     roughness: 0.3,
     metalness: 0.4,
