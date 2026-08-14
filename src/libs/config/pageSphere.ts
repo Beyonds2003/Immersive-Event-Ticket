@@ -107,7 +107,7 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
   Detail: {
     ...defaultSphereConfig,
     positionX: -6.3,
-    positionY: -3,
+    positionY: -3.5,
     spreadY: 1.15,
     sphereCount: 6,
     sphereRadius: 1,
@@ -116,7 +116,7 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
   Detail2: {
     ...defaultSphereConfig,
     positionX: 6.3,
-    positionY: -3,
+    positionY: -3.5,
     spreadY: 1.1,
     sphereCount: 6,
     sphereRadius: 1,

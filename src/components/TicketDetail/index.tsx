@@ -19,7 +19,7 @@ const TicketDetail = () => {
       {show && (
         <group>
           <GroupOfSphere configKey="Detail" configOffset={0} />
-          <GroupOfSphere configKey="Detail2" configOffset={3} />
+          <GroupOfSphere configKey="Detail2" configOffset={9} />
         </group>
       )}
     </Suspense>

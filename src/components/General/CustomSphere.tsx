@@ -581,14 +581,14 @@ const SphereModel = ({
     D: new THREE.Vector2(0.5, 0.0), // bottom-right
   };
 
-  let seed = 2; // change it to (3) only if and only if things turn out good
+  let seed = 4; // change it to (3) only if and only if things turn out good
 
   if (location.pathname === "/nfc") {
     // seed = 230;
     seed = 22;
   }
 
-  const [colorA, colorB] = generateColorPair(`${email} ${type}`, 0.9, seed);
+  const [colorA, colorB] = generateColorPair(`${email} ${type}`, 1, seed);
 
   const uniforms = useRef({
     uDiffuseTexture: { value: diffuseTexture },
@@ -669,6 +669,12 @@ const fragmentShader = `
   uniform vec3 uColorA;
   uniform vec3 uColorB;
 
+  // Boosts colour saturation: factor > 1 = more vivid, 0 = grayscale
+  vec3 saturateColor(vec3 c, float factor) {
+    float lum = dot(c, vec3(0.2126, 0.7152, 0.0722));
+    return mix(vec3(lum), c, factor);
+  }
+
   vec3 applyNormalMap(vec3 geomNormal, vec3 normColor, vec2 uv, vec3 viewPos) {
     vec3 mapN = normColor * 2.0 - 1.0;
 
@@ -707,8 +713,11 @@ const fragmentShader = `
       diffuseSample.r
     );
 
+    // Boost saturation so the diffuse texture averaging
+    // doesn't wash the hue out to gray.
+    color = saturateColor(color, 2.5);
 
-    csm_DiffuseColor = vec4(vec3(color), 1.0);
+    csm_DiffuseColor = vec4(color, 1.0);
 
     // normal atlas UV (2x2 grid, scale by 0.5)
     vec2 normalUV = fract(vUv) + uNormalType;
