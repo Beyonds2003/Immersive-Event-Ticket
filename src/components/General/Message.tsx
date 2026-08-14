@@ -203,6 +203,7 @@ const Message = ({ align, name, message }: Props) => {
 
   const pathname = useAtomValue(pathnameAtom);
   if (pathname === "/detail") return null;
+  if (pathname === "/nfc") return null;
 
   return (
     <Html
@@ -210,6 +211,7 @@ const Message = ({ align, name, message }: Props) => {
       className="message-container"
       center
       position={[align === "left" ? 0 : 0.7, 0.5, -1]}
+      zIndexRange={[10, 0]}
     >
       <div
         ref={setNode}

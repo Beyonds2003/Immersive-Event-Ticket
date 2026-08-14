@@ -3,10 +3,12 @@ import React from "react";
 import { pathnameAtom } from "../../libs/atoms";
 import EventCardUi from "../HomePage/EventCardUi";
 import TicketDetailUi from "../TicketDetail/TicketDetailUi";
+import NfcUi from "../NfcPage/NfcUi";
 
 const routeUiMap: Record<string, React.ReactNode> = {
   "/": <EventCardUi />,
   "/detail": <TicketDetailUi />,
+  "/nfc": <NfcUi />,
 };
 
 const PageHtmlUi = () => {

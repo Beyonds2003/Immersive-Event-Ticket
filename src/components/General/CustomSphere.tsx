@@ -7,6 +7,7 @@ import CustomShaderMaterial from "three-custom-shader-material";
 import { generateColorPair } from "../../libs/generateColorPair";
 import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 import Message from "./Message";
+import { useLocation } from "react-router";
 
 // ── UV Region Type ────────────────────────────────────────────────────────────
 
@@ -559,6 +560,7 @@ const SphereModel = ({
   const sphereGeo = (sphereModel.scene.children[0] as THREE.Mesh).geometry;
 
   const ringTex = useRingDistordTexture();
+  const location = useLocation();
 
   const [diffuseTexture, normalTexture] = useTexture([
     "/sphere/diffuse.png",
@@ -579,7 +581,13 @@ const SphereModel = ({
     D: new THREE.Vector2(0.5, 0.0), // bottom-right
   };
 
-  const seed = 2; // change it to (3) only if and only if things turn out good
+  let seed = 2; // change it to (3) only if and only if things turn out good
+
+  if (location.pathname === "/nfc") {
+    // seed = 230;
+    seed = 22;
+  }
+
   const [colorA, colorB] = generateColorPair(`${email} ${type}`, 0.9, seed);
 
   const uniforms = useRef({
@@ -641,7 +649,7 @@ const vertexShader = `
       float ringMask    = ring.b;                // grayscale ring intensity (0..1)
 
       csm_Position.xyz *= (1. - ringMask * 0.1); // Scale
-      csm_Position.xy += ringDistord *  4.;
+      csm_Position.xy -= ringDistord *  2.3;
 
       vUv = uv;
     }

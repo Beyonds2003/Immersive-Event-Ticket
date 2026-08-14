@@ -390,15 +390,15 @@
 .rating-container {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 14px;
   background: white;
-  padding: 10px 30px 16px 30px;
+  padding: 10px 28px 16px 28px;
   border-radius: 40px;
   cursor: pointer;
   pointer-events: auto;
 
   & span {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-family: Dingos-Bold, sans-serif;
     line-height: 1.3;
     margin-bottom: -12px;
@@ -406,8 +406,8 @@
 }
 
 .rate-btn {
-  width: 52px;
-  height: 52px;
+  width: 38px;
+  height: 38px;
 }
 
 .ticket-detail-content {
@@ -629,5 +629,66 @@
     font-size: 0.8rem;
     color: #211c3b;
     margin-top: 10px;
+  }
+}
+
+.nfc-container {
+  z-index: 20;
+  position: relative;
+}
+
+.nfc-btn-container {
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+}
+
+.nfc-card {
+  position: relative;
+  width: min(700px, 70vw);
+  aspect-ratio: 700 / 400;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+.nfc-img-container {
+  background: #f1e8dd;
+  border-radius: 30px;
+  box-shadow: 4px 5px 26px 1px rgba(0, 0, 0, 0.47);
+  -webkit-box-shadow: 4px 5px 26px 1px rgba(0, 0, 0, 0.47);
+  overflow: hidden;
+  user-select: none;
+  transform: scale(1.3);
+}
+
+.nfc-sticker-promo-img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  user-select: none;
+}
+
+.nfc-promo-text {
+  position: absolute;
+  top: -45px;
+  right: -80px;
+}
+
+.circle-promo-path {
+  scale: 0.9;
+  animation: rotate360 14s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes rotate360 {
+  from {
+    transform: scale(1.1) rotate(0deg);
+  }
+
+  to {
+    transform: scale(1.1) rotate(360deg);
   }
 }

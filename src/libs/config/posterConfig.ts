@@ -61,9 +61,9 @@ export const posterConfigs: Record<string, PosterConfig> = {
     responsive: true,
   },
   "/nfc": {
-    title: ["NFC STICKER"],
+    title: ["NFC PASS"],
     titleFontFamily: "Dingos-ExtraBold",
-    titleFontSize: 100,
+    titleFontSize: 80,
     titleColor: "#000000",
     titleLineHeight: 1,
 

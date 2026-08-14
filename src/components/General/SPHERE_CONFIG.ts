@@ -185,7 +185,7 @@ export const SPHERE_CONFIGS = [
     message: "So lovely",
     roughness: 0.25,
     metalness: 0.4,
-    face: "G",
+    face: "B",
     diffuse: "A",
     normal: "B",
   },
