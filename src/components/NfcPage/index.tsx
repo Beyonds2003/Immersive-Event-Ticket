@@ -14,8 +14,6 @@ const index = () => {
   const [show, setShow] = useState(false);
   const ref = useRef<THREE.Group>(null);
 
-  const { coords, updateMouse } = useMouse();
-
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setShow(true);
@@ -26,43 +24,28 @@ const index = () => {
     };
   }, []);
 
-  useFrame(() => {
-    if (ref.current) {
-      updateMouse();
-
-      // const targetY = remapClamp(coords.x, -1, 1, -0.4, 0.1) * 0.4;
-
-      // ref.current.rotation.y = lerp(ref.current.rotation.y, targetY, 0.05);
-
-      const targetY = remapClamp(coords.x, -1, 1, -0.4, 0.4) * 0.2;
-      const targetX = remapClamp(-coords.y, -1, 1, -0.4, 0.4) * 0.2;
-
-      ref.current.rotation.y = lerp(ref.current.rotation.y, targetY, 0.05);
-      ref.current.rotation.x = lerp(ref.current.rotation.x, targetX, 0.05);
-    }
-  });
-
   return (
-    <Suspense fallback={<></>}>
-      {show && (
-        <>
-          <group>
-            <GroupOfSphere configKey="Nfc1" configOffset={5} />
-            <GroupOfSphere configKey="Nfc2" configOffset={15} />
+    <>
+      <Suspense fallback={<></>}>
+        {show && (
+          <>
+            <group>
+              <GroupOfSphere configKey="Nfc1" configOffset={5} />
+              <GroupOfSphere configKey="Nfc2" configOffset={15} />
 
-            {/* <GroupOfSphere configKey="Nfc" configOffset={0} /> */}
-          </group>
+              {/* <GroupOfSphere configKey="Nfc" configOffset={0} /> */}
+            </group>
+          </>
+        )}
+      </Suspense>
 
-          <group ref={ref}>
-            <Card />
-          </group>
-        </>
-      )}
-    </Suspense>
+      <Card />
+    </>
   );
 };
 
 const Card = () => {
+  const groupRef = useRef<THREE.Group>(null);
   const promoTex = useTexture("/images/nfc-sticker-promo.jpg");
   // promoTex.colorSpace = THREE.SRGBColorSpace;
   promoTex.flipY = false;
@@ -75,6 +58,48 @@ const Card = () => {
     return () => {
       flameMaterial.dispose();
     };
+  }, [flameMaterial]);
+
+  // Enter animation — slide up from below + fade in
+  useEffect(() => {
+    if (!groupRef.current) return;
+
+    groupRef.current.position.y = -3;
+    flameMaterial.uniforms.uOpacity.value = 0;
+
+    gsap.to(groupRef.current.position, {
+      y: 0,
+      duration: 1,
+      ease: "power4.out",
+    });
+
+    gsap.to(flameMaterial.uniforms.uOpacity, {
+      value: 1,
+      duration: 3,
+      ease: "power4.out",
+    });
+  }, [flameMaterial]);
+
+  // Exit animation — menu-click event
+  useEffect(() => {
+    const handleClick = () => {
+      if (!groupRef.current) return;
+
+      // gsap.to(groupRef.current.position, {
+      //   y: 3,
+      //   duration: 0.65,
+      //   ease: "power3.in",
+      // });
+
+      gsap.to(flameMaterial.uniforms.uOpacity, {
+        value: 0,
+        duration: 0.65,
+        ease: "power3.in",
+      });
+    };
+
+    window.addEventListener("menu-click", handleClick);
+    return () => window.removeEventListener("menu-click", handleClick);
   }, [flameMaterial]);
 
   const flameControls = useControls("Flame Shader", {
@@ -165,8 +190,30 @@ const Card = () => {
     }
   });
 
+  const { coords, updateMouse } = useMouse();
+
+  useFrame(() => {
+    if (groupRef.current) {
+      updateMouse();
+
+      const targetY = remapClamp(coords.x, -1, 1, -0.4, 0.4) * 0.2;
+      const targetX = remapClamp(-coords.y, -1, 1, -0.4, 0.4) * 0.2;
+
+      groupRef.current.rotation.y = lerp(
+        groupRef.current.rotation.y,
+        targetY,
+        0.05,
+      );
+      groupRef.current.rotation.x = lerp(
+        groupRef.current.rotation.x,
+        targetX,
+        0.05,
+      );
+    }
+  });
+
   return (
-    <group position={[0, -0, 0]}>
+    <group ref={groupRef} position={[0, -0, 0]}>
       <mesh>
         <planeGeometry args={[12, 8.5]} />
         <primitive object={flameMaterial} attach="material" />

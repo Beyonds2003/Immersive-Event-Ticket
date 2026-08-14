@@ -639,8 +639,11 @@
 
 .nfc-btn-container {
   position: absolute;
-  bottom: -30px;
-  left: -30px;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  filter: drop-shadow(4px 5px 26px rgba(0, 0, 0, 0.27));
 }
 
 .nfc-card {

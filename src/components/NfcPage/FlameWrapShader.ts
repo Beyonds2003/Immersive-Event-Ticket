@@ -131,6 +131,7 @@ uniform float uSmoke;
 uniform float uEmber;
 uniform float uScorch;
 uniform float uHasContent;
+uniform float uOpacity;
 
 #define S(a, b, t) smoothstep(a, b, t)
 
@@ -351,7 +352,7 @@ void main () {
     float a = clamp(fireA + sA * (1.0 - fireA), 0.0, 1.0);
     outColor = vec4(
       fireCol * fireA + glow + smokeCol * sA * (1.0 - fireA),
-      clamp(a + halo * 0.6, 0.0, 1.0)
+      clamp(a + halo * 0.6, 0.0, 1.0) * uOpacity
     );
     return;
   }
@@ -400,7 +401,7 @@ void main () {
   vec3 base = content.rgb * cA + smokeCol * smk;
   vec3 col = fireCol * fireA + base * (1.0 - fireA) + glow;
   float alpha = clamp(fireA + baseA * (1.0 - fireA) + halo * 0.5, 0.0, 1.0);
-  outColor = vec4(col, alpha);
+  outColor = vec4(col, alpha * uOpacity);
 }`;
 
 export function supportsHtmlInCanvas(): boolean {
@@ -468,6 +469,7 @@ export function createFlameWrapMaterial(
     uEmber: { value: opts.ember },
     uScorch: { value: opts.scorch },
     uHasContent: { value: texture ? 1.0 : 0.0 },
+    uOpacity: { value: 1.0 },
   };
 
   return new THREE.ShaderMaterial({
