@@ -323,7 +323,7 @@ const MenuContent = ({
         >
           <button onClick={(e) => handleNavigate("/", e)}>Home</button>
           <button onClick={(e) => handleNavigate("/nfc", e)}>NFC Card</button>
-          <button onClick={(e) => handleNavigate("/live", e)}>Live</button>
+          {/* <button onClick={(e) => handleNavigate("/live", e)}>Live</button> */}
           <button onClick={(e) => handleNavigate("/profile", e)}>
             Profile
           </button>

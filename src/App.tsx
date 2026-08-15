@@ -14,6 +14,7 @@ import MenuButton from "./components/UI/WobbleMenu";
 import PageHtmlUi from "./components/General/PageHtmlUi";
 import { PageCameraController } from "./components/General/PageCameraController";
 import PageNavigator from "./components/General/PageNavigator";
+import Profile from "./components/General/Profile";
 
 /** Syncs React Router location into the Jotai atom so R3F canvas can read it */
 const LocationSync = () => {
@@ -33,6 +34,7 @@ const App = () => {
         <Scene />
         <Leva collapsed />
         <PageHtmlUi />
+        <Profile />
         <MenuButton />
       </div>
     </BrowserRouter>

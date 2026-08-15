@@ -53,6 +53,10 @@
   interpolate-size: allow-keywords;
 }
 
+body {
+  background: white;
+}
+
 *,
 *::before,
 *::after {
@@ -761,8 +765,8 @@
   transform: translateY(30px);
 
   transition:
-    opacity 1.45s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 
   &[data-open="true"] {
     opacity: 1;
@@ -803,4 +807,112 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.leva-c-kWgxhW-czBHep-hideTitleBar-false {
+  display: none !important;
+}
+
+.profile-icon-container {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  color: white;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  z-index: 9999;
+}
+
+.profile-icon-btn {
+  cursor: pointer;
+  background: 0 0;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  display: flex;
+}
+.profile-avatar {
+  filter: drop-shadow(0 2px 4px #211c3b59);
+  transform-origin: 50%;
+  width: 50px;
+  height: 50px;
+  transition: transform 0.45s cubic-bezier(0.34, 1.7, 0.5, 1);
+  display: block;
+  overflow: visible;
+}
+
+.profile-icon-btn:hover .profile-avatar {
+  transform: scale(1.1);
+}
+
+.profile-icon-btn .avatar-face {
+  transition: r 0.45s cubic-bezier(0.34, 1.7, 0.5, 1);
+}
+
+.profile-icon-btn:hover .avatar-face {
+  r: 22;
+}
+
+.profile-icon-btn::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;
+  height: 10px;
+}
+
+.profile-dropdown {
+  background: black;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  /* background: #211c3b; */
+  border-radius: 20px;
+  overflow: hidden;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 4px;
+  gap: 2px;
+  transform-origin: top right;
+  filter: drop-shadow(0 2px 4px #211c3b59);
+
+  opacity: 0;
+  transform: scale(0);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.45s cubic-bezier(0.34, 1.7, 0.5, 1);
+
+  & button {
+    padding: 8px 20px;
+    width: 100%;
+    text-align: left;
+    border-radius: 12px;
+    cursor: pointer;
+
+    font-family: Inter;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 1;
+
+    transition: background-color 0.2s ease-in;
+  }
+
+  & button:hover {
+    transition: background-color 0.2s ease-out;
+    background: #383455;
+  }
+}
+
+.profile-icon-btn:hover .profile-dropdown {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
 }

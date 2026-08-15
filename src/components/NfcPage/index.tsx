@@ -31,7 +31,7 @@ const index = () => {
           <>
             <group>
               <GroupOfSphere configKey="Nfc1" configOffset={14} />
-              <GroupOfSphere configKey="Nfc2" configOffset={16} />
+              <GroupOfSphere configKey="Nfc2" configOffset={0} />
 
               {/* <GroupOfSphere configKey="Nfc" configOffset={0} /> */}
             </group>
