@@ -26,7 +26,7 @@ const Review = () => {
             <WobbleButton
               text="Post"
               hoverText="Share"
-              fillColor="#a13c52"
+              fillColor="#666cff"
               width={140}
               height={60}
               fontSize={1.15}

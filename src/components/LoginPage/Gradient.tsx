@@ -53,6 +53,7 @@ const Gradient = () => {
     "/login": "Login",
     "/detail": "Detail",
     "/nfc": "Nfc",
+    "/faq": "Faq",
   };
 
   const pColor = pageColor[routeColorMap[pathname] ?? "Home"];

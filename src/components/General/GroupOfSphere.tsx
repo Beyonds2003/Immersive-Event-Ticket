@@ -16,6 +16,20 @@ import { SPHERE_CONFIGS } from "./SPHERE_CONFIG";
 import { alea } from "seedrandom";
 import gsap from "gsap";
 
+// ── Global Window Pointer Tracker ─────────────────────────────────────────────
+// Persists mouse position across component remounts and page switches.
+export const globalWindowPointer = new THREE.Vector2(999, 999);
+
+if (typeof window !== "undefined") {
+  window.addEventListener("pointermove", (e: PointerEvent) => {
+    globalWindowPointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+    globalWindowPointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+  window.addEventListener("mouseleave", () => {
+    globalWindowPointer.set(999, 999);
+  });
+}
+
 // ── Init Sphere Positions (Stacking Layout) ──────────────────────────────────
 function initSpherePositions(
   ballState: Float32Array,
@@ -163,6 +177,11 @@ interface PhysicsSceneProps {
   endAnimProgress: number;
   pushForce: number;
   delayFactor: number;
+  fresnelDark: number;
+  fresnelWhite: number;
+  sunX: number;
+  sunY: number;
+  sunZ: number;
   configOffset: number;
   onProgressUpdate: (progress: number) => void;
 }
@@ -212,6 +231,11 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   endAnimProgress,
   pushForce,
   delayFactor,
+  fresnelDark,
+  fresnelWhite,
+  sunX,
+  sunY,
+  sunZ,
   configOffset,
   onProgressUpdate,
 }) => {
@@ -506,13 +530,17 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   ]);
 
   const initialPointer = useRef(new THREE.Vector2(999, 999));
-  const windowPointer = useRef(new THREE.Vector2(999, 999));
+  const windowPointer = useRef(
+    new THREE.Vector2(globalWindowPointer.x, globalWindowPointer.y),
+  );
   const smoothedMouseWorld = useRef(new THREE.Vector3(999, 999, 999));
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
-      windowPointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      windowPointer.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+      windowPointer.current.set(x, y);
+      globalWindowPointer.set(x, y);
     };
     window.addEventListener("pointermove", handlePointerMove);
     return () => {
@@ -527,14 +555,9 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     const mouse =
       windowPointer.current.x !== 999
         ? windowPointer.current
-        : initialPointer.current;
-
-    if (
-      windowPointer.current.x === 999 &&
-      (pointer.x !== 0 || pointer.y !== 0)
-    ) {
-      mouse.copy(pointer);
-    }
+        : globalWindowPointer.x !== 999
+          ? globalWindowPointer
+          : initialPointer.current;
 
     const state = ballState.current;
     const inp = input.current;
@@ -776,6 +799,11 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
             visible={false}
             diffuseType={cfg.diffuse}
             normalType={cfg.normal}
+            fresnelDark={fresnelDark}
+            fresnelWhite={fresnelWhite}
+            sunX={sunX}
+            sunY={sunY}
+            sunZ={sunZ}
             renderOrder={2}
           />
         ),
@@ -1042,6 +1070,43 @@ const GroupOfSphere = ({
         );
       }),
     }),
+    "Fresnel Atmosphere": folder({
+      fresnelDark: {
+        value: 0.0,
+        min: -1.0,
+        max: 1.0,
+        step: 0.01,
+        label: "Fresnel Min (Dark)",
+      },
+      fresnelWhite: {
+        value: 0.8,
+        min: 0.0,
+        max: 2.0,
+        step: 0.01,
+        label: "Fresnel Max (White)",
+      },
+      sunX: {
+        value: 0.0,
+        min: -5.0,
+        max: 5.0,
+        step: 0.1,
+        label: "Sun Dir X",
+      },
+      sunY: {
+        value: 0.0,
+        min: -5.0,
+        max: 5.0,
+        step: 0.1,
+        label: "Sun Dir Y",
+      },
+      sunZ: {
+        value: 1.0,
+        min: -5.0,
+        max: 5.0,
+        step: 0.1,
+        label: "Sun Dir Z",
+      },
+    }),
   }));
 
   useEffect(() => {
@@ -1094,6 +1159,11 @@ const GroupOfSphere = ({
       endAnimProgress={controls.endAnimProgress}
       pushForce={controls.pushForce}
       delayFactor={controls.delayFactor}
+      fresnelDark={controls.fresnelDark}
+      fresnelWhite={controls.fresnelWhite}
+      sunX={controls.sunX}
+      sunY={controls.sunY}
+      sunZ={controls.sunZ}
       configOffset={configOffset}
       onProgressUpdate={handleProgressUpdate}
     />

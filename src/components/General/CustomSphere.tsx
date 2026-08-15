@@ -8,6 +8,9 @@ import { generateColorPair } from "../../libs/generateColorPair";
 import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 import Message from "./Message";
 import { useLocation } from "react-router";
+import { globalWindowPointer } from "./GroupOfSphere";
+import { pageColor } from "../../libs/config/pageColor";
+import { routeSphereMap } from "../../libs/config/pageSphere";
 
 // ── UV Region Type ────────────────────────────────────────────────────────────
 
@@ -357,11 +360,21 @@ const MultiSpriteFace: React.FC<MultiSpriteFaceProps> = ({
           -sphereWorldPos.current.z,
         );
 
-        raycasterRef.current.setFromCamera(pointer, camera);
-        const hit = raycasterRef.current.ray.intersectPlane(
-          targetPlane.current,
-          mouseWorldPos.current,
-        );
+        const activePointer =
+          globalWindowPointer.x !== 999
+            ? globalWindowPointer
+            : pointer.x !== -1 || pointer.y !== -1
+              ? pointer
+              : null;
+
+        let hit = false;
+        if (activePointer) {
+          raycasterRef.current.setFromCamera(activePointer, camera);
+          hit = !!raycasterRef.current.ray.intersectPlane(
+            targetPlane.current,
+            mouseWorldPos.current,
+          );
+        }
 
         if (hit) {
           const dx = mouseWorldPos.current.x - sphereWorldPos.current.x;
@@ -459,6 +472,11 @@ export interface ModelProps extends Omit<ThreeElements["group"], "ref"> {
   baseRadius?: number;
   diffuseType: string;
   normalType: string;
+  fresnelDark?: number;
+  fresnelWhite?: number;
+  sunX?: number;
+  sunY?: number;
+  sunZ?: number;
 }
 
 export const CustomSphere = React.forwardRef<THREE.Group, ModelProps>(
@@ -481,6 +499,11 @@ export const CustomSphere = React.forwardRef<THREE.Group, ModelProps>(
       baseRadius = 1.8,
       diffuseType,
       normalType,
+      fresnelDark = 0.0,
+      fresnelWhite = 0.8,
+      sunX = 1.0,
+      sunY = 1.0,
+      sunZ = 1.0,
       ...groupProps
     },
     ref,
@@ -513,6 +536,11 @@ export const CustomSphere = React.forwardRef<THREE.Group, ModelProps>(
           metalness={metalness}
           diffuseType={diffuseType}
           normalType={normalType}
+          fresnelDark={fresnelDark}
+          fresnelWhite={fresnelWhite}
+          sunX={sunX}
+          sunY={sunY}
+          sunZ={sunZ}
         />
 
         {/* 2. Multi-Sprite Face System */}
@@ -546,6 +574,11 @@ type SphereModelProps = {
   metalness: number;
   diffuseType: string;
   normalType: string;
+  fresnelDark?: number;
+  fresnelWhite?: number;
+  sunX?: number;
+  sunY?: number;
+  sunZ?: number;
 };
 
 const SphereModel = ({
@@ -555,6 +588,11 @@ const SphereModel = ({
   metalness,
   diffuseType: type,
   normalType,
+  fresnelDark = 0.0,
+  fresnelWhite = 0.8,
+  sunX = 1.0,
+  sunY = 1.0,
+  sunZ = 1.0,
 }: SphereModelProps) => {
   const sphereModel = useGLTF("/models/test-sphere.glb");
   const sphereGeo = (sphereModel.scene.children[0] as THREE.Mesh).geometry;
@@ -590,6 +628,11 @@ const SphereModel = ({
 
   const [colorA, colorB] = generateColorPair(`${email} ${type}`, 1, seed);
 
+  const pageKey = (routeSphereMap[location.pathname] ||
+    "Home") as keyof typeof pageColor;
+  const activePageColor = pageColor[pageKey] || pageColor.Home;
+  const pageColorA = useRef(new THREE.Color(activePageColor.colorA));
+
   const uniforms = useRef({
     uDiffuseTexture: { value: diffuseTexture },
     uNormalTexture: { value: normalTexture },
@@ -601,6 +644,10 @@ const SphereModel = ({
     uResolution: {
       value: new THREE.Vector2(window.innerWidth, window.innerHeight),
     },
+    uFresnelDark: { value: fresnelDark },
+    uFresnelWhite: { value: fresnelWhite },
+    uSunDirection: { value: new THREE.Vector3(sunX, sunY, sunZ) },
+    uPageColorA: { value: pageColorA.current },
   });
 
   useFrame(() => {
@@ -609,6 +656,14 @@ const SphereModel = ({
       window.innerWidth,
       window.innerHeight,
     );
+    uniforms.current.uFresnelDark.value = fresnelDark;
+    uniforms.current.uFresnelWhite.value = fresnelWhite;
+    uniforms.current.uSunDirection.value.set(sunX, sunY, sunZ);
+
+    const currentKey = (routeSphereMap[location.pathname] ||
+      "Home") as keyof typeof pageColor;
+    const currentTheme = pageColor[currentKey] || pageColor.Home;
+    pageColorA.current.set(currentTheme.colorA);
   });
 
   return (
@@ -634,6 +689,9 @@ const SphereModel = ({
 
 const vertexShader = `
     varying vec2 vUv;
+    varying float vRing;
+
+    
     uniform sampler2D uRingTex;
     uniform vec2 uResolution;
 
@@ -652,11 +710,13 @@ const vertexShader = `
       csm_Position.xy -= ringDistord *  2.3;
 
       vUv = uv;
+      vRing = ringMask;
     }
 `;
 
 const fragmentShader = `
   varying vec2 vUv;
+  varying float vRing;
 
   uniform vec2 uDiffuseType;
   uniform vec2 uNormalType;
@@ -668,6 +728,11 @@ const fragmentShader = `
 
   uniform vec3 uColorA;
   uniform vec3 uColorB;
+
+  uniform float uFresnelDark;
+  uniform float uFresnelWhite;
+  uniform vec3 uSunDirection;
+  uniform vec3 uPageColorA;
 
   // Boosts colour saturation: factor > 1 = more vivid, 0 = grayscale
   vec3 saturateColor(vec3 c, float factor) {
@@ -717,7 +782,24 @@ const fragmentShader = `
     // doesn't wash the hue out to gray.
     color = saturateColor(color, 2.5);
 
-    csm_DiffuseColor = vec4(color, 1.0);
+    vec3 sphereNormal = normalize(vNormal);
+    vec3 viewDirection = normalize(vViewPosition);
+
+    float sunOrientation = max(0.0, dot(normalize(uSunDirection), sphereNormal));
+
+    // Edge Blur
+    float fresnel = dot(sphereNormal, viewDirection);
+    fresnel = smoothstep(uFresnelDark, uFresnelWhite, fresnel);
+    fresnel = fresnel * sunOrientation;
+    float edge = 1. - fresnel;
+
+    // color = mix(color, uPageColorA, fresnel);
+
+    float edgeBoost = 0.05 + (0.2 * pow(vRing, 1.));
+
+    color += vec3(1., 1., 1.) * edge * edgeBoost;
+
+    csm_DiffuseColor = vec4(vec3(color), 1.0);
 
     // normal atlas UV (2x2 grid, scale by 0.5)
     vec2 normalUV = fract(vUv) + uNormalType;

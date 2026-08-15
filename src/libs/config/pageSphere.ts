@@ -46,6 +46,13 @@ export type SphereConfig = {
   endAnimProgress: number;
   pushForce: number;
   delayFactor: number;
+
+  // Fresnel Edge Blur & Sun Direction
+  fresnelDark: number;
+  fresnelWhite: number;
+  sunX: number;
+  sunY: number;
+  sunZ: number;
 };
 
 export const defaultSphereConfig: SphereConfig = {
@@ -96,6 +103,13 @@ export const defaultSphereConfig: SphereConfig = {
   endAnimProgress: 0,
   pushForce: 4.0,
   delayFactor: 0.04,
+
+  // Fresnel Edge Blur & Sun Direction
+  fresnelDark: 0.11,
+  fresnelWhite: 0.66,
+  sunX: 0.0,
+  sunY: 0.0,
+  sunZ: 1.0,
 };
 
 export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {

@@ -4,11 +4,15 @@ import { pathnameAtom } from "../../libs/atoms";
 import EventCardUi from "../HomePage/EventCardUi";
 import TicketDetailUi from "../TicketDetail/TicketDetailUi";
 import NfcUi from "../NfcPage/NfcUi";
+import FAQUi from "../FAQPage/FAQUi";
+import LoginUi from "../LoginPage/LoginUi";
 
 const routeUiMap: Record<string, React.ReactNode> = {
   "/": <EventCardUi />,
   "/detail": <TicketDetailUi />,
   "/nfc": <NfcUi />,
+  "/faq": <FAQUi />,
+  "/login": <LoginUi />,
 };
 
 const PageHtmlUi = () => {

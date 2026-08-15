@@ -48,6 +48,11 @@
   font-display: swap;
 }
 
+:root {
+  /* Allows animations between numeric values and keywords like auto */
+  interpolate-size: allow-keywords;
+}
+
 *,
 *::before,
 *::after {
@@ -546,7 +551,8 @@
 }
 
 .review-container {
-  background: #e98115;
+  /* background: #ff9e42; */
+  background: #9ea2ff;
   /* height: 150px; */
   width: 100%;
   border-radius: 28px;
@@ -575,6 +581,7 @@
   font-size: 1.2rem;
   font-family: Dingos-Bold;
   width: stretch;
+  width: -webkit-fill-available;
   background: transparent;
   border: none;
   outline: none;
@@ -694,4 +701,106 @@
   to {
     transform: scale(1.1) rotate(360deg);
   }
+}
+
+.faq-title {
+  font-size: 2rem;
+  font-family: Dingos-Bold;
+  margin-bottom: 25px;
+  margin-left: 10px;
+}
+
+.faq-container {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.faq-question-container {
+  text-align: left;
+  color: #211c3b;
+  background: 0 0;
+  border: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 26px 34px;
+  font-family: Dingos, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  display: flex;
+  cursor: pointer;
+
+  & .question {
+    font-size: 1.2rem;
+    font-family: Dingos-Bold;
+    /* margin-bottom: 10px; */
+  }
+
+  & .icon {
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    background: #211c3b;
+    flex: none;
+    width: 16px;
+    height: 10px;
+    margin-top: 4px;
+    transition: transform 0.25s;
+    transform: rotate(0);
+
+    &[data-open="true"] {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.faq-answer {
+  padding: 2px 34px 30px;
+  opacity: 0;
+  transform: translateY(30px);
+
+  transition:
+    opacity 1.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &[data-open="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faq-a-text {
+  color: #211c3b;
+  white-space: pre-line;
+  margin: 0;
+  font-family: Inter, Dingos, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.faq-parent-container {
+  padding-bottom: 60px;
+  gap: 60px;
+}
+
+.faq-answer-container {
+  height: 0px;
+  transition: height 0.25s;
+
+  &[data-open="true"] {
+    height: auto;
+  }
+}
+
+.faq-parent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }

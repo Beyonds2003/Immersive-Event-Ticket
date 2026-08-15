@@ -9,8 +9,10 @@ import Review from "./Review";
 
 const colorA = pageColor.Detail.colorA;
 const colorB = pageColor.Detail.colorB;
-const colorC = "#fcd17c";
-const colorD = "#f8c05c";
+// const colorC = "#ffd9a6";
+// const colorD = "#ffcc9d";
+const colorC = "#f1f1ff";
+const colorD = "#cfd1ff";
 
 const TicketDetailUi = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -68,8 +70,8 @@ const TicketDetailUi = () => {
             className="ticket-detail-tab"
             initialTab={tabComponentIndex}
             isRippleFromClick={true}
-            rippleDirection="in"
-            timeScale={0.8}
+            rippleDirection="out"
+            timeScale={0.9}
           />
           <button className="rating-container">
             <span>4</span>

@@ -286,14 +286,19 @@ const MenuContent = ({
       new CustomEvent("menu-click", { detail: { path: path } }),
     );
 
-    const targetColor =
-      path === "/detail"
-        ? pageColor.Detail
-        : path === "/login"
-          ? pageColor.Login
-          : path === "/nfc"
-            ? pageColor.Nfc
-            : pageColor.Home;
+    let targetColor;
+
+    if (path === "/detail") {
+      targetColor = pageColor.Detail;
+    } else if (path === "/login") {
+      targetColor = pageColor.Login;
+    } else if (path === "/nfc") {
+      targetColor = pageColor.Nfc;
+    } else if (path === "/faq") {
+      targetColor = pageColor.Faq;
+    } else {
+      targetColor = pageColor.Home;
+    }
 
     window.setTimeout(() => {
       createRipple({

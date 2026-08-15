@@ -32,7 +32,6 @@ const App = () => {
       <div className="h-screen login-container">
         <Scene />
         <Leva collapsed />
-        <GroupMember />
         <PageHtmlUi />
         <MenuButton />
       </div>
