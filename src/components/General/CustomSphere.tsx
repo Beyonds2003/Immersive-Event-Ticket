@@ -623,7 +623,10 @@ const SphereModel = ({
 
   if (location.pathname === "/nfc") {
     // seed = 230;
-    seed = 22;
+    seed = 15;
+    seed = 15;
+  } else if (location.pathname === "/faq") {
+    seed = 121;
   }
 
   const [colorA, colorB] = generateColorPair(`${email} ${type}`, 1, seed);
@@ -771,6 +774,7 @@ const fragmentShader = `
       uDiffuseTexture,
       diffuseUV
     );
+    diffuseSample.r = 1. - pow(1. - diffuseSample.r, 5.);
 
     vec3 color = mix(
       uColorA,

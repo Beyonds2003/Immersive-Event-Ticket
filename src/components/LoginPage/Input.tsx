@@ -42,8 +42,8 @@ const Input = () => {
 
     updateMouse();
 
-    const targetY = remapClamp(coords.x, -1, 1, -0.4, 0.1) * 0.4;
-    const targetX = remapClamp(-coords.y, -1, 1, -0.4, 0.2) * 0.4;
+    const targetY = remapClamp(coords.x, -1, 1, -0.4, 0.1) * 0.6;
+    const targetX = remapClamp(-coords.y, -1, 1, -0.4, 0.2) * 0.6;
 
     ref.current.rotation.y = lerp(ref.current.rotation.y, targetY, 0.05);
     ref.current.rotation.x = lerp(ref.current.rotation.x, targetX, 0.05);

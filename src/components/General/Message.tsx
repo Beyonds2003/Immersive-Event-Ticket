@@ -212,6 +212,7 @@ const Message = ({ align, name, message }: Props) => {
       center
       position={[align === "left" ? 0 : 0.7, 0.5, -1]}
       zIndexRange={[10, 0]}
+      // occlude
     >
       <div
         ref={setNode}

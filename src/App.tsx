@@ -15,6 +15,7 @@ import PageHtmlUi from "./components/General/PageHtmlUi";
 import { PageCameraController } from "./components/General/PageCameraController";
 import PageNavigator from "./components/General/PageNavigator";
 import Profile from "./components/General/Profile";
+import ProfileDialog from "./components/General/ProfileDialog";
 
 /** Syncs React Router location into the Jotai atom so R3F canvas can read it */
 const LocationSync = () => {
@@ -31,10 +32,13 @@ const App = () => {
     <BrowserRouter>
       <LocationSync />
       <div className="h-screen login-container">
-        <Scene />
+        {/* <Scene /> */}
         <Leva collapsed />
         <PageHtmlUi />
+
         <Profile />
+        <ProfileDialog />
+
         <MenuButton />
       </div>
     </BrowserRouter>

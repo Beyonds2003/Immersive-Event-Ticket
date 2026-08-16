@@ -18,7 +18,7 @@ const index = () => {
     <Suspense fallback={null}>
       {show && (
         <group>
-          <GroupOfSphere configKey="Detail" configOffset={15} />
+          <GroupOfSphere configKey="Detail" configOffset={11} />
           <GroupOfSphere configKey="Detail2" configOffset={1} />
         </group>
       )}
