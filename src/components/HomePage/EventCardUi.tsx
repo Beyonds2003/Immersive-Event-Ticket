@@ -33,7 +33,7 @@ const EventCardUi = () => {
         colorC={colorC}
         colorD={colorD}
         textA="New"
-        textB="Own"
+        textB="Old"
         rippleCoord={[0, -0]}
         timeScale={1.2}
       />

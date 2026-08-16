@@ -6,5 +6,6 @@ export const pageColor = {
 
   // Faq: { colorA: "#f5daff", colorB: "#edbfff", coord: [1.1, 0.5] },
   // Faq: { colorA: "#b9f9ff", colorB: "#85ecff", coord: [1.1, 0.5] },
-  Faq: { colorA: "#ffd9a6", colorB: "#ffcc9d", coord: [1.1, 0.5] },
+  // Faq: { colorA: "#ffd9a6", colorB: "#ffcc9d", coord: [1.1, 0.5] },
+  Faq: { colorA: "#d1f0ff", colorB: "#b0cff7", coord: [1.1, 0.5] },
 };

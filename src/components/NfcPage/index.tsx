@@ -30,8 +30,8 @@ const index = () => {
         {show && (
           <>
             <group>
-              <GroupOfSphere configKey="Nfc1" configOffset={14} />
-              <GroupOfSphere configKey="Nfc2" configOffset={2} />
+              <GroupOfSphere configKey="Nfc1" configOffset={2} />
+              <GroupOfSphere configKey="Nfc2" configOffset={14} />
 
               {/* <GroupOfSphere configKey="Nfc" configOffset={0} /> */}
             </group>

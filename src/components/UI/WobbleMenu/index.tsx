@@ -282,6 +282,13 @@ const MenuContent = ({
 
     onClose();
 
+    if (path === "/profile") {
+      window.setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("profile-click"));
+      }, 700);
+      return;
+    }
+
     window.dispatchEvent(
       new CustomEvent("menu-click", { detail: { path: path } }),
     );

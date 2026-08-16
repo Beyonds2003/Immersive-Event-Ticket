@@ -20,7 +20,7 @@ const ProfileDialog = () => {
   return (
     <>
       {open && (
-        <div className="profile-overlay">
+        <div data-open={open} className="profile-overlay">
           <div className="profile-panel">
             <div className="profile-bg" />
             <button
@@ -32,56 +32,64 @@ const ProfileDialog = () => {
             </button>
 
             <div className="panel-content">
-              <header className="panel-header">
-                <h1 className="">PROFILE</h1>
-                <p>Thanks for being part of our community</p>
-              </header>
+              <section className="profile-section-1">
+                <header className="panel-header">
+                  <h1 className="">PROFILE</h1>
+                  <p>Thanks for being part of our community</p>
+                </header>
+              </section>
 
               <div className="panel-info">
-                <div className="panel-info-title">
-                  <h3 className="panel-title">YOUR INFO</h3>
-                  <div>
-                    <WobbleButton
-                      text="EDIT"
-                      fillColor="#f1e8dd"
-                      textColor="black"
-                      fontFamily="Inter"
-                      width={110}
-                      height={40}
-                      fontSize={1}
-                      bulgeAmount={2}
-                      stiffness={0.04}
-                      damping={0.96}
-                      proximityThreshold={70}
-                    />
+                <section className="profile-section-2">
+                  <div className="panel-info-title">
+                    <h3 className="panel-title">YOUR INFO</h3>
+                    <div>
+                      <WobbleButton
+                        text="EDIT"
+                        fillColor="#f1e8dd"
+                        textColor="black"
+                        fontFamily="Inter"
+                        width={110}
+                        height={40}
+                        fontSize={1}
+                        bulgeAmount={2}
+                        stiffness={0.04}
+                        damping={0.96}
+                        proximityThreshold={70}
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <table className="panel-info-table">
-                  <tbody>
-                    <tr>
-                      <td>Surname</td>
-                      <td>Addy</td>
-                    </tr>
+                  <table className="panel-info-table">
+                    <tbody>
+                      <tr>
+                        <td>Surname</td>
+                        <td>Addy</td>
+                      </tr>
 
-                    <tr>
-                      <td>Email</td>
-                      <td>jane@example.com</td>
-                    </tr>
+                      <tr>
+                        <td>Email</td>
+                        <td>jane@example.com</td>
+                      </tr>
 
-                    <tr>
-                      <td>Social</td>
-                      <td>@example</td>
-                    </tr>
-                  </tbody>
-                </table>
+                      <tr>
+                        <td>Social</td>
+                        <td>@example</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
 
-                <div className="panel-ticket-container">
-                  <h3 className="panel-title">YOUR TICKETS</h3>
-                  <div className="panel-ticket-list">
-                    <TicketUi />
+                <section className="profile-section-3">
+                  <div className="panel-ticket-container">
+                    <h3 className="panel-title">YOUR TICKETS</h3>
+                    <div className="panel-ticket-list">
+                      {new Array(4).fill(0).map((item) => (
+                        <TicketUi key={item} />
+                      ))}
+                    </div>
                   </div>
-                </div>
+                </section>
               </div>
             </div>
           </div>
@@ -94,7 +102,7 @@ const ProfileDialog = () => {
 const TicketUi = () => {
   return (
     <div className="profile-ticket-container">
-      <h4>Fucking Linyan</h4>
+      <h4>Ticket Title</h4>
       <div className="profile-ticket-date">
         <p>20 SEP 2026</p>
         <span className="text-[4px]" aria-hidden>

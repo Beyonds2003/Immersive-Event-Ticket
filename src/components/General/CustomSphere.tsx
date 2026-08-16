@@ -623,8 +623,8 @@ const SphereModel = ({
 
   if (location.pathname === "/nfc") {
     // seed = 230;
-    seed = 15;
-    seed = 15;
+    // seed = 15;
+    // seed = 15;
   } else if (location.pathname === "/faq") {
     seed = 121;
   }
