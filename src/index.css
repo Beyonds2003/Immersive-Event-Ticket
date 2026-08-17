@@ -810,7 +810,8 @@ body {
 }
 
 .leva-c-kWgxhW-czBHep-hideTitleBar-false {
-  display: none !important;
+  /* display: none !important; */
+  z-index: 9999 !important;
 }
 
 .profile-icon-container {
@@ -983,7 +984,6 @@ body {
   animation: panel-section-enter 0.6s cubic-bezier(0.34, 1.7, 0.5, 1) both;
   opacity: 0;
   transform-origin: center center;
-  width: fit-content;
 }
 
 .panel-content .profile-section-1 {
@@ -1012,10 +1012,32 @@ body {
   gap: 60px;
   min-height: 0;
   max-height: calc(100dvh - clamp(24px, 6vw, 60px));
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-areas: "header aside" "main aside" "ticket ticket";
+  flex: 1;
   position: relative;
   overflow-y: auto;
+}
+
+.profile-section-1 {
+  grid-area: header;
+}
+
+.panel-info {
+  display: contents;
+}
+
+.profile-section-2 {
+  grid-area: main;
+}
+
+.profile-section-3 {
+  width: 100%;
+  grid-area: ticket;
+}
+
+.profile-section-4 {
+  grid-area: aside;
 }
 
 .profile-bg {

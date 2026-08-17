@@ -169,6 +169,18 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
     sphereRadius: 1.25,
     obstacleState: "remove",
   },
+  Profile: {
+    ...defaultSphereConfig,
+    positionX: 0,
+    positionY: 0,
+    positionZ: 0,
+    spreadX: 1,
+    spreadY: 1,
+    sphereCount: 1,
+    sphereRadius: 1.2,
+    mouseForce: 0,
+    obstacleState: "remove",
+  },
   // Home is intentionally left undefined
 };
 

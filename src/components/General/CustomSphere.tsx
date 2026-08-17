@@ -706,11 +706,11 @@ const vertexShader = `
       vec2 screenUv = ndcPos * 0.5 + 0.5;
 
       vec4 ring = texture2D(uRingTex, screenUv);
+      float ringMask    = ring.a > 0.5 ? ring.b : 0.0;
       vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
-      float ringMask    = ring.b;                // grayscale ring intensity (0..1)
 
       // csm_Position.xyz *= (1. - ringMask * 0.1); // Scale
-      csm_Position.xy -= ringDistord *  2.3;
+      csm_Position.xy -= ringDistord * ringMask * 2.3;
 
       vUv = uv;
       vRing = ringMask;
@@ -774,13 +774,11 @@ const fragmentShader = `
       uDiffuseTexture,
       diffuseUV
     );
-    diffuseSample.r = 1. - pow(1. - diffuseSample.r, 5.);
+    diffuseSample.r = 1. - pow(1. - diffuseSample.r, 4.);
 
-    vec3 color = mix(
-      uColorA,
-      uColorB,
-      diffuseSample.r
-    );
+vec3 color = diffuseSample.r < 0.5
+  ? uColorA
+  : uColorB;
 
     // Boost saturation so the diffuse texture averaging
     // doesn't wash the hue out to gray.

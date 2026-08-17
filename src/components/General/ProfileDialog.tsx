@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import WobbleButton from "../UI/WobbleButton";
 import { LocateFixedIcon, LocationEditIcon } from "lucide-react";
+import { Canvas } from "@react-three/fiber";
+import GroupOfSphere from "./GroupOfSphere";
+import { OrbitControls } from "@react-three/drei";
 
 const ProfileDialog = () => {
   const [open, setOpen] = useState(false);
@@ -90,12 +93,35 @@ const ProfileDialog = () => {
                     </div>
                   </div>
                 </section>
+
+                <section className="profile-section-4">
+                  <Scene />
+                </section>
               </div>
             </div>
           </div>
         </div>
       )}
     </>
+  );
+};
+
+const Scene = () => {
+  return (
+    <Canvas camera={{ position: [0, 0, 15], fov: 11 }}>
+      <GroupOfSphere configKey="Profile" configOffset={5} />
+
+      <ambientLight intensity={2.4} color="#504ed8" />
+      <ambientLight intensity={2.8} />
+      <directionalLight
+        position={[5, 10, 5]}
+        intensity={1.8}
+        castShadow
+        shadow-normalBias={0.008}
+      />
+      <pointLight position={[0, -3, 3]} intensity={0.4} />
+      <OrbitControls />
+    </Canvas>
   );
 };
 

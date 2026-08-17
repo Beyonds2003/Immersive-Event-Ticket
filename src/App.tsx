@@ -76,7 +76,7 @@ const Scene = () => {
           castShadow
           shadow-normalBias={0.008}
         />
-        <pointLight position={[0, -3, 3]} intensity={0.4} />
+        {/* <pointLight position={[0, -3, 3]} intensity={0.4} /> */}
         {isShowFps && <ShowFps />}
       </RouterBridge>
     </Canvas>
