@@ -55,6 +55,11 @@ export type SphereConfig = {
   sunZ: number;
 };
 
+/** Shared obstacle scale state synced between Login Input and GroupOfSphere physics collider */
+export const loginObstacle = {
+  scale: 0,
+};
+
 export const defaultSphereConfig: SphereConfig = {
   // Physics
   sphereCount: 10,

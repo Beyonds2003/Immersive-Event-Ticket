@@ -12,6 +12,7 @@ import { useControls } from "leva";
 import { createRipple } from "../../libs/createRipple";
 import { useNavigate } from "react-router";
 import { pageColor } from "../../libs/config/pageColor";
+import { loginObstacle } from "../../libs/config/pageSphere";
 
 gsap.registerPlugin(SplitText);
 
@@ -40,6 +41,9 @@ const Input = () => {
   useFrame(() => {
     if (!ref.current || !visible) return;
 
+    // Keep obstacle physics collider in exact sync with input mesh scale
+    loginObstacle.scale = ref.current.scale.x;
+
     updateMouse();
 
     const targetY = remapClamp(coords.x, -1, 1, -0.4, 0.1) * 0.6;
@@ -48,6 +52,29 @@ const Input = () => {
     ref.current.rotation.y = lerp(ref.current.rotation.y, targetY, 0.05);
     ref.current.rotation.x = lerp(ref.current.rotation.x, targetX, 0.05);
   });
+
+  // Enter animation (scale 0 to 1) synced with physics obstacle
+  useEffect(() => {
+    if (!ref.current) return;
+
+    ref.current.scale.set(0, 0, 0);
+    loginObstacle.scale = 0;
+
+    const ctx = gsap.context(() => {
+      gsap.to(ref.current!.scale, {
+        x: 1,
+        y: 1,
+        z: 1,
+        duration: 0.4,
+        ease: "back.out(1.7)",
+      });
+    });
+
+    return () => {
+      ctx.revert();
+      loginObstacle.scale = 0;
+    };
+  }, []);
 
   // Continuous idle Z-shake: bounce left→right→rest, pause 2 s, repeat
   const SHAKE_AMPLITUDE = 0.03; // radians
@@ -189,6 +216,7 @@ const Input = () => {
       ease: "power2.out",
       overwrite: "auto",
       onComplete: () => {
+        loginObstacle.scale = 0;
         document.body.style.cursor = "auto";
         setVisible(false);
       },
@@ -239,7 +267,7 @@ const Input = () => {
 
   return (
     <>
-      <group ref={ref} position={[2, -0.2, -0.2]} scale={1}>
+      <group ref={ref} position={[2, -0.2, -0.2]} scale={0}>
         <group ref={spinGroupRef}>
           {/* Email input plane — canvas texture replaces the baked text mesh */}
           <mesh geometry={nodes.text.geometry}>

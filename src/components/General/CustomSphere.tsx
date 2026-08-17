@@ -11,6 +11,7 @@ import { useLocation } from "react-router";
 import { globalWindowPointer } from "./GroupOfSphere";
 import { pageColor } from "../../libs/config/pageColor";
 import { routeSphereMap } from "../../libs/config/pageSphere";
+import { getSphereRandomFactors } from "./sphereRandom";
 
 // ── UV Region Type ────────────────────────────────────────────────────────────
 
@@ -107,6 +108,8 @@ const FaceSpriteMaterial = ({
 // ── Multi-Sprite Face System ──────────────────────────────────────────────────
 
 interface MultiSpriteFaceProps {
+  name?: string;
+  email?: string;
   sphereRadius: number;
   autoBlink: boolean;
   allowAnim: boolean;
@@ -119,6 +122,8 @@ interface MultiSpriteFaceProps {
 }
 
 const MultiSpriteFace: React.FC<MultiSpriteFaceProps> = ({
+  name,
+  email,
   sphereRadius,
   autoBlink,
   allowAnim,
@@ -411,15 +416,52 @@ const MultiSpriteFace: React.FC<MultiSpriteFaceProps> = ({
     }
   });
 
+  // Deterministic personalized face proportions based on name and email (correlated with sphere scale)
+  const faceProportions = React.useMemo(() => {
+    const factors = getSphereRandomFactors(name, email);
+
+    const finalEyeH = eyeSize * factors.eyeScale;
+    const finalEyeW = finalEyeH * eyeAspect;
+
+    // Minimum inner gap between eyes so they never collide or get too close when small
+    const minInnerGap = 0.22;
+    const finalEyeDistance = Math.max(
+      eyeDistance + factors.spacingVariation,
+      finalEyeW + minInnerGap,
+    );
+
+    // Subtle eye vertical level variation
+    const eyeY = 0.15 + factors.eyeYOffset;
+
+    const finalMouthH = eyeSize * 1.1 * factors.mouthScale;
+    const finalMouthW = finalMouthH * mouthAspect;
+
+    // Mouth vertical position stays comfortably spaced below the eyes
+    const mouthY =
+      eyeY -
+      (finalEyeH * 0.5 + finalMouthH * 0.5 + 0.14 + factors.mouthYOffset);
+
+    return {
+      finalEyeW,
+      finalEyeH,
+      leftX: -finalEyeDistance / 2,
+      rightX: finalEyeDistance / 2,
+      eyeY,
+      finalMouthW,
+      finalMouthH,
+      mouthY,
+    };
+  }, [name, email, eyeSize, eyeDistance, eyeAspect, mouthAspect]);
+
   const surfaceZ = sphereRadius + 0.025;
-  const leftX = -eyeDistance / 2;
-  const rightX = eyeDistance / 2;
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
       {/* Left Eye */}
-      <mesh position={[leftX, 0.15, surfaceZ]}>
-        <planeGeometry args={[eyeSize * eyeAspect, eyeSize]} />
+      <mesh position={[faceProportions.leftX, faceProportions.eyeY, surfaceZ]}>
+        <planeGeometry
+          args={[faceProportions.finalEyeW, faceProportions.finalEyeH]}
+        />
         <FaceSpriteMaterial
           texture={faceTexture}
           uvRegion={eyeUV}
@@ -428,8 +470,10 @@ const MultiSpriteFace: React.FC<MultiSpriteFaceProps> = ({
       </mesh>
 
       {/* Right Eye */}
-      <mesh position={[rightX, 0.15, surfaceZ]}>
-        <planeGeometry args={[eyeSize * eyeAspect, eyeSize]} />
+      <mesh position={[faceProportions.rightX, faceProportions.eyeY, surfaceZ]}>
+        <planeGeometry
+          args={[faceProportions.finalEyeW, faceProportions.finalEyeH]}
+        />
         <FaceSpriteMaterial
           texture={faceTexture}
           uvRegion={eyeUV}
@@ -439,8 +483,10 @@ const MultiSpriteFace: React.FC<MultiSpriteFaceProps> = ({
 
       {/* Mouth */}
       {hasMouth && (
-        <mesh position={[0, -0.22, surfaceZ]}>
-          <planeGeometry args={[eyeSize * 1.1 * mouthAspect, eyeSize * 1.1]} />
+        <mesh position={[0, faceProportions.mouthY, surfaceZ]}>
+          <planeGeometry
+            args={[faceProportions.finalMouthW, faceProportions.finalMouthH]}
+          />
           <FaceSpriteMaterial
             texture={faceTexture}
             uvRegion={mouthUV}
@@ -545,6 +591,8 @@ export const CustomSphere = React.forwardRef<THREE.Group, ModelProps>(
 
         {/* 2. Multi-Sprite Face System */}
         <MultiSpriteFace
+          name={name}
+          email={email}
           sphereRadius={sphereRadius}
           autoBlink={autoBlink}
           allowAnim={allowAnim}
@@ -676,6 +724,7 @@ const SphereModel = ({
       position-z={-0.1}
       geometry={sphereGeo}
       scale={sphereRadius}
+      rotation={[0, 0, 0]}
     >
       <CustomShaderMaterial
         baseMaterial={THREE.MeshStandardMaterial}
@@ -774,11 +823,10 @@ const fragmentShader = `
       uDiffuseTexture,
       diffuseUV
     );
-    diffuseSample.r = 1. - pow(1. - diffuseSample.r, 4.);
+    diffuseSample.r = 1. - pow(1. - diffuseSample.r, 2.5);
 
-vec3 color = diffuseSample.r < 0.5
-  ? uColorA
-  : uColorB;
+    // vec3 color = diffuseSample.r < 0.5 ? uColorA : uColorB;
+    vec3 color = mix(uColorA, uColorB, diffuseSample.r);
 
     // Boost saturation so the diffuse texture averaging
     // doesn't wash the hue out to gray.

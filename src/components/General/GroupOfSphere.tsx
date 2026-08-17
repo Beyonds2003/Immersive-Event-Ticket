@@ -9,11 +9,11 @@ import { pathnameAtom } from "../../libs/atoms";
 import {
   pageSphere,
   routeSphereMap,
-  defaultSphereConfig,
   type SphereConfig,
+  loginObstacle,
 } from "../../libs/config/pageSphere";
 import { SPHERE_CONFIGS } from "./SPHERE_CONFIG";
-import { alea } from "seedrandom";
+import { getSphereRandomFactors } from "./sphereRandom";
 import gsap from "gsap";
 
 // ── Global Window Pointer Tracker ─────────────────────────────────────────────
@@ -174,6 +174,7 @@ interface PhysicsSceneProps {
   obstacleX: number;
   obstacleY: number;
   obstacleZ: number;
+  isLoginPage?: boolean;
   endAnimProgress: number;
   pushForce: number;
   delayFactor: number;
@@ -228,6 +229,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   obstacleX,
   obstacleY,
   obstacleZ,
+  isLoginPage = false,
   endAnimProgress,
   pushForce,
   delayFactor,
@@ -240,6 +242,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   onProgressUpdate,
 }) => {
   const { camera } = useThree();
+  const obstacleMeshRef = useRef<THREE.Mesh>(null);
   const groupRefs = useRef<(THREE.Group | null)[]>([]);
   const physicsWorld = useRef<PhysicsWorld | null>(null);
   const ballState = useRef<Float32Array | null>(null);
@@ -249,12 +252,21 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   const zeroPlane = useRef(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0));
   const mouseWorld = useRef(new THREE.Vector3());
 
-  // @ts-ignore
-  const rng = new alea("addy");
-
   const scaleOffsets = useRef<number[]>(
-    Array.from({ length: 100 }, () => rng() * 0.3),
+    Array.from({ length: 100 }, (_, i) => {
+      const cfg = SPHERE_CONFIGS[(configOffset + i) % SPHERE_CONFIGS.length];
+      return cfg
+        ? getSphereRandomFactors(cfg.name, cfg.email).sphereScaleOffset
+        : 0;
+    }),
   );
+
+  scaleOffsets.current = Array.from({ length: 100 }, (_, i) => {
+    const cfg = SPHERE_CONFIGS[(configOffset + i) % SPHERE_CONFIGS.length];
+    return cfg
+      ? getSphereRandomFactors(cfg.name, cfg.email).sphereScaleOffset
+      : 0;
+  });
 
   const introScalesRef = useRef<{ scale: number }[]>([]);
   const endAnimStatesRef = useRef<EndAnimSphereState[]>([]);
@@ -596,9 +608,13 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       state[n + 38] = squeezeFactor;
     }
 
+    // Dynamic obstacle scale (synced with Login Input component enter/hover/exit animation)
+    const obsScale = isLoginPage ? loginObstacle.scale : 1.0;
+
     // Configure Obstacle physics in input
     const physicsActive =
-      obstacleState === "visible" || obstacleState === "invisible";
+      (obstacleState === "visible" || obstacleState === "invisible") &&
+      obsScale > 0.001;
 
     if (physicsActive) {
       inp[17] = 1.0; // enable colliders check
@@ -606,9 +622,9 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       inp[33] = obstacleX;
       inp[34] = obstacleY;
       inp[35] = obstacleZ;
-      inp[36] = obstacleWidth * 0.5;
-      inp[37] = obstacleHeight * 0.5;
-      inp[38] = obstacleDepth * 0.5;
+      inp[36] = obstacleWidth * 0.5 * obsScale;
+      inp[37] = obstacleHeight * 0.5 * obsScale;
+      inp[38] = obstacleDepth * 0.5 * obsScale;
       inp[39] = 1.0; // active
       inp[40] = 0.0;
     } else {
@@ -644,9 +660,9 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       const bx = obstacleX;
       const by = obstacleY;
       const bz = obstacleZ;
-      const hw = obstacleWidth * 0.5;
-      const hh = obstacleHeight * 0.5;
-      const hd = obstacleDepth * 0.5;
+      const hw = obstacleWidth * 0.5 * obsScale;
+      const hh = obstacleHeight * 0.5 * obsScale;
+      const hd = obstacleDepth * 0.5 * obsScale;
 
       for (let i = 0; i < count; i++) {
         const n = i * 128;
@@ -753,6 +769,13 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
         group.matrixWorldNeedsUpdate = true;
       }
     }
+
+    // Sync obstacle debug mesh scale and visibility
+    if (obstacleMeshRef.current) {
+      obstacleMeshRef.current.scale.set(obsScale, obsScale, obsScale);
+      obstacleMeshRef.current.visible =
+        obstacleState === "visible" && obsScale > 0.001;
+    }
   });
 
   if (isDisposedState) return null;
@@ -761,6 +784,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     <>
       {obstacleState === "visible" && (
         <mesh
+          ref={obstacleMeshRef}
           position={[obstacleX, obstacleY, obstacleZ]}
           castShadow
           receiveShadow
@@ -1156,6 +1180,7 @@ const GroupOfSphere = ({
       obstacleX={controls.obstacleX}
       obstacleY={controls.obstacleY}
       obstacleZ={controls.obstacleZ}
+      isLoginPage={activeKey === "Login"}
       endAnimProgress={controls.endAnimProgress}
       pushForce={controls.pushForce}
       delayFactor={controls.delayFactor}

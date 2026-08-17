@@ -26,8 +26,8 @@ export const SPHERE_CONFIGS = [
     roughness: 0.2,
     metalness: 0.8,
     face: "B",
-    diffuse: "C",
-    normal: "D",
+    diffuse: "B",
+    normal: "B",
   },
   {
     email: "noah.parker@example.com",
