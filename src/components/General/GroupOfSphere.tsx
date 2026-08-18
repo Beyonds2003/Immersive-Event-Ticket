@@ -332,6 +332,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     x: number,
     y: number,
     autoPlay: boolean = true,
+    defaultDelay = 0,
   ) => {
     if (isDisposedRef.current) {
       isDisposedRef.current = false;
@@ -426,8 +427,9 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
         {
           scale: 0,
           pushDist: pushForce,
-          duration: 0.7,
-          ease: "power2.inOut",
+          duration: 0.6,
+          delay: defaultDelay,
+          ease: "power1.inOut",
         },
         delay,
       );
@@ -443,9 +445,10 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
       const detail = (e as CustomEvent).detail;
       const x = typeof detail?.x === "number" ? detail.x : 0;
       const y = typeof detail?.y === "number" ? detail.y : 0;
+      const delay = typeof detail?.delay === "number" ? detail.delay : 0;
 
       if (detail.isPageTransition) {
-        triggerEndAnimation(x, y, true);
+        triggerEndAnimation(x, y, true, delay);
       }
     };
 

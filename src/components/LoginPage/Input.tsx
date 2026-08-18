@@ -250,6 +250,7 @@ const Input = () => {
         colorA: pageColor.Home.colorA,
         colorB: pageColor.Home.colorB,
         transitionFireAt: 0.5,
+        timeScale: 1,
         delay: 0.2,
       });
 

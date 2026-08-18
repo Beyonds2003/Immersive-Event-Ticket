@@ -109,7 +109,7 @@ export const defaultSphereConfig: SphereConfig = {
   // End Animation
   endAnimProgress: 0,
   pushForce: 4.0,
-  delayFactor: 0.03,
+  delayFactor: 0.04,
 
   // Fresnel Edge Blur & Sun Direction
   fresnelDark: 0.11,
