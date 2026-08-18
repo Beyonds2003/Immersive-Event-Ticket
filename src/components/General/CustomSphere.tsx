@@ -759,7 +759,7 @@ const vertexShader = `
       vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
 
       // csm_Position.xyz *= (1. - ringMask * 0.1); // Scale
-      csm_Position.xy -= ringDistord * ringMask * 2.3;
+      csm_Position.xy += ringDistord * ringMask * 2.;
 
       vUv = uv;
       vRing = ringMask;

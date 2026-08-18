@@ -276,7 +276,7 @@ export const RingDistordRenderTarget = () => {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      const { x, y, isPageTransition, rippleDirection, timeScale } = (
+      const { x, y, isPageTransition, rippleDirection, timeScale, delay } = (
         e as CustomEvent
       ).detail;
 
@@ -290,9 +290,9 @@ export const RingDistordRenderTarget = () => {
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.2 : 1.6 + 0.2,
+        duration: isPageTransition ? 2.4 : 1.6 - 0.3,
         ease: "power1.out",
-        delay: isPageTransition ? 0 : 0,
+        delay,
       });
 
       progressTween.current.timeScale(timeScale);

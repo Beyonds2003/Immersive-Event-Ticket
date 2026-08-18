@@ -1,3 +1,5 @@
+import { getRatioOverflow } from "../getRatioOverflow";
+
 export type SphereConfig = {
   // Physics
   sphereCount: number;
@@ -107,7 +109,7 @@ export const defaultSphereConfig: SphereConfig = {
   // End Animation
   endAnimProgress: 0,
   pushForce: 4.0,
-  delayFactor: 0.04,
+  delayFactor: 0.03,
 
   // Fresnel Edge Blur & Sun Direction
   fresnelDark: 0.11,
@@ -117,15 +119,21 @@ export const defaultSphereConfig: SphereConfig = {
   sunZ: 1.0,
 };
 
+const ratioOverflow = getRatioOverflow();
+export const ratioScale = Math.max(0, 1 - ratioOverflow);
+
+console.log(ratioOverflow);
+
 export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
   Login: {
     ...defaultSphereConfig,
-    positionX: 2.2,
+    positionX: 2.2 * ratioScale,
+    obstacleX: 2 * ratioScale,
     positionY: -5.7,
   },
   Detail: {
     ...defaultSphereConfig,
-    positionX: -6.3,
+    positionX: -6.3 + ratioOverflow * 6,
     positionY: -3.5,
     spreadY: 1.15,
     sphereCount: 6,
@@ -134,7 +142,7 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
   },
   Detail2: {
     ...defaultSphereConfig,
-    positionX: 6.3,
+    positionX: 6.3 - ratioOverflow * 6,
     positionY: -3.5,
     spreadY: 1.1,
     sphereCount: 6,

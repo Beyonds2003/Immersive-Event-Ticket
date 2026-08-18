@@ -810,7 +810,7 @@ body {
 }
 
 .leva-c-kWgxhW-czBHep-hideTitleBar-false {
-  /* display: none !important; */
+  display: none !important;
   z-index: 9999 !important;
 }
 
@@ -1128,8 +1128,12 @@ body {
   width: 240px;
 }
 
-.panel-ticket-container {
-  margin-top: 50px;
+.profile-section-2 {
+  margin-bottom: 40px;
+}
+
+.profile-section-4 {
+  transform: translateY(100%);
 }
 
 .panel-ticket-list {

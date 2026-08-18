@@ -120,7 +120,6 @@ const Scene = () => {
         shadow-normalBias={0.008}
       />
       <pointLight position={[0, -3, 3]} intensity={0.4} />
-      <OrbitControls />
     </Canvas>
   );
 };

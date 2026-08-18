@@ -9,6 +9,7 @@ type BaseParams = {
    * Progress fraction (0–1) at which the "page-transition-end" event is fired.
    */
   transitionFireAt?: number;
+  delay?: number;
 };
 
 export type Params =
@@ -31,6 +32,7 @@ export const createRipple = ({
   rippleDirection = "out",
   timeScale = 1,
   transitionFireAt = 1,
+  delay = 0,
 }: Params) => {
   window.dispatchEvent(
     new CustomEvent("ripple-click", {
@@ -45,6 +47,7 @@ export const createRipple = ({
         rippleDirection,
         timeScale,
         transitionFireAt,
+        delay,
       },
     }),
   );

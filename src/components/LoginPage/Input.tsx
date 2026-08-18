@@ -12,7 +12,7 @@ import { useControls } from "leva";
 import { createRipple } from "../../libs/createRipple";
 import { useNavigate } from "react-router";
 import { pageColor } from "../../libs/config/pageColor";
-import { loginObstacle } from "../../libs/config/pageSphere";
+import { loginObstacle, ratioScale } from "../../libs/config/pageSphere";
 
 gsap.registerPlugin(SplitText);
 
@@ -250,6 +250,7 @@ const Input = () => {
         colorA: pageColor.Home.colorA,
         colorB: pageColor.Home.colorB,
         transitionFireAt: 0.5,
+        delay: 0.2,
       });
 
       // window.setTimeout(() => navigate("/"), 1100);
@@ -263,11 +264,23 @@ const Input = () => {
     };
   }, [navigate]);
 
+  useEffect(() => {
+    const handleClick = () => {
+      cleanUp();
+    };
+
+    window.addEventListener("menu-click", handleClick);
+
+    return () => {
+      window.removeEventListener("menu-click", handleClick);
+    };
+  }, []);
+
   if (!visible) return null;
 
   return (
     <>
-      <group ref={ref} position={[2, -0.2, -0.2]} scale={0}>
+      <group ref={ref} position={[2 * ratioScale, -0.2, -0.2]} scale={0}>
         <group ref={spinGroupRef}>
           {/* Email input plane — canvas texture replaces the baked text mesh */}
           <mesh geometry={nodes.text.geometry}>

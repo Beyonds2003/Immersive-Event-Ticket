@@ -349,6 +349,7 @@ export const SpiralCards = ({
       rippleDirection: "in",
       nextPathname: "/detail",
       transitionFireAt: 0.5,
+      timeScale: 1.3,
     });
 
     if (materialRef.current) {

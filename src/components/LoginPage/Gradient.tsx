@@ -110,6 +110,7 @@ const Gradient = () => {
         timeScale,
         nextPathname,
         transitionFireAt = 1,
+        delay,
       } = (e as CustomEvent).detail;
       clickPos.current.set(x, y);
 
@@ -145,8 +146,9 @@ const Gradient = () => {
       // Ripple ring progress
       const tween = gsap.to(material.current.uniforms.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.2 : 1.6,
+        duration: isPageTransition ? 2.4 : 1.6,
         ease: "power1.out",
+        delay,
         onUpdate() {
           // Fire early when the tween crosses the transitionFireAt threshold.
           if (transitionFireAt < 1 && this.progress() >= transitionFireAt) {
@@ -313,7 +315,7 @@ const fragmentShader = `
         float maxDist = max(max(d00, d10), max(d01, d11));
 
         // Scale progress by maxDist so the circle always reaches the farthest corner at uProgress=1
-        float p = (uProgress * maxDist * 1.5) - 0.35;
+        float p = (uProgress * maxDist * 1.8) - 0.35;
         float c = circle(vUv, p, 0.2);
 
         // Ring effect

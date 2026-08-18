@@ -35,7 +35,7 @@ const EventCardUi = () => {
         textA="New"
         textB="Old"
         rippleCoord={[0, -0]}
-        timeScale={1.2}
+        timeScale={1}
       />
       <Navigation />
     </div>
