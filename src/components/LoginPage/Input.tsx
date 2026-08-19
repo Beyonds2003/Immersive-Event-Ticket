@@ -251,6 +251,7 @@ const Input = () => {
         colorB: pageColor.Home.colorB,
         transitionFireAt: 0.5,
         timeScale: 1,
+        rippleDirection: "in",
         delay: 0.2,
       });
 

@@ -92,6 +92,10 @@ const rtFragmentShader = /* glsl */ `
     return inner * (1.0 - outer);
   }
 
+  float remap(float value, float from1, float to1, float from2, float to2) {
+    return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+  }
+
   void main() {
     float aspect = uResolution.x / uResolution.y;
 
@@ -133,6 +137,16 @@ const rtFragmentShader = /* glsl */ `
 
     // UV-space displacement = outward direction × ring intensity × strength
     vec2 displacement = direction * mask * uDistordStrength;
+
+    float displacementStrength = remap(
+        uProgress,
+        0.0,
+        1.0,
+        1.0,
+        0.0
+    );
+
+    displacement *= 1. - pow(1. - displacementStrength, 2.5);
 
     // ── Encode into RGBA ───────────────────────────────────────────────────
     //  R  = displace X  mapped 0..1  (0.5 = zero displacement)
@@ -290,7 +304,7 @@ export const RingDistordRenderTarget = () => {
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
-        duration: isPageTransition ? 2.4 : 1.6 - 0.3,
+        duration: isPageTransition ? 1.8 : 1.6 - 0.3,
         ease: "power1.out",
         delay,
       });
