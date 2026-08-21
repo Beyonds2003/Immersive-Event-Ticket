@@ -297,8 +297,8 @@ const MenuContent = ({
 
     if (path === "/detail") {
       targetColor = pageColor.Detail;
-    } else if (path === "/login") {
-      targetColor = pageColor.Login;
+    } else if (path === "/explore") {
+      targetColor = pageColor.Explore;
     } else if (path === "/nfc") {
       targetColor = pageColor.Nfc;
     } else if (path === "/faq") {
@@ -329,6 +329,9 @@ const MenuContent = ({
           onMouseLeave={handleMouseLeave}
         >
           <button onClick={(e) => handleNavigate("/", e)}>Home</button>
+          <button onClick={(e) => handleNavigate("/explore", e)}>
+            Explore
+          </button>
           <button onClick={(e) => handleNavigate("/nfc", e)}>NFC Card</button>
           {/* <button onClick={(e) => handleNavigate("/live", e)}>Live</button> */}
           <button onClick={(e) => handleNavigate("/profile", e)}>

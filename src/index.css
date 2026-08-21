@@ -1235,6 +1235,27 @@ body {
   animation: profile-panel-enter 0.65s cubic-bezier(0.34, 1.7, 0.5, 1) both;
 }
 
+.login-panel.closing {
+  animation: login-panel-exit 0.3s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+
+.profile-overlay.closing {
+  animation: login-overlay-exit 0.3s ease forwards;
+}
+
+@keyframes login-panel-exit {
+  to {
+    /* opacity: 0; */
+    transform: scale(0.7) translateY(100px);
+  }
+}
+
+@keyframes login-overlay-exit {
+  to {
+    opacity: 0;
+  }
+}
+
 .login-title {
   color: #f1e8dd;
   text-transform: uppercase;

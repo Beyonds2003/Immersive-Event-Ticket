@@ -1,9 +1,12 @@
-import EventCard from "./EventCard";
+import React from "react";
+import Input from "./Input";
+import GroupOfSphere from "../General/GroupOfSphere";
 
 const index = () => {
   return (
     <>
-      <EventCard />
+      <Input />
+      <GroupOfSphere />
     </>
   );
 };

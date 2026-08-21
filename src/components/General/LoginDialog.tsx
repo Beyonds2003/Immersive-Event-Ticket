@@ -9,6 +9,7 @@ const test = {
 
 const LoginDialog = () => {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [email, setEmail] = useState("");
   const [otpcode, setOtpCode] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -23,7 +24,7 @@ const LoginDialog = () => {
     const otpErr = otpcode.trim() !== test.otp;
 
     if (!emailErr && !otpErr) {
-      setTimeout(() => setOpen(false), 500);
+      setTimeout(() => handleClose(), 1000);
     } else {
       // Reset momentarily and apply to re-trigger shake animation if already in error state
       setErrors({ email: false, otp: false });
@@ -32,13 +33,21 @@ const LoginDialog = () => {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setClosing(true);
     setErrors({ email: false, otp: false });
+  };
+
+  const handleExitEnd = (e: React.AnimationEvent) => {
+    if (e.animationName === "login-panel-exit") {
+      setClosing(false);
+      setOpen(false);
+    }
   };
 
   useEffect(() => {
     const handleClick = () => {
       setOpen(true);
+      setClosing(false);
       setEmail("");
       setOtpCode("");
     };
@@ -50,11 +59,16 @@ const LoginDialog = () => {
     };
   }, []);
 
+  const visible = open || closing;
+
   return (
     <>
-      {open && (
-        <div data-open={open} className="profile-overlay">
-          <div className="login-panel">
+      {visible && (
+        <div className={`profile-overlay ${closing ? "closing" : ""}`}>
+          <div
+            className={`login-panel ${closing ? "closing" : ""}`}
+            onAnimationEnd={handleExitEnd}
+          >
             {/* <div className="profile-bg" /> */}
             <button
               onClick={handleClose}

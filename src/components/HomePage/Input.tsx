@@ -190,9 +190,9 @@ const Input = () => {
     createRipple({
       coord: { x: 0.24, y: 0 },
       isPageTransition: true,
-      nextPathname: "/",
-      colorA: pageColor.Home.colorA,
-      colorB: pageColor.Home.colorB,
+      nextPathname: "/explore",
+      colorA: pageColor.Explore.colorA,
+      colorB: pageColor.Explore.colorB,
       transitionFireAt: 0.5,
       timeScale: 1,
       rippleDirection: "in",
@@ -261,7 +261,7 @@ const Input = () => {
       createRipple({
         coord: { x: 0.24, y: 0 },
         isPageTransition: true,
-        nextPathname: "/",
+        nextPathname: "/explore",
         colorA: pageColor.Home.colorA,
         colorB: pageColor.Home.colorB,
         transitionFireAt: 0.5,

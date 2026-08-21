@@ -1,10 +1,10 @@
 import { Leva } from "leva";
-import GroupMember from "./components/LoginPage/GroupMember";
+import GroupMember from "./components/HomePage/GroupMember";
 import { useShowFps } from "./libs/useShowFps";
 import { Canvas } from "@react-three/fiber";
 import { RingDistordRenderTarget } from "./libs/ringDistordRenderTarget";
-import Gradient from "./components/LoginPage/Gradient";
-import Poster from "./components/LoginPage/Poster";
+import Gradient from "./components/HomePage/Gradient";
+import Poster from "./components/HomePage/Poster";
 import { BrowserRouter, useLocation } from "react-router";
 import AppRoutes, { RouterBridge } from "./router";
 import { useSetAtom } from "jotai";
@@ -33,7 +33,7 @@ const App = () => {
     <BrowserRouter>
       <LocationSync />
       <div className="h-screen login-container">
-        {/* <Scene /> */}
+        <Scene />
         <Leva collapsed />
         <PageHtmlUi />
 

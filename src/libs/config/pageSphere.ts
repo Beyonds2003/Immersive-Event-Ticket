@@ -122,8 +122,6 @@ export const defaultSphereConfig: SphereConfig = {
 const ratioOverflow = getRatioOverflow();
 export const ratioScale = Math.max(0, 1 - ratioOverflow);
 
-console.log(ratioOverflow);
-
 export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
   Login: {
     ...defaultSphereConfig,
@@ -199,6 +197,6 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
 
 export const routeSphereMap: Record<string, string> = {
   "/": "Home",
-  "/login": "Login",
+  "/explore": "Explore",
   "/detail": "Detail",
 };

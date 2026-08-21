@@ -6,8 +6,8 @@ import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
 } from "react-router";
+import ExplorePage from "../components/ExplorePage";
 import HomePage from "../components/HomePage";
-import LoginPage from "../components/LoginPage";
 import TicketDetailPage from "../components/TicketDetail";
 import NfcPage from "../components/NfcPage";
 import FAQPage from "../components/FAQPage";
@@ -15,12 +15,12 @@ import FAQPage from "../components/FAQPage";
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
+      <Route path="/explore" element={<ExplorePage />} />
       <Route path="/detail" element={<TicketDetailPage />} />
       <Route path="/nfc" element={<NfcPage />} />
       <Route path="/faq" element={<FAQPage />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

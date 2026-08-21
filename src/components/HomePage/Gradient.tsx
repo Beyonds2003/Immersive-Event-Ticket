@@ -49,8 +49,8 @@ const Gradient = () => {
   const clickPos = useRef(new THREE.Vector2(0, 0));
 
   const routeColorMap: Record<string, keyof typeof pageColor> = {
+    "/explore": "Explore",
     "/": "Home",
-    "/login": "Login",
     "/detail": "Detail",
     "/nfc": "Nfc",
     "/faq": "Faq",

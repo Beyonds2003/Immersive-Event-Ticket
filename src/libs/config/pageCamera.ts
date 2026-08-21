@@ -4,8 +4,8 @@ export type CameraConfig = {
 };
 
 export const pageCamera: Record<string, CameraConfig> = {
-  Home: { position: [0, 0, 5], fov: 75 },
-  Login: { position: [0, 0, 15], fov: 30 },
+  Home: { position: [0, 0, 15], fov: 30 },
+  Explore: { position: [0, 0, 5], fov: 75 },
   Detail: { position: [0, 0, 15], fov: 30 },
   Nfc: { position: [0, 0, 15], fov: 30 },
   Faq: { position: [0, 0, 15], fov: 30 },
@@ -13,7 +13,7 @@ export const pageCamera: Record<string, CameraConfig> = {
 
 export const routeCameraMap: Record<string, keyof typeof pageCamera> = {
   "/": "Home",
-  "/login": "Login",
+  "/explore": "Explore",
   "/detail": "Detail",
   "/nfc": "Nfc",
   "/faq": "Faq",

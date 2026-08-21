@@ -17,7 +17,7 @@ export type PosterConfig = {
 };
 
 export const posterConfigs: Record<string, PosterConfig> = {
-  "/login": {
+  "/": {
     title: ["DISCOVER EVENT"],
     titleFontFamily: "Dingos-ExtraBold",
     titleFontSize: 160,
@@ -36,7 +36,7 @@ export const posterConfigs: Record<string, PosterConfig> = {
     textBaseline: "top",
     responsive: true,
   },
-  "/": {
+  "/explore": {
     title: ["EXPLORE"],
     titleFontFamily: "Dingos-ExtraBold",
     titleFontSize: 160,

@@ -15,7 +15,7 @@ import { posterConfigs } from "../../libs/config/posterConfig";
 
 const Poster = () => {
   const pathname = useAtomValue(pathnameAtom);
-  const pageZ = pathname === "/" ? 0.96 : 1;
+  const pageZ = pathname === "/" ? 1 : 1;
   const { coords, updateMouse, mouseMoved } = useMouse();
 
   const currentConfig = posterConfigs[pathname] ?? posterConfigs["/"];

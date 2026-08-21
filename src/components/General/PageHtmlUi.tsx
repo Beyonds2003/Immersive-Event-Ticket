@@ -1,18 +1,18 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 import { pathnameAtom } from "../../libs/atoms";
-import EventCardUi from "../HomePage/EventCardUi";
+import EventCardUi from "../ExplorePage/EventCardUi";
 import TicketDetailUi from "../TicketDetail/TicketDetailUi";
 import NfcUi from "../NfcPage/NfcUi";
 import FAQUi from "../FAQPage/FAQUi";
-import LoginUi from "../LoginPage/LoginUi";
+import LoginUi from "../HomePage/LoginUi";
 
 const routeUiMap: Record<string, React.ReactNode> = {
-  "/": <EventCardUi />,
+  "/explore": <EventCardUi />,
   "/detail": <TicketDetailUi />,
   "/nfc": <NfcUi />,
   "/faq": <FAQUi />,
-  "/login": <LoginUi />,
+  "/": <LoginUi />,
 };
 
 const PageHtmlUi = () => {
