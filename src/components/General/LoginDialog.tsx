@@ -2,17 +2,45 @@ import React, { useEffect, useState } from "react";
 import WobbleButton from "../UI/WobbleButton";
 import OtpCountdown from "./OtpCountdown";
 
+const test = {
+  email: "addy@gmail.com",
+  otp: "123456",
+};
+
 const LoginDialog = () => {
   const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [otpcode, setOtpCode] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [errors, setErrors] = useState({ email: false, otp: false });
 
   const handleOtpSend = () => {
     setOtpSent(true);
   };
 
+  const handleSubmit = () => {
+    const emailErr = email.trim().toLowerCase() !== test.email.toLowerCase();
+    const otpErr = otpcode.trim() !== test.otp;
+
+    if (!emailErr && !otpErr) {
+      setTimeout(() => setOpen(false), 500);
+    } else {
+      // Reset momentarily and apply to re-trigger shake animation if already in error state
+      setErrors({ email: false, otp: false });
+      setTimeout(() => setErrors({ email: emailErr, otp: otpErr }), 10);
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setErrors({ email: false, otp: false });
+  };
+
   useEffect(() => {
     const handleClick = () => {
       setOpen(true);
+      setEmail("");
+      setOtpCode("");
     };
 
     window.addEventListener("login-click", handleClick);
@@ -29,7 +57,7 @@ const LoginDialog = () => {
           <div className="login-panel">
             {/* <div className="profile-bg" /> */}
             <button
-              onClick={() => setOpen(false)}
+              onClick={handleClose}
               className="profile-close"
               aria-label="Close"
             >
@@ -37,10 +65,39 @@ const LoginDialog = () => {
             </button>
             <h2 className="login-title">LOG IN</h2>
             <div className="login-section">
-              <input placeholder="Your Email" className="login-email-input" />
+              <input
+                placeholder="Your Email"
+                className={`login-email-input ${errors.email ? "error" : ""}`}
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email)
+                    setErrors((prev) => ({ ...prev, email: false }));
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
+              />
 
               <div className="otp-code-container">
-                <input placeholder="Otp Code" className="login-otp-input" />
+                <input
+                  placeholder="Otp Code"
+                  className={`login-otp-input ${errors.otp ? "error" : ""}`}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otpcode}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    setOtpCode(value);
+                    if (errors.otp)
+                      setErrors((prev) => ({ ...prev, otp: false }));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSubmit();
+                  }}
+                />
 
                 <div className="otp-code-send-btn">
                   {otpSent ? (
@@ -80,6 +137,7 @@ const LoginDialog = () => {
                   stiffness={0.04}
                   damping={0.96}
                   proximityThreshold={70}
+                  onClick={handleSubmit}
                 />
               </div>
 

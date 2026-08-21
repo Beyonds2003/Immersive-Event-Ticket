@@ -875,7 +875,7 @@ body {
   /* background: #211c3b; */
   border-radius: 20px;
   overflow: hidden;
-  width: 200px;
+  width: 180px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1268,6 +1268,14 @@ body {
   font-size: 1rem;
   transition: border-color 0.2s;
 
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+    -webkit-text-fill-color: white;
+    caret-color: white;
+  }
+
   &:focus {
     border-color: #a8a6ff;
   }
@@ -1341,5 +1349,35 @@ body {
 }
 
 .login-error {
-  color: red;
+  color: #ff4d4d;
+}
+
+.login-email-input.error,
+.login-otp-input.error {
+  border-color: #ff4d4d;
+}
+
+.login-email-input.error:focus,
+.login-otp-input.error:focus {
+  border-color: #ff4d4d;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+.login-email-input.error,
+.otp-code-container:has(.login-otp-input.error) {
+  animation: shake 0.25s ease-in-out;
 }
