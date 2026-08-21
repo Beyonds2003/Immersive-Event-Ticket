@@ -17,6 +17,7 @@ import PageNavigator from "./components/General/PageNavigator";
 import Profile from "./components/General/Profile";
 import ProfileDialog from "./components/General/ProfileDialog";
 import LoginDialog from "./components/General/LoginDialog";
+import PostProcessing from "./components/General/PostProcessing";
 
 /** Syncs React Router location into the Jotai atom so R3F canvas can read it */
 const LocationSync = () => {
@@ -80,6 +81,7 @@ const Scene = () => {
         />
         {/* <pointLight position={[0, -3, 3]} intensity={0.4} /> */}
         {isShowFps && <ShowFps />}
+        {/* <PostProcessing /> */}
       </RouterBridge>
     </Canvas>
   );

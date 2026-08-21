@@ -348,7 +348,7 @@ export const SpiralCards = ({
       colorB: pageColor.Detail.colorB,
       rippleDirection: "in",
       nextPathname: "/detail",
-      transitionFireAt: 0.5,
+      transitionFireAt: 0.55,
       timeScale: 1.3,
     });
 

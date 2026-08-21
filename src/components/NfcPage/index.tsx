@@ -213,7 +213,7 @@ const Card = () => {
   });
 
   return (
-    <group ref={groupRef} position={[0, -0, 0]}>
+    <group renderOrder={1} ref={groupRef} position={[0, -0, 0]}>
       <mesh>
         <planeGeometry args={[12, 8.5]} />
         <primitive object={flameMaterial} attach="material" />

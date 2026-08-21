@@ -2,17 +2,19 @@ import React, { useEffect } from "react";
 import Tab from "../UI/Tab";
 import Heart from "../Icons/Heart";
 import WobbleButton from "../UI/WobbleButton";
-import { pageColor } from "../../libs/config/pageColor";
+import { pageColor, pageTabColor } from "../../libs/config/pageColor";
 import { useSearchParams } from "react-router";
 import gsap from "gsap";
 import Review from "./Review";
 
-const colorA = pageColor.Detail.colorA;
-const colorB = pageColor.Detail.colorB;
+const colorA = pageTabColor.Detail[0];
+const colorB = pageTabColor.Detail[1];
 // const colorC = "#ffd9a6";
 // const colorD = "#ffcc9d";
-const colorC = "#f1f1ff";
-const colorD = "#cfd1ff";
+// const colorC = "#f1f1ff";
+// const colorD = "#cfd1ff";
+const colorC = pageTabColor.Detail[2];
+const colorD = pageTabColor.Detail[3];
 
 const TicketDetailUi = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -70,7 +72,7 @@ const TicketDetailUi = () => {
             className="ticket-detail-tab"
             initialTab={tabComponentIndex}
             isRippleFromClick={true}
-            rippleDirection="out"
+            rippleDirection="in"
             timeScale={0.6}
           />
           <button className="rating-container">

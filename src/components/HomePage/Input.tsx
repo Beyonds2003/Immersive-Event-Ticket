@@ -254,32 +254,32 @@ const Input = () => {
   // });
   // texture.flipY = false;
 
-  useEffect(() => {
-    const handleSubmit = (_event: Event) => {
-      // rotateEmailInput();
+  // useEffect(() => {
+  //   const handleSubmit = (_event: Event) => {
+  //     // rotateEmailInput();
 
-      createRipple({
-        coord: { x: 0.24, y: 0 },
-        isPageTransition: true,
-        nextPathname: "/explore",
-        colorA: pageColor.Home.colorA,
-        colorB: pageColor.Home.colorB,
-        transitionFireAt: 0.5,
-        timeScale: 1,
-        rippleDirection: "in",
-        delay: 0.2,
-      });
+  //     createRipple({
+  //       coord: { x: 0.24, y: 0 },
+  //       isPageTransition: true,
+  //       nextPathname: "/explore",
+  //       colorA: pageColor.Home.colorA,
+  //       colorB: pageColor.Home.colorB,
+  //       transitionFireAt: 0.5,
+  //       timeScale: 1,
+  //       rippleDirection: "in",
+  //       delay: 0.2,
+  //     });
 
-      // window.setTimeout(() => navigate("/"), 1100);
-      cleanUp();
-    };
+  //     // window.setTimeout(() => navigate("/"), 1100);
+  //     cleanUp();
+  //   };
 
-    window.addEventListener("user-input-submit", handleSubmit);
+  //   window.addEventListener("user-input-submit", handleSubmit);
 
-    return () => {
-      window.removeEventListener("user-input-submit", handleSubmit);
-    };
-  }, [navigate]);
+  //   return () => {
+  //     window.removeEventListener("user-input-submit", handleSubmit);
+  //   };
+  // }, [navigate]);
 
   useEffect(() => {
     const handleClick = () => {

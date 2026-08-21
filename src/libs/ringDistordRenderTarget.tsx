@@ -133,7 +133,7 @@ const rtFragmentShader = /* glsl */ `
     vec2 direction = rawDiff / max(length(rawDiff), 0.001);
 
     // Secrect Sauce
-    direction *= uDirection;
+    direction *= uDirection * -1.;
 
     // UV-space displacement = outward direction × ring intensity × strength
     vec2 displacement = direction * mask * uDistordStrength;
@@ -186,7 +186,7 @@ const debugFragmentShader = /* glsl */ `
 `;
 
 export const RingDistordRenderTarget = () => {
-  const { gl } = useThree();
+  const { gl, size } = useThree();
   const setTexture = useSetAtom(ringDistordTextureAtom);
 
   // ── Leva controls ─────────────────────────────────────────────────────────
@@ -227,12 +227,16 @@ export const RingDistordRenderTarget = () => {
   // ── WebGLRenderTarget (created once, stable identity) ────────────────────
   const renderTarget = useMemo(
     () =>
-      new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType,
-      }),
+      new THREE.WebGLRenderTarget(
+        Math.floor(size.width * gl.getPixelRatio()),
+        Math.floor(size.height * gl.getPixelRatio()),
+        {
+          minFilter: THREE.LinearFilter,
+          magFilter: THREE.LinearFilter,
+          format: THREE.RGBAFormat,
+          type: THREE.HalfFloatType,
+        },
+      ),
     [],
   );
 
@@ -300,7 +304,8 @@ export const RingDistordRenderTarget = () => {
       // Kill running animation, reset to 0, then drive to 1
       progressTween.current?.kill();
       uniforms.current.uProgress.value = 0;
-      uniforms.current.uDirection.value = rippleDirection === "in" ? -1 : 1;
+      uniforms.current.uDirection.value = rippleDirection === "in" ? 1 : -1;
+      console.log(rippleDirection, "rippleDirection");
 
       progressTween.current = gsap.to(uniforms.current.uProgress, {
         value: 1,
@@ -318,11 +323,12 @@ export const RingDistordRenderTarget = () => {
 
   // ── Offscreen render at priority −1 (before the main scene) ──────────────
   useFrame(() => {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const pr = gl.getPixelRatio();
+    const w = Math.floor(size.width * pr);
+    const h = Math.floor(size.height * pr);
 
     // Push live Leva values + click state to uniforms
-    uniforms.current.uResolution.value.set(w, h);
+    uniforms.current.uResolution.value.set(size.width, size.height);
     uniforms.current.uClickPos.value.copy(clickPos.current);
     uniforms.current.uRingWidth.value = ringWidth;
     uniforms.current.uRingBlur.value = ringBlur;

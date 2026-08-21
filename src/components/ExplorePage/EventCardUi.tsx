@@ -2,11 +2,17 @@ import { useEffect } from "react";
 import Arrow from "../Icons/Arrow";
 import Tab from "../UI/Tab";
 import gsap from "gsap";
+import { pageTabColor } from "../../libs/config/pageColor";
 
-const colorA = "#06ecff";
-const colorB = "#00e1ff";
-const colorC = "#fff170";
-const colorD = "#efda21";
+// const colorA = "#06ecff";
+// const colorB = "#00e1ff";
+// const colorC = "#fff170";
+// const colorD = "#efda21";
+
+const colorA = pageTabColor.Explore[0];
+const colorB = pageTabColor.Explore[1];
+const colorC = pageTabColor.Explore[2];
+const colorD = pageTabColor.Explore[3];
 
 const EventCardUi = () => {
   // Handle Menu Click
@@ -34,8 +40,9 @@ const EventCardUi = () => {
         colorD={colorD}
         textA="New"
         textB="Old"
-        rippleCoord={[0, -0]}
-        timeScale={1}
+        rippleCoord={[0, 0]}
+        timeScale={0.8}
+        rippleDirection="out"
       />
       <Navigation />
     </div>

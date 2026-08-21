@@ -195,7 +195,7 @@ const Gradient = () => {
   });
 
   return (
-    <mesh renderOrder={0}>
+    <mesh renderOrder={1}>
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={material}

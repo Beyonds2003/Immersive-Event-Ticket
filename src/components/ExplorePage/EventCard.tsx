@@ -160,7 +160,7 @@ const EventCard = () => {
       infiniteLoop: { value: false, label: "Infinite Loop" },
     }),
     "Visual Styling": folder({
-      cardColor: { value: "#0aefe7", label: "Card Base Color" },
+      cardColor: { value: "#7eb3df", label: "Card Base Color" },
       activeColor: { value: "#ffe816", label: "Active Highlight" },
       wireframe: { value: false, label: "Wireframe Mode" },
     }),

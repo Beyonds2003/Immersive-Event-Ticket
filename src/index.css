@@ -1246,7 +1246,7 @@ body {
 @keyframes login-panel-exit {
   to {
     /* opacity: 0; */
-    transform: scale(0.7) translateY(100px);
+    transform: scale(1.2);
   }
 }
 

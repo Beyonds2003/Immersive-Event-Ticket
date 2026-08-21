@@ -129,7 +129,7 @@ const Poster = () => {
   });
 
   return (
-    <mesh renderOrder={1}>
+    <mesh renderOrder={1} frustumCulled={false}>
       <planeGeometry args={[2, 2, 20, 20]} />
       <shaderMaterial
         ref={material}
