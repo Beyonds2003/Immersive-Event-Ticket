@@ -3,9 +3,7 @@ import ProfileIcon from "../Icons/Profile";
 
 const Profile = () => {
   const handleClick = (type: string) => {
-    if (type === "profile") {
-      window.dispatchEvent(new CustomEvent("profile-click"));
-    }
+    window.dispatchEvent(new CustomEvent(`${type}-click`));
   };
 
   return (
@@ -14,8 +12,9 @@ const Profile = () => {
         <ProfileIcon />
 
         <div className="profile-dropdown">
-          <button onClick={() => handleClick("profile")}>SEE PROFILE</button>
-          <button>LOGOUT</button>
+          {/* <button onClick={() => handleClick("profile")}>SEE PROFILE</button> */}
+          <button onClick={() => handleClick("login")}>LOGIN</button>
+          {/* <button>LOGOUT</button> */}
           <button>CONTACT SUPPORT</button>
         </div>
       </div>

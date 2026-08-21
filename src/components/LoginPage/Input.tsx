@@ -151,7 +151,7 @@ const Input = () => {
 
     window.dispatchEvent(
       new CustomEvent("user-input-hover", {
-        detail: { text: "Enter Email", isHovering: true },
+        detail: { text: "Enjoy Your Day!", isHovering: true },
       }),
     );
   };
@@ -183,9 +183,24 @@ const Input = () => {
   };
 
   const handleClick = () => {
-    setClicked(true);
+    // setClicked(true);
     // focus is called after InputText mounts via the ref
-    setTimeout(() => inputTextRef.current?.focus(), 0);
+    // setTimeout(() => inputTextRef.current?.focus(), 0);
+
+    createRipple({
+      coord: { x: 0.24, y: 0 },
+      isPageTransition: true,
+      nextPathname: "/",
+      colorA: pageColor.Home.colorA,
+      colorB: pageColor.Home.colorB,
+      transitionFireAt: 0.5,
+      timeScale: 1,
+      rippleDirection: "in",
+      delay: 0.2,
+    });
+
+    // window.setTimeout(() => navigate("/"), 1100);
+    cleanUp();
   };
 
   const rotateEmailInput = () => {
@@ -312,14 +327,15 @@ const Input = () => {
             />
           </mesh>
 
-          {clicked ? (
+          {/* {clicked ? (
             <InputText
               ref={inputTextRef}
               onBlurEmpty={() => setClicked(false)}
             />
           ) : (
             <AnimateText />
-          )}
+          )} */}
+          <AnimateText />
         </group>
       </group>
 
@@ -496,7 +512,7 @@ const AnimateText = () => {
       isHoveredRef.current = !!isHovering;
 
       if (isHovering) {
-        animateToText(text || "Enter Email");
+        animateToText(text || "Enjoy Your Day!");
       } else {
         animateToText(data[indexRef.current]);
       }
