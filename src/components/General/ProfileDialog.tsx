@@ -108,7 +108,7 @@ const ProfileDialog = () => {
 
 const Scene = () => {
   return (
-    <Canvas camera={{ position: [0, 0, 15], fov: 11 }}>
+    <Canvas camera={{ position: [0, 0, 15], fov: 15 }}>
       <GroupOfSphere configKey="Profile" configOffset={5} />
 
       <ambientLight intensity={2.4} color="#504ed8" />

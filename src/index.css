@@ -1013,7 +1013,7 @@ body {
   min-height: 0;
   max-height: calc(100dvh - clamp(24px, 6vw, 60px));
   display: grid;
-  grid-template-areas: "header aside" "main aside" "ticket ticket";
+  grid-template-areas: "header aside" "main aside" "ticket aside";
   flex: 1;
   position: relative;
   overflow-y: auto;

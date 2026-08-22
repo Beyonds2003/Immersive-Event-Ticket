@@ -538,6 +538,7 @@ const AnimateText = () => {
       transform
       // occlude
       style={{ pointerEvents: "none" }}
+      zIndexRange={[10, 0]}
     >
       <h1 ref={textRef} className="animate-input-text">
         {data[0]}
