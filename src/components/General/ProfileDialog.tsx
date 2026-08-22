@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import WobbleButton from "../UI/WobbleButton";
-import { LocateFixedIcon, LocationEditIcon } from "lucide-react";
+import {
+  CalendarDays,
+  Clock3,
+  MapPin,
+  Tag,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
 import { Canvas } from "@react-three/fiber";
 import GroupOfSphere from "./GroupOfSphere";
 import { OrbitControls } from "@react-three/drei";
@@ -18,13 +27,38 @@ const ProfileDialog = () => {
     return () => {
       window.removeEventListener("profile-click", handleClick);
     };
-  });
+  }, []);
+
+  // Force canvas resize measurement when dialog opens and throughout entrance animation
+  // useEffect(() => {
+  //   if (!open) return;
+  //   const triggerResize = () => {
+  //     window.dispatchEvent(new Event("resize"));
+  //   };
+
+  //   triggerResize();
+  //   const timers = [
+  //     setTimeout(triggerResize, 50),
+  //     setTimeout(triggerResize, 150),
+  //     setTimeout(triggerResize, 350),
+  //     setTimeout(triggerResize, 700),
+  //   ];
+
+  //   return () => {
+  //     timers.forEach(clearTimeout);
+  //   };
+  // }, [open]);
 
   return (
     <>
       {open && (
         <div data-open={open} className="profile-overlay">
-          <div className="profile-panel">
+          <div
+            className="profile-panel"
+            onAnimationEnd={() => {
+              window.dispatchEvent(new Event("resize"));
+            }}
+          >
             <div className="profile-bg" />
             <button
               onClick={() => setOpen(false)}
@@ -87,15 +121,17 @@ const ProfileDialog = () => {
                   <div className="panel-ticket-container">
                     <h3 className="panel-title">YOUR TICKETS</h3>
                     <div className="panel-ticket-list">
-                      {new Array(4).fill(0).map((item) => (
-                        <TicketUi key={item} />
+                      {new Array(4).fill(0).map((_, i) => (
+                        <TicketUi key={i} index={i} />
                       ))}
                     </div>
                   </div>
                 </section>
 
                 <section className="profile-section-4">
-                  <Scene />
+                  <div className="profile-canvas-container">
+                    <Scene />
+                  </div>
                 </section>
               </div>
             </div>
@@ -108,7 +144,11 @@ const ProfileDialog = () => {
 
 const Scene = () => {
   return (
-    <Canvas camera={{ position: [0, 0, 15], fov: 15 }}>
+    <Canvas
+      style={{ width: "100%", height: "100%", display: "block" }}
+      camera={{ position: [0, 0, 15], fov: 15 }}
+      resize={{ scroll: true, debounce: { scroll: 50, resize: 0 } }}
+    >
       <GroupOfSphere configKey="Profile" configOffset={5} />
 
       <ambientLight intensity={2.4} color="#504ed8" />
@@ -124,31 +164,120 @@ const Scene = () => {
   );
 };
 
-const TicketUi = () => {
+type TicketStatus = "upcoming" | "checked" | "expired";
+
+const tickets = [
+  {
+    title: "React Conf 2026",
+    date: "20 Sep 2026",
+    time: "5:00 PM",
+    location: "Yangon Hmawbi",
+    description:
+      "A conference for React developers to learn, connect and build the future.",
+    price: "$49",
+    status: "upcoming" as TicketStatus,
+  },
+  {
+    title: "Web Dev Summit",
+    date: "25 Oct 2026",
+    time: "2:30 PM",
+    location: "Yangon Hmawbi",
+    description:
+      "Join industry leaders and developers to explore the latest in web technologies.",
+    price: "$79",
+    status: "checked" as TicketStatus,
+  },
+  {
+    title: "UI/UX Design Day",
+    date: "15 Nov 2026",
+    time: "10:00 AM",
+    location: "Yangon Hmawbi",
+    description:
+      "A day dedicated to UI/UX design, trends and hands-on workshops.",
+    price: "$35",
+    status: "expired" as TicketStatus,
+  },
+  {
+    title: "Code & Coffee",
+    date: "10 Dec 2026",
+    time: "4:00 PM",
+    location: "Yangon Hmawbi",
+    description:
+      "Casual meetup for developers to code, share ideas and enjoy coffee.",
+    price: "Free",
+    status: "upcoming" as TicketStatus,
+  },
+];
+
+const statusConfig: Record<
+  TicketStatus,
+  { label: string; className: string; Icon: LucideIcon }
+> = {
+  upcoming: {
+    label: "Upcoming",
+    className: "ticket-status--upcoming",
+    Icon: Clock,
+  },
+  checked: {
+    label: "Checked In",
+    className: "ticket-status--checked",
+    Icon: CheckCircle2,
+  },
+  expired: {
+    label: "Expired",
+    className: "ticket-status--expired",
+    Icon: XCircle,
+  },
+};
+
+const TicketUi = ({ index }: { index: number }) => {
+  const ticket = tickets[index % tickets.length];
+  const { label, className, Icon } = statusConfig[ticket.status];
   return (
-    <div className="profile-ticket-container">
-      <h4>Ticket Title</h4>
-      <div className="profile-ticket-date">
-        <p>20 SEP 2026</p>
-        <span className="text-[4px]" aria-hidden>
-          ⚪️
-        </span>
-        <p>5:00 PM</p>
-      </div>
-      <div className="profile-ticket-location">
-        <LocationEditIcon size={20} />
-        <p>Yangon Hmawbi</p>
-      </div>
-
-      <div className="ticket-divider"></div>
-
-      <div className="profile-ticket-qr-container">
-        <div className="profile-qr-info">
-          <h6>TICKET ID</h6>
-          <h3>#0002</h3>
+    <div
+      className="profile-ticket-container"
+      style={{ animationDelay: `${index * 0.1}s` }}
+    >
+      <div className="ticket-timeline-dot" aria-hidden />
+      <div className="ticket-card">
+        {/* Title row with status badge */}
+        <div className="ticket-card-header">
+          <h4>{ticket.title}</h4>
+          <span className={`ticket-status-badge ${className}`}>
+            <Icon size={11} />
+            {label}
+          </span>
         </div>
-        <div className="profile-ticket-qr-img-container">
-          <img src="/images/qr-code.png" alt="qr-code" />
+
+        <div className="profile-ticket-meta">
+          <span className="ticket-meta-item">
+            <CalendarDays size={14} />
+            {ticket.date}
+          </span>
+          <span className="ticket-meta-sep" aria-hidden>
+            •
+          </span>
+          <span className="ticket-meta-item">
+            <Clock3 size={14} />
+            {ticket.time}
+          </span>
+          <span className="ticket-meta-sep" aria-hidden>
+            •
+          </span>
+          <span className="ticket-meta-item">
+            <MapPin size={14} />
+            {ticket.location}
+          </span>
+        </div>
+
+        <p className="ticket-description">{ticket.description}</p>
+
+        {/* Price tag */}
+        <div className="ticket-price-row">
+          <span className="ticket-price-tag">
+            <Tag size={12} />
+            {ticket.price}
+          </span>
         </div>
       </div>
     </div>

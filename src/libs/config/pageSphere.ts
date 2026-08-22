@@ -188,7 +188,7 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
     spreadX: 1,
     spreadY: 1,
     sphereCount: 1,
-    sphereRadius: 1,
+    sphereRadius: 1.2,
     mouseForce: 0,
     obstacleState: "remove",
   },
