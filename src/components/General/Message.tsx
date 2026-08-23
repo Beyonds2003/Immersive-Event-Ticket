@@ -201,9 +201,22 @@ const Message = ({ align, name, message }: Props) => {
     };
   }, [isActive, node, id]);
 
+  const [isProfileOpen, setIsProfileOpen] = useState(true);
+
+  useEffect(() => {
+    const handleClick = () => {
+      setIsProfileOpen(true);
+    };
+
+    window.addEventListener("profile-click", handleClick);
+
+    return () => window.removeEventListener("profile-click", handleClick);
+  }, []);
+
   const pathname = useAtomValue(pathnameAtom);
   if (pathname === "/detail") return null;
   if (pathname === "/nfc") return null;
+  if (isProfileOpen) return null;
 
   return (
     <Html

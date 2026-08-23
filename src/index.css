@@ -810,7 +810,7 @@ body {
 }
 
 .leva-c-kWgxhW-czBHep-hideTitleBar-false {
-  display: none !important;
+  /* display: none !important; */
   z-index: 9999 !important;
 }
 
@@ -1147,8 +1147,6 @@ body {
 .profile-section-2 {
   margin-bottom: 40px;
 }
-
-
 
 .panel-ticket-list {
   margin-top: 20px;

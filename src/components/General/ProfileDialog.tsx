@@ -13,9 +13,10 @@ import {
 import { Canvas } from "@react-three/fiber";
 import GroupOfSphere from "./GroupOfSphere";
 import { OrbitControls } from "@react-three/drei";
+import ProfileScene from "../ProfileScene";
 
 const ProfileDialog = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     const handleClick = () => {
@@ -130,7 +131,7 @@ const ProfileDialog = () => {
 
                 <section className="profile-section-4">
                   <div className="profile-canvas-container">
-                    <Scene />
+                    <ProfileScene />
                   </div>
                 </section>
               </div>
@@ -139,28 +140,6 @@ const ProfileDialog = () => {
         </div>
       )}
     </>
-  );
-};
-
-const Scene = () => {
-  return (
-    <Canvas
-      style={{ width: "100%", height: "100%", display: "block" }}
-      camera={{ position: [0, 0, 15], fov: 15 }}
-      resize={{ scroll: true, debounce: { scroll: 50, resize: 0 } }}
-    >
-      <GroupOfSphere configKey="Profile" configOffset={5} />
-
-      <ambientLight intensity={2.4} color="#504ed8" />
-      <ambientLight intensity={2.8} />
-      <directionalLight
-        position={[5, 10, 5]}
-        intensity={1.8}
-        castShadow
-        shadow-normalBias={0.008}
-      />
-      <pointLight position={[0, -3, 3]} intensity={0.4} />
-    </Canvas>
   );
 };
 

@@ -729,7 +729,8 @@ const SphereModel = ({
       <CustomShaderMaterial
         baseMaterial={THREE.MeshStandardMaterial}
         // color={sphereColor}
-        roughness={roughness}
+        // roughness={roughness}
+        roughness={1}
         metalness={metalness}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}

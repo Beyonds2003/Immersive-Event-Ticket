@@ -182,8 +182,8 @@ export const pageSphere: Record<string, Partial<SphereConfig> | undefined> = {
   },
   Profile: {
     ...defaultSphereConfig,
-    positionX: 0.5,
-    positionY: 0.3,
+    positionX: 0.4,
+    positionY: 0.8,
     positionZ: 0,
     spreadX: 1,
     spreadY: 1,
