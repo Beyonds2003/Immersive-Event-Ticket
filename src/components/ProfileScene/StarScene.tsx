@@ -47,7 +47,7 @@ const StarScene: React.FC = () => {
         />
       )} */}
 
-      <GroupOfSphere configKey="Profile" configOffset={18} />
+      <GroupOfSphere configKey="Profile" configOffset={6} />
     </>
   );
 };

@@ -104,7 +104,7 @@ const ProfileDialog = () => {
                     <tbody>
                       <tr>
                         <td>Surname</td>
-                        <td>Addy</td>
+                        <td>Violet Evergarden</td>
                       </tr>
 
                       <tr>

@@ -151,7 +151,7 @@ const Input = () => {
 
     window.dispatchEvent(
       new CustomEvent("user-input-hover", {
-        detail: { text: "Enjoy Your Day!", isHovering: true },
+        detail: { text: "Let Go!", isHovering: true },
       }),
     );
   };
@@ -512,7 +512,7 @@ const AnimateText = () => {
       isHoveredRef.current = !!isHovering;
 
       if (isHovering) {
-        animateToText(text || "Enjoy Your Day!");
+        animateToText(text || "Let Go!");
       } else {
         animateToText(data[indexRef.current]);
       }

@@ -1,6 +1,6 @@
 import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
 import { useFBO, useGLTF } from "@react-three/drei";
-import React, { useMemo } from "react";
+import React, { Suspense, useMemo } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
 import StarScene from "./StarScene";
@@ -22,7 +22,9 @@ const index = () => {
       shadows
       resize={{ scroll: true, debounce: { scroll: 50, resize: 0 } }}
     >
-      <Scene />
+      <Suspense>
+        <Scene />
+      </Suspense>
 
       <ambientLight intensity={2.4} color="#504ed8" />
       <ambientLight intensity={2.8} />

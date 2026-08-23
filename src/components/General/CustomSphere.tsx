@@ -686,6 +686,8 @@ const SphereModel = ({
   const activePageColor = pageColor[pageKey] || pageColor.Home;
   const pageColorA = useRef(new THREE.Color(activePageColor.colorA));
 
+  const isProfileOpen = useAtomValue(isProfileOpenAtom);
+
   const uniforms = useRef({
     uDiffuseTexture: { value: diffuseTexture },
     uNormalTexture: { value: normalTexture },
@@ -701,6 +703,7 @@ const SphereModel = ({
     uFresnelWhite: { value: fresnelWhite },
     uSunDirection: { value: new THREE.Vector3(sunX, sunY, sunZ) },
     uPageColorA: { value: pageColorA.current },
+    uProfileOpen: { value: isProfileOpen },
   });
 
   useFrame(() => {
@@ -712,14 +715,13 @@ const SphereModel = ({
     uniforms.current.uFresnelDark.value = fresnelDark;
     uniforms.current.uFresnelWhite.value = fresnelWhite;
     uniforms.current.uSunDirection.value.set(sunX, sunY, sunZ);
+    uniforms.current.uProfileOpen.value = isProfileOpen;
 
     const currentKey = (routeSphereMap[location.pathname] ||
       "Home") as keyof typeof pageColor;
     const currentTheme = pageColor[currentKey] || pageColor.Home;
     pageColorA.current.set(currentTheme.colorA);
   });
-
-  const isProfileOpen = useAtomValue(isProfileOpenAtom);
 
   return (
     <mesh
@@ -789,6 +791,7 @@ const fragmentShader = `
   uniform float uFresnelWhite;
   uniform vec3 uSunDirection;
   uniform vec3 uPageColorA;
+  uniform bool uProfileOpen;
 
   // Boosts colour saturation: factor > 1 = more vivid, 0 = grayscale
   vec3 saturateColor(vec3 c, float factor) {
@@ -849,7 +852,9 @@ const fragmentShader = `
 
     // color = mix(color, uPageColorA, fresnel);
 
-    float edgeBoost = 0.05 + (0.2 * pow(vRing, 1.));
+    float edgeBoostOffset = uProfileOpen ? 0.4 : 0.05;
+
+    float edgeBoost = edgeBoostOffset + (0.2 * pow(vRing, 1.));
 
     color += vec3(1., 1., 1.) * edge * edgeBoost;
 
