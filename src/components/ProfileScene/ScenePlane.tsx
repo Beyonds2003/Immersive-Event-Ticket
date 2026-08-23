@@ -34,8 +34,9 @@ const fragmentShader = `
 
 const ScenePlane: React.FC<ScenePlaneProps> = ({
   texture = null,
-  position = [0, 0, 0],
-  size = [5.8 * 1.3, 4 * 1.3],
+  position = [0, 1, 0],
+  // size = [5.8 * 1.3, 4 * 1.3],
+  size = [4, 4],
 }) => {
   const matRef = useRef<THREE.ShaderMaterial>(null);
 

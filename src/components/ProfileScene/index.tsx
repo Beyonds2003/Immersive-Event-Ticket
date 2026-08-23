@@ -43,12 +43,15 @@ const Scene = () => {
   const virtualScene = useMemo(() => new THREE.Scene(), []);
   const fbo = useFBO({ samples: 4 });
 
+  const newCamera = new THREE.PerspectiveCamera(15);
+  newCamera.position.set(0, 1, 15);
+
   // Render offscreen StarScene into the FBO
   useFrame((state) => {
     state.gl.setRenderTarget(fbo);
     state.gl.setClearColor(0x000000, 0);
     state.gl.clear();
-    state.gl.render(virtualScene, camera);
+    state.gl.render(virtualScene, newCamera);
     state.gl.setRenderTarget(null);
   });
 

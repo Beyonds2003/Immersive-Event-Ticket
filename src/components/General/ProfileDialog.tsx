@@ -134,6 +134,21 @@ const ProfileDialog = () => {
                 <section className="profile-section-4">
                   <div className="profile-canvas-container">
                     <ProfileScene />
+
+                    {/* <div className="show-qr-btn-containter">
+                      <WobbleButton
+                        text="Physics Bowl"
+                        hoverText="Click me"
+                        fillColor="#6C4EF5"
+                        width={200}
+                        height={60}
+                        fontSize={1.15}
+                        bulgeAmount={6}
+                        stiffness={0.04}
+                        damping={0.96}
+                        proximityThreshold={70}
+                      />
+                    </div> */}
                   </div>
                 </section>
               </div>

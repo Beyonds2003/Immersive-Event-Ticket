@@ -1565,3 +1565,8 @@ body {
 .otp-code-container:has(.login-otp-input.error) {
   animation: shake 0.25s ease-in-out;
 }
+
+.show-qr-btn-containter {
+  position: absolute;
+  bottom: -50px;
+}
