@@ -8,6 +8,8 @@ import { generateColorPair } from "../../libs/generateColorPair";
 import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 import Message from "./Message";
 import { useLocation } from "react-router";
+import { useAtomValue } from "jotai";
+import { isProfileOpenAtom } from "../../libs/atoms";
 import { globalWindowPointer } from "./GroupOfSphere";
 import { pageColor } from "../../libs/config/pageColor";
 import { routeSphereMap } from "../../libs/config/pageSphere";
@@ -717,6 +719,8 @@ const SphereModel = ({
     pageColorA.current.set(currentTheme.colorA);
   });
 
+  const isProfileOpen = useAtomValue(isProfileOpenAtom);
+
   return (
     <mesh
       castShadow
@@ -729,8 +733,7 @@ const SphereModel = ({
       <CustomShaderMaterial
         baseMaterial={THREE.MeshStandardMaterial}
         // color={sphereColor}
-        // roughness={roughness}
-        roughness={1}
+        roughness={isProfileOpen ? 0.5 : roughness}
         metalness={metalness}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}

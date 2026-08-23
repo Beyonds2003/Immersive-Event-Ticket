@@ -5,7 +5,7 @@ import * as THREE from "three";
 import Model from "./CustomSphere";
 import { PhysicsWorld } from "../../libs/PhysicsWorld";
 import { useAtomValue } from "jotai";
-import { pathnameAtom } from "../../libs/atoms";
+import { pathnameAtom, isProfileOpenAtom } from "../../libs/atoms";
 import {
   pageSphere,
   routeSphereMap,
@@ -184,6 +184,7 @@ interface PhysicsSceneProps {
   sunY: number;
   sunZ: number;
   configOffset: number;
+  isProfileScene?: boolean;
   onProgressUpdate: (progress: number) => void;
 }
 
@@ -239,8 +240,10 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   sunY,
   sunZ,
   configOffset,
+  isProfileScene = false,
   onProgressUpdate,
 }) => {
+  const isProfileOpen = useAtomValue(isProfileOpenAtom);
   const { camera } = useThree();
   const obstacleMeshRef = useRef<THREE.Mesh>(null);
   const groupRefs = useRef<(THREE.Group | null)[]>([]);
@@ -565,6 +568,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
 
   useFrame(({ pointer, clock, camera }) => {
     if (isDisposedRef.current) return;
+    if (isProfileOpen && !isProfileScene) return;
     if (!physicsWorld.current || !ballState.current || !input.current) return;
 
     const mouse =
@@ -1193,6 +1197,7 @@ const GroupOfSphere = ({
       sunY={controls.sunY}
       sunZ={controls.sunZ}
       configOffset={configOffset}
+      isProfileScene={activeKey === "Profile"}
       onProgressUpdate={handleProgressUpdate}
     />
   );

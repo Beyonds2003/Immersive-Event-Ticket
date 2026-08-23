@@ -2,7 +2,7 @@ import { Html } from "@react-three/drei";
 import React, { useEffect, useRef, useState, useId } from "react";
 import gsap from "gsap";
 import { useAtomValue } from "jotai";
-import { pathnameAtom } from "../../libs/atoms";
+import { pathnameAtom, isProfileOpenAtom } from "../../libs/atoms";
 
 interface Props {
   align: "left" | "right";
@@ -201,19 +201,9 @@ const Message = ({ align, name, message }: Props) => {
     };
   }, [isActive, node, id]);
 
-  const [isProfileOpen, setIsProfileOpen] = useState(true);
-
-  useEffect(() => {
-    const handleClick = () => {
-      setIsProfileOpen(true);
-    };
-
-    window.addEventListener("profile-click", handleClick);
-
-    return () => window.removeEventListener("profile-click", handleClick);
-  }, []);
-
+  const isProfileOpen = useAtomValue(isProfileOpenAtom);
   const pathname = useAtomValue(pathnameAtom);
+
   if (pathname === "/detail") return null;
   if (pathname === "/nfc") return null;
   if (isProfileOpen) return null;

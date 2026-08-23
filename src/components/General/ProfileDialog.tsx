@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useAtom } from "jotai";
+import { isProfileOpenAtom } from "../../libs/atoms";
 import WobbleButton from "../UI/WobbleButton";
 import {
   CalendarDays,
@@ -16,7 +18,7 @@ import { OrbitControls } from "@react-three/drei";
 import ProfileScene from "../ProfileScene";
 
 const ProfileDialog = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useAtom(isProfileOpenAtom);
 
   useEffect(() => {
     const handleClick = () => {
@@ -28,7 +30,7 @@ const ProfileDialog = () => {
     return () => {
       window.removeEventListener("profile-click", handleClick);
     };
-  }, []);
+  }, [setOpen]);
 
   // Force canvas resize measurement when dialog opens and throughout entrance animation
   // useEffect(() => {

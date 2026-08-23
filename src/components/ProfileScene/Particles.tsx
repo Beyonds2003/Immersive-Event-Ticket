@@ -257,7 +257,7 @@ export const Particles: React.FC<ParticlesProps> = (props) => {
     minY: { value: props.minY ?? -2.1, min: -5.0, max: 2.0, step: 0.1 },
     maxY: { value: props.maxY ?? 2.1, min: 0.0, max: 8.0, step: 0.1 },
     opacity: { value: props.opacity ?? 0.9, min: 0.0, max: 1.0, step: 0.05 },
-    glow: { value: 2, min: 0.0, max: 10.0, step: 0.05 },
+    glow: { value: 4, min: 0.0, max: 10.0, step: 0.05 },
     baseRadius: {
       value: props.baseRadius ?? 1.6,
       min: 0.2,

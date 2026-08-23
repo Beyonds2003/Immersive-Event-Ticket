@@ -34,7 +34,7 @@ const App = () => {
     <BrowserRouter>
       <LocationSync />
       <div className="h-screen login-container">
-        {/* <Scene /> */}
+        <Scene />
         <Leva collapsed />
         <PageHtmlUi />
 

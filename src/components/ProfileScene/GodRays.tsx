@@ -202,7 +202,7 @@ const GodRays: React.FC<GodRaysProps> = (props) => {
       intensity: { value: props.intensity ?? 4.2, min: 0, max: 10, step: 0.1 },
       speed: { value: props.speed ?? 0.83, min: 0, max: 3, step: 0.01 },
       rayCount: { value: props.rayCount ?? 5, min: 2, max: 40, step: 1 },
-      decay: { value: props.decay ?? 1.6, min: 0.1, max: 5, step: 0.05 },
+      decay: { value: props.decay ?? 1.95, min: 0.1, max: 5, step: 0.05 },
       density: { value: props.density ?? 0.05, min: 0.1, max: 4, step: 0.1 },
       originX: { value: props.originX ?? 1.0, min: 0, max: 1.5, step: 0.01 },
       originY: { value: props.originY ?? 1.08, min: 0, max: 1.5, step: 0.01 },
