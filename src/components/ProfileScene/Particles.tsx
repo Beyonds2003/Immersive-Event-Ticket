@@ -1,4 +1,5 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
+import gsap from "gsap";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import * as THREE from "three";
@@ -259,7 +260,7 @@ export const Particles: React.FC<ParticlesProps> = (props) => {
     opacity: { value: props.opacity ?? 0.9, min: 0.0, max: 1.0, step: 0.05 },
     glow: { value: 4, min: 0.0, max: 10.0, step: 0.05 },
     baseRadius: {
-      value: props.baseRadius ?? 1.6,
+      value: props.baseRadius ?? 5,
       min: 0.2,
       max: 5.0,
       step: 0.1,
@@ -332,7 +333,7 @@ export const Particles: React.FC<ParticlesProps> = (props) => {
       uSpreadPower: { value: controls.spreadPower },
       uNoiseStrength: { value: controls.noiseStrength },
       uNoiseFreq: { value: controls.noiseFreq },
-      uOpacity: { value: controls.opacity },
+      uOpacity: { value: 0 },
       uGlow: { value: controls.glow },
       uPixelRatio: {
         value:
@@ -343,6 +344,36 @@ export const Particles: React.FC<ParticlesProps> = (props) => {
     }),
     [],
   );
+
+  // GSAP animation: animate opacity from 0 to target opacity (default 0.9)
+  useEffect(() => {
+    if (!matRef.current) return;
+    const tween = gsap.fromTo(
+      matRef.current.uniforms.uOpacity,
+      { value: 0 },
+      {
+        value: controls.opacity,
+        duration: 1.5,
+        delay: 0.8,
+        ease: "power2.out",
+      },
+    );
+    return () => {
+      tween.kill();
+    };
+  }, []);
+
+  // Update opacity dynamically if adjusted via Leva controls after mount
+  const isMounted = useRef(false);
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    if (matRef.current) {
+      matRef.current.uniforms.uOpacity.value = controls.opacity;
+    }
+  }, [controls.opacity]);
 
   useFrame((_, delta) => {
     if (matRef.current) {
@@ -356,13 +387,12 @@ export const Particles: React.FC<ParticlesProps> = (props) => {
       matRef.current.uniforms.uSpreadPower.value = controls.spreadPower;
       matRef.current.uniforms.uNoiseStrength.value = controls.noiseStrength;
       matRef.current.uniforms.uNoiseFreq.value = controls.noiseFreq;
-      matRef.current.uniforms.uOpacity.value = controls.opacity;
       matRef.current.uniforms.uGlow.value = controls.glow;
     }
   });
 
   return (
-    <points key={`particles-${controls.count}`} position-z={-4}>
+    <points key={`particles-${controls.count}`} position-z={-2}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         <bufferAttribute
