@@ -5,3 +5,6 @@ export const pathnameAtom = atom<string>(window.location.pathname);
 
 /** Synced profile dialog open/close state */
 export const isProfileOpenAtom = atom<boolean>(false);
+
+/** Synced physics engine loaded state */
+export const isPhysicsLoadedAtom = atom<boolean>(false);

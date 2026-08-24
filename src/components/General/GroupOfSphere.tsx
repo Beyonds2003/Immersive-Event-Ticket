@@ -4,8 +4,8 @@ import { useControls, Leva, folder, button } from "leva";
 import * as THREE from "three";
 import Model from "./CustomSphere";
 import { PhysicsWorld } from "../../libs/PhysicsWorld";
-import { useAtomValue } from "jotai";
-import { pathnameAtom, isProfileOpenAtom } from "../../libs/atoms";
+import { useAtomValue, useSetAtom } from "jotai";
+import { pathnameAtom, isProfileOpenAtom, isPhysicsLoadedAtom } from "../../libs/atoms";
 import {
   pageSphere,
   routeSphereMap,
@@ -244,6 +244,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
   onProgressUpdate,
 }) => {
   const isProfileOpen = useAtomValue(isProfileOpenAtom);
+  const setPhysicsLoaded = useSetAtom(isPhysicsLoadedAtom);
   const { camera } = useThree();
   const obstacleMeshRef = useRef<THREE.Mesh>(null);
   const groupRefs = useRef<(THREE.Group | null)[]>([]);
@@ -527,6 +528,7 @@ const PhysicsScene: React.FC<PhysicsSceneProps> = ({
     input.current = inp;
 
     physicsWorld.current.initialSeparation(state, inp, 60);
+    setPhysicsLoaded(true);
 
     triggerIntroAnimation(count);
 

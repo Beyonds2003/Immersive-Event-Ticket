@@ -18,6 +18,7 @@ import Profile from "./components/General/Profile";
 import ProfileDialog from "./components/General/ProfileDialog";
 import LoginDialog from "./components/General/LoginDialog";
 import PostProcessing from "./components/General/PostProcessing";
+import LoadingScreen from "./components/General/LoadingScreen";
 
 /** Syncs React Router location into the Jotai atom so R3F canvas can read it */
 const LocationSync = () => {
@@ -34,10 +35,10 @@ const App = () => {
     <BrowserRouter>
       <LocationSync />
       <div className="h-screen login-container">
+        <LoadingScreen />
         <Scene />
         <Leva collapsed />
         <PageHtmlUi />
-
         <Profile />
         <ProfileDialog />
         <LoginDialog />

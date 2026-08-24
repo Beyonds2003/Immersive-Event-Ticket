@@ -11,9 +11,14 @@ export class PhysicsWorld {
   private _activeInput: Float32Array | null = null;
   private _pendingStep: { ballState: Float32Array; input: Float32Array } | null = null;
   private _stepId = 0;
+  private _isReady = false;
+  private _readyCallbacks: (() => void)[] = [];
 
-  constructor(maxBalls: number) {
+  constructor(maxBalls: number, onReady?: () => void) {
     this._maxBalls = maxBalls;
+    if (onReady) {
+      this._readyCallbacks.push(onReady);
+    }
 
     if (typeof Worker !== "undefined") {
       try {
@@ -24,6 +29,11 @@ export class PhysicsWorld {
 
         this._worker.onmessage = (e: MessageEvent) => {
           const { type, ballState, input } = e.data;
+          if (type === "initDone") {
+            this._isReady = true;
+            this._notifyReady();
+            return;
+          }
           if (type === "stepDone") {
             if (this._activeState && ballState) {
               this._activeState.set(ballState);
@@ -51,10 +61,31 @@ export class PhysicsWorld {
         console.warn("Failed to create physics worker, falling back to sync engine", err);
         this._worker = null;
         this._fallbackEngine = new PhysicsEngine(maxBalls);
+        this._isReady = true;
+        this._notifyReady();
       }
     } else {
       this._fallbackEngine = new PhysicsEngine(maxBalls);
+      this._isReady = true;
+      this._notifyReady();
     }
+  }
+
+  get isReady(): boolean {
+    return this._isReady;
+  }
+
+  onReady(cb: () => void): void {
+    if (this._isReady) {
+      cb();
+    } else {
+      this._readyCallbacks.push(cb);
+    }
+  }
+
+  private _notifyReady(): void {
+    this._readyCallbacks.forEach((cb) => cb());
+    this._readyCallbacks = [];
   }
 
   step(ballState: Float32Array, input: Float32Array): void {
