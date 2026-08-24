@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
 import GroupOfSphere from "../General/GroupOfSphere";
@@ -46,9 +46,28 @@ const StarScene: React.FC = () => {
           shadow-normalBias={0.008}
         />
       )} */}
-
-      <GroupOfSphere configKey="Profile" configOffset={6} />
+      <Star />
     </>
+  );
+};
+
+const Star = () => {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setShow(true);
+    }, 400);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <Suspense fallback={null}>
+      {show && <GroupOfSphere configKey="Profile" configOffset={6} />}
+    </Suspense>
   );
 };
 

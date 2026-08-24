@@ -1,7 +1,8 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useControls, folder } from "leva";
 import * as THREE from "three";
+import gsap from "gsap";
 
 export interface GodRaysProps {
   position?: [number, number, number];
@@ -230,7 +231,7 @@ const GodRays: React.FC<GodRaysProps> = (props) => {
       uRayColor: { value: new THREE.Color(controls.rayColor) },
       uGlowColor: { value: new THREE.Color(controls.glowColor) },
       uCoreColor: { value: new THREE.Color(controls.coreColor) },
-      uIntensity: { value: controls.intensity },
+      uIntensity: { value: 0 },
       uSpeed: { value: controls.speed },
       uRayCount: { value: controls.rayCount },
       uDecay: { value: controls.decay },
@@ -244,6 +245,36 @@ const GodRays: React.FC<GodRaysProps> = (props) => {
     [],
   );
 
+  // GSAP animation: animate intensity from 0 to target intensity (default 4.2)
+  useEffect(() => {
+    if (!matRef.current) return;
+    const tween = gsap.fromTo(
+      matRef.current.uniforms.uIntensity,
+      { value: 0 },
+      {
+        value: controls.intensity,
+        duration: 1.5,
+        delay: 1,
+        ease: "power2.out",
+      },
+    );
+    return () => {
+      tween.kill();
+    };
+  }, []);
+
+  // Update intensity dynamically if adjusted via Leva controls after mount
+  const isMounted = useRef(false);
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    if (matRef.current) {
+      matRef.current.uniforms.uIntensity.value = controls.intensity;
+    }
+  }, [controls.intensity]);
+
   useFrame((state) => {
     if (!matRef.current) return;
     const u = matRef.current.uniforms;
@@ -252,7 +283,6 @@ const GodRays: React.FC<GodRaysProps> = (props) => {
     u.uRayColor.value.set(controls.rayColor);
     u.uGlowColor.value.set(controls.glowColor);
     u.uCoreColor.value.set(controls.coreColor);
-    u.uIntensity.value = controls.intensity;
     u.uSpeed.value = controls.speed;
     u.uRayCount.value = controls.rayCount;
     u.uDecay.value = controls.decay;

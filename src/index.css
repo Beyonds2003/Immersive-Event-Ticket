@@ -810,7 +810,7 @@ body {
 }
 
 .leva-c-kWgxhW-czBHep-hideTitleBar-false {
-  display: none !important;
+  /* display: none !important; */
   z-index: 9999 !important;
 }
 
@@ -1054,6 +1054,15 @@ body {
   max-height: 600px;
   overflow: hidden;
   pointer-events: auto;
+}
+
+@keyframes profile-canvas-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .profile-bg {

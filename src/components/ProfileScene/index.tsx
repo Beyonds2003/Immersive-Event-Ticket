@@ -1,6 +1,6 @@
 import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
 import { useFBO, useGLTF } from "@react-three/drei";
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, useEffect, useMemo, useRef } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
 import StarScene from "./StarScene";
@@ -8,6 +8,8 @@ import ScenePlane from "./ScenePlane";
 import Particles from "./Particles";
 import GodRays from "./GodRays";
 import BloomEffect from "./BloomEffect";
+import CanvasLoader from "./CanvasLoader";
+import gsap from "gsap";
 
 const index = () => {
   return (
@@ -22,7 +24,7 @@ const index = () => {
       shadows
       resize={{ scroll: true, debounce: { scroll: 50, resize: 0 } }}
     >
-      <Suspense>
+      <Suspense fallback={<CanvasLoader />}>
         <Scene />
       </Suspense>
 
@@ -80,6 +82,7 @@ const Scene = () => {
 
 const Stage = () => {
   const { nodes, materials } = useGLTF("/models/stage.glb") as any;
+  const ref = useRef<THREE.Group>(null);
 
   const lightControls = useControls("Stage Light Ring", {
     color: { value: "#d974e8" },
@@ -87,8 +90,19 @@ const Stage = () => {
     toneMapped: { value: false },
   });
 
+  useEffect(() => {
+    if (!ref.current) return;
+    gsap.to(ref.current.scale, {
+      x: 1,
+      y: 1,
+      z: 1,
+      duration: 0.7,
+      ease: "back.out(1.7)",
+    });
+  }, []);
+
   return (
-    <group dispose={null} scale={[1.4, 1, 1.4]} position-y={0.1}>
+    <group ref={ref} scale={0} dispose={null} position={[0, -1.501, 0]}>
       <mesh
         castShadow
         receiveShadow

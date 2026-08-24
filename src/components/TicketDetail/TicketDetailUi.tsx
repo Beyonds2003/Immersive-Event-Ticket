@@ -72,7 +72,7 @@ const TicketDetailUi = () => {
             className="ticket-detail-tab"
             initialTab={tabComponentIndex}
             isRippleFromClick={true}
-            rippleDirection="in"
+            rippleDirection="out"
             timeScale={0.6}
           />
           <button className="rating-container">

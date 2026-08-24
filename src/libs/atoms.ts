@@ -4,4 +4,4 @@ import { atom } from "jotai";
 export const pathnameAtom = atom<string>(window.location.pathname);
 
 /** Synced profile dialog open/close state */
-export const isProfileOpenAtom = atom<boolean>(false);
+export const isProfileOpenAtom = atom<boolean>(true);
