@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useProgress } from "@react-three/drei";
-import { useAtomValue } from "jotai";
-import { isPhysicsLoadedAtom } from "../../libs/atoms";
+import { useAtomValue, useSetAtom } from "jotai";
+import { isLoadingDoneAtom, isPhysicsLoadedAtom } from "../../libs/atoms";
 import gsap from "gsap";
 
 interface AnimatedProgressDigitProps {
@@ -86,6 +86,8 @@ const LoadingScreen: React.FC = () => {
   const { progress, active } = useProgress();
   const isPhysicsLoaded = useAtomValue(isPhysicsLoadedAtom);
 
+  const setIsLoadingDone = useSetAtom(isLoadingDoneAtom);
+
   const [displayProgress, setDisplayProgress] = useState(0);
   const [isDone, setIsDone] = useState(false);
   const [isRendered, setIsRendered] = useState(true);
@@ -159,6 +161,9 @@ const LoadingScreen: React.FC = () => {
   // Smooth fade-out when loading is 100% complete
   useEffect(() => {
     if (!isDone || !overlayRef.current) return;
+
+    // Expose loading-done globally so other components can react
+    setIsLoadingDone(true);
 
     const timer = setTimeout(() => {
       gsap.to(overlayRef.current, {

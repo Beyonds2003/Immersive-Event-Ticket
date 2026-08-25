@@ -8,3 +8,6 @@ export const isProfileOpenAtom = atom<boolean>(false);
 
 /** Synced physics engine loaded state */
 export const isPhysicsLoadedAtom = atom<boolean>(false);
+
+/** True once the loading screen has fully completed */
+export const isLoadingDoneAtom = atom<boolean>(false);

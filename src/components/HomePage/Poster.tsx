@@ -10,11 +10,12 @@ import { CustomEase } from "gsap/CustomEase";
 import { useRingDistordTexture } from "../../libs/ringDistordRenderTarget";
 import { useCanvasTextTexture } from "../../libs/useCanvasTextTexture";
 import { useAtomValue } from "jotai";
-import { pathnameAtom } from "../../libs/atoms";
+import { isLoadingDoneAtom, pathnameAtom } from "../../libs/atoms";
 import { posterConfigs } from "../../libs/config/posterConfig";
 
 const Poster = () => {
   const pathname = useAtomValue(pathnameAtom);
+  const isLoadingDone = useAtomValue(isLoadingDoneAtom);
   const pageZ = pathname === "/" ? 1 : 1;
   const { coords, updateMouse, mouseMoved } = useMouse();
 
@@ -55,6 +56,7 @@ const Poster = () => {
     uProgress: { value: 0 },
     uRingDistordTexture: { value: ringTex },
     uPageZ: { value: pageZ },
+    uIntroProgress: { value: 0 },
   });
 
   // Kill any running GSAP tween on uProgress and reset when route changes
@@ -97,6 +99,21 @@ const Poster = () => {
       window.removeEventListener("ripple-click", handleRippleClick);
     };
   }, []);
+
+  useEffect(() => {
+    if (isLoadingDone && material.current) {
+      gsap.fromTo(
+        material.current.uniforms.uIntroProgress,
+        { value: 0 },
+        {
+          value: 1,
+          duration: 1.5,
+          delay: 0.5,
+          ease: "power3.out",
+        },
+      );
+    }
+  }, [isLoadingDone]);
 
   const mouseInit = useRef(false);
   useFrame((_state, delta) => {
@@ -152,6 +169,7 @@ const vertexShader = `
     uniform vec2 uMouse;
     uniform vec2 uResolution;
     uniform float uPageZ;
+    uniform float uIntroProgress;
 
     uniform sampler2D uRingDistordTexture;
 
@@ -182,7 +200,11 @@ const vertexShader = `
       vec4  ring        = texture2D(uRingDistordTexture, uv);
       vec2  ringDistord = ring.rg * 2.0 - 1.0;  // decode displacement
       float ringMask    = ring.b;                // grayscale ring intensity (0..1)
-      pos.xy               += ringDistord * ringMask; 
+      pos.xy               += ringDistord * ringMask;
+
+      // Intro slide-up: offset Y downward, easing back to 0
+      float introSlide = (1.0 - uIntroProgress) * 0.3;
+      pos.y -= introSlide;
 
       vUv = uv;
       vDistord = direction * influence * uStrength;
@@ -203,6 +225,7 @@ const fragmentShader = `
     uniform sampler2D uTexture1;
     uniform sampler2D uTexture2;
     uniform float uProgress;
+    uniform float uIntroProgress;
     uniform vec2 uMousePos;
     uniform vec2 uResolution;
 
@@ -240,6 +263,9 @@ const fragmentShader = `
         // Blend Texture 1 (white) on top of Texture 2 (black)
         vec3 color = mix(tex2.rgb, tex1.rgb, a1);
         float alpha = max(a1, a2);
+
+        // Intro fade-in
+        alpha *= remap(uIntroProgress, 0.5, 1.0);
 
         gl_FragColor = vec4(color, alpha);
 
