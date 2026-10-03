@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { useAtom } from "jotai";
-import { isProfileOpenAtom } from "../../libs/atoms";
+import { useAtom, useAtomValue } from "jotai";
+import { isProfileOpenAtom, userAtom } from "../../libs/atoms";
 import WobbleButton from "../UI/WobbleButton";
 import {
   CalendarDays,
@@ -19,6 +19,7 @@ import ProfileScene from "../ProfileScene";
 
 const ProfileDialog = () => {
   const [open, setOpen] = useAtom(isProfileOpenAtom);
+  const userData = useAtomValue(userAtom);
 
   useEffect(() => {
     const handleClick = () => {

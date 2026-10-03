@@ -17,6 +17,7 @@ import PageNavigator from "./components/General/PageNavigator";
 import Profile from "./components/General/Profile";
 import ProfileDialog from "./components/General/ProfileDialog";
 import LoginDialog from "./components/General/LoginDialog";
+import AuthProvider from "./components/General/AuthProvider";
 import PostProcessing from "./components/General/PostProcessing";
 import LoadingScreen from "./components/General/LoadingScreen";
 
@@ -34,11 +35,12 @@ const App = () => {
   return (
     <BrowserRouter>
       <LocationSync />
+      <AuthProvider />
       <div className="h-screen login-container">
         <LoadingScreen />
-        <div className="scene-wrapper">
+        {/* <div className="scene-wrapper">
           <Scene />
-        </div>
+        </div> */}
         <Leva collapsed />
         <PageHtmlUi />
         <Profile />

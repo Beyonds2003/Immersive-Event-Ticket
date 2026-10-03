@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import WobbleButton from "../UI/WobbleButton";
 import OtpCountdown from "./OtpCountdown";
-
-const test = {
-  email: "addy@gmail.com",
-  otp: "123456",
-};
+import { sendOtpSupabase, verifyOtp } from "../../utils/auth";
 
 const LoginDialog = () => {
   const [open, setOpen] = useState(false);
@@ -14,33 +10,51 @@ const LoginDialog = () => {
   const [otpcode, setOtpCode] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [errors, setErrors] = useState({ email: false, otp: false });
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleOtpSend = () => {
+  const handleOtpSend = async () => {
     setOtpSent(true);
+
+    try {
+      const { error, success } = await sendOtpSupabase(email);
+
+      console.log("OTP send result:", { error, success });
+
+      if (error.length > 0 && !success) {
+        setErrors((prev) => ({ ...prev, email: true }));
+        setErrorMessage(error);
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      setErrorMessage("An error occurred while sending the OTP.");
+    }
   };
 
-  const handleSubmit = () => {
-    const emailErr = email.trim().toLowerCase() !== test.email.toLowerCase();
-    const otpErr = otpcode.trim() !== test.otp;
+  const handleSubmit = async () => {
+    const { success, error } = await verifyOtp(email.trim(), otpcode.trim());
 
-    if (!emailErr && !otpErr) {
+    if (success) {
       setTimeout(() => handleClose(), 1000);
     } else {
+      console.error("Verification failed:", error);
       // Reset momentarily and apply to re-trigger shake animation if already in error state
-      setErrors({ email: false, otp: false });
-      setTimeout(() => setErrors({ email: emailErr, otp: otpErr }), 10);
+      setErrors({ email: email.length < 1, otp: otpcode.length < 1 });
+      setErrorMessage(error);
+      // setTimeout(() => setErrors({ email: true, otp: true }), 10);
     }
   };
 
   const handleClose = () => {
     setClosing(true);
     setErrors({ email: false, otp: false });
+    setErrorMessage("");
   };
 
   const handleExitEnd = (e: React.AnimationEvent) => {
     if (e.animationName === "login-panel-exit") {
       setClosing(false);
       setOpen(false);
+      setOtpSent(false);
     }
   };
 
@@ -116,7 +130,7 @@ const LoginDialog = () => {
                 <div className="otp-code-send-btn">
                   {otpSent ? (
                     <OtpCountdown
-                      initialSeconds={10}
+                      initialSeconds={60}
                       onComplete={() => setOtpSent(false)}
                     />
                   ) : (
@@ -133,6 +147,7 @@ const LoginDialog = () => {
                       proximityThreshold={70}
                       clickShockWave={1}
                       onClick={handleOtpSend}
+                      disabled={email.trim() === "" || errors.email}
                     />
                   )}
                 </div>
@@ -147,15 +162,18 @@ const LoginDialog = () => {
                   width={160}
                   height={50}
                   fontSize={1}
-                  bulgeAmount={6}
+                  bulgeAmount={4}
                   stiffness={0.04}
                   damping={0.96}
                   proximityThreshold={70}
+                  clickShockWave={1}
                   onClick={handleSubmit}
                 />
               </div>
 
-              {/* <span className="login-error">Invalid Email.</span> */}
+              {errorMessage.length > 0 && (
+                <span className="login-error">{errorMessage}</span>
+              )}
             </div>
           </div>
         </div>

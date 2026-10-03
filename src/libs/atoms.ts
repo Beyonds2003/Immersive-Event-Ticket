@@ -1,4 +1,7 @@
 import { atom } from "jotai";
+import type { User } from "@supabase/supabase-js";
+
+export type Profile = { role: string } | null;
 
 /** Synced from React Router location.pathname into the R3F canvas via Jotai */
 export const pathnameAtom = atom<string>(window.location.pathname);
@@ -11,3 +14,12 @@ export const isPhysicsLoadedAtom = atom<boolean>(false);
 
 /** True once the loading screen has fully completed */
 export const isLoadingDoneAtom = atom<boolean>(false);
+
+/** Current authenticated user (null when logged out) */
+export const userAtom = atom<User | null>(null);
+
+/** Current user's profile from the profiles table */
+export const profileAtom = atom<Profile>(null);
+
+/** True while auth session is being restored on app start */
+export const isAuthLoadingAtom = atom<boolean>(true);

@@ -1417,7 +1417,7 @@ body {
   align-items: stretch;
   gap: 16px;
   min-width: 340px;
-  max-width: 420px;
+  max-width: 340px;
   padding: 40px 28px;
   display: flex;
   position: relative;
@@ -1516,7 +1516,8 @@ body {
 
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+
+  cursor: not-allowed;
 }
 
 .otp-countdown {

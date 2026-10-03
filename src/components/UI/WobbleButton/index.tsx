@@ -79,6 +79,7 @@ export interface WobbleButtonProps {
   onClick?: (e: React.MouseEvent) => void;
   style?: CSSProperties;
   className?: string;
+  disabled?: boolean;
 }
 
 // ─── Heart particle emitter ───────────────────────────────────────────────────
@@ -209,6 +210,7 @@ const WobbleButton: React.FC<WobbleButtonProps> = ({
   onClick,
   style,
   className,
+  disabled = false,
 }) => {
   // ── Derived geometry ──────────────────────────────────────────────────────
   const radius = height / 2;
@@ -865,6 +867,7 @@ const WobbleButton: React.FC<WobbleButtonProps> = ({
       onClick={handleClick}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
+      disabled={disabled}
     >
       {/* Dynamic wobbly SVG */}
       <svg
