@@ -78,6 +78,18 @@ body {
   ); */
 }
 
+.scene-wrapper {
+  position: absolute;
+  inset: 0;
+}
+
+/* When any dialog overlay is open inside .login-container, disable ALL
+   pointer events on the 3D scene and its drei <Html> overlays. */
+.login-container:has(.profile-overlay) .scene-wrapper,
+.login-container:has(.profile-overlay) .scene-wrapper * {
+  pointer-events: none !important;
+}
+
 .visually-hidden:not(:focus):not(:active) {
   position: absolute;
   width: 1px;
@@ -1045,13 +1057,21 @@ body {
   transform: none;
 }
 
-.profile-canvas-container {
+.profile-canvas-wrapper {
   position: sticky;
   top: 0;
   width: 100%;
   height: calc(100dvh - clamp(24px, 6vw, 60px) - (var(--profile-pad-y) * 2));
   min-height: 380px;
-  max-height: 600px;
+  pointer-events: auto;
+}
+
+.profile-canvas-container {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: calc(85dvh - clamp(24px, 6vw, 60px) - (var(--profile-pad-y) * 2));
+  min-height: 380px;
   overflow: hidden;
   pointer-events: auto;
 }
@@ -1577,7 +1597,9 @@ body {
 
 .show-qr-btn-containter {
   position: absolute;
-  bottom: -50px;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* ── Progress Loading Screen ── */

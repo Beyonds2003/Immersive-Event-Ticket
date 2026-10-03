@@ -265,7 +265,7 @@ const fragmentShader = `
         float alpha = max(a1, a2);
 
         // Intro fade-in
-        alpha *= remap(uIntroProgress, 0.5, 1.0);
+        alpha *= remap(uIntroProgress, 0.7, 1.0);
 
         gl_FragColor = vec4(color, alpha);
 

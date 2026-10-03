@@ -36,7 +36,9 @@ const App = () => {
       <LocationSync />
       <div className="h-screen login-container">
         <LoadingScreen />
-        <Scene />
+        <div className="scene-wrapper">
+          <Scene />
+        </div>
         <Leva collapsed />
         <PageHtmlUi />
         <Profile />

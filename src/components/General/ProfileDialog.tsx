@@ -132,23 +132,27 @@ const ProfileDialog = () => {
                 </section>
 
                 <section className="profile-section-4">
-                  <div className="profile-canvas-container">
-                    <ProfileScene />
-
-                    {/* <div className="show-qr-btn-containter">
+                  <div className="profile-canvas-wrapper">
+                    <div className="profile-canvas-container">
+                      <ProfileScene />
+                    </div>
+                    <div className="show-qr-btn-containter">
                       <WobbleButton
-                        text="Physics Bowl"
-                        hoverText="Click me"
-                        fillColor="#6C4EF5"
-                        width={200}
-                        height={60}
-                        fontSize={1.15}
+                        text="SHOW QR CODE"
+                        hoverText="CLICK ME!"
+                        fillColor="#9896F0"
+                        textColor="black"
+                        width={200 * 1.1}
+                        height={60 * 1.1}
+                        fontSize={1.1}
                         bulgeAmount={6}
                         stiffness={0.04}
                         damping={0.96}
                         proximityThreshold={70}
+                        fontFamily="sans-serif"
+                        // emitHearts
                       />
-                    </div> */}
+                    </div>
                   </div>
                 </section>
               </div>
