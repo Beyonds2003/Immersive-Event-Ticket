@@ -6,7 +6,6 @@ import { signOut } from "../../utils/auth";
 
 const Profile = () => {
   const userData = useAtomValue(userAtom);
-  console.log(userData);
 
   const handleClick = (type: string) => {
     window.dispatchEvent(new CustomEvent(`${type}-click`));
@@ -39,4 +38,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

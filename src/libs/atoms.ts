@@ -1,7 +1,12 @@
 import { atom } from "jotai";
 import type { User } from "@supabase/supabase-js";
 
-export type Profile = { role: string } | null;
+export type Profile = {
+  full_name: string;
+  email: string;
+  role: string;
+  purchased_nfc: boolean;
+} | null;
 
 /** Synced from React Router location.pathname into the R3F canvas via Jotai */
 export const pathnameAtom = atom<string>(window.location.pathname);

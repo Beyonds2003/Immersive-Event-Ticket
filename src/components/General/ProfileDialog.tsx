@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { isProfileOpenAtom, userAtom } from "../../libs/atoms";
+import { isProfileOpenAtom, profileAtom, userAtom } from "../../libs/atoms";
 import WobbleButton from "../UI/WobbleButton";
 import {
   CalendarDays,
@@ -19,11 +19,17 @@ import ProfileScene from "../ProfileScene";
 
 const ProfileDialog = () => {
   const [open, setOpen] = useAtom(isProfileOpenAtom);
-  const userData = useAtomValue(userAtom);
+  const profileData = useAtomValue(profileAtom);
+  console.log("ProfileDialog: userData", profileData);
 
   useEffect(() => {
     const handleClick = () => {
-      setOpen(true);
+      // If user is logged in, open the profile dialog; otherwise, trigger login dialog
+      if (profileData) {
+        setOpen(true);
+      } else {
+        window.dispatchEvent(new CustomEvent("login-click"));
+      }
     };
 
     window.addEventListener("profile-click", handleClick);
@@ -31,7 +37,7 @@ const ProfileDialog = () => {
     return () => {
       window.removeEventListener("profile-click", handleClick);
     };
-  }, [setOpen]);
+  }, [setOpen, profileData]);
 
   // Force canvas resize measurement when dialog opens and throughout entrance animation
   // useEffect(() => {
@@ -105,12 +111,12 @@ const ProfileDialog = () => {
                     <tbody>
                       <tr>
                         <td>Surname</td>
-                        <td>Violet Evergarden</td>
+                        <td>{profileData?.full_name}</td>
                       </tr>
 
                       <tr>
                         <td>Email</td>
-                        <td>jane@example.com</td>
+                        <td>{profileData?.email}</td>
                       </tr>
 
                       <tr>

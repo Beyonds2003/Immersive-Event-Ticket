@@ -1,3 +1,5 @@
+import { getDefaultStore } from "jotai";
+import { profileAtom, type Profile } from "../libs/atoms";
 import { supabase } from "./supabase";
 
 export async function sendOtpSupabase(email: string) {
@@ -43,7 +45,40 @@ export async function verifyOtp(email: string, token: string) {
     return { success: false, error: "Verification failed" };
   }
 
-  // Profile & session are synced automatically by AuthProvider's onAuthStateChange
+  const user = data.user;
+
+  // Only assign default name if the user doesn't have one; never overwrite an existing name
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, email, role, purchased_nfc")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.full_name?.trim()) {
+      const username = email.split("@")[0].replace(/\d+$/, "");
+      const formattedUsername =
+        username.charAt(0).toUpperCase() + username.slice(1);
+
+      const { data: updatedProfile } = await supabase
+        .from("profiles")
+        .upsert({
+          id: user.id,
+          email: user.email,
+          full_name: formattedUsername,
+        })
+        .select("full_name, email, role, purchased_nfc")
+        .single();
+
+      if (updatedProfile) {
+        getDefaultStore().set(profileAtom, updatedProfile as Profile);
+      }
+    } else {
+      // User already has a name: preserve it without modifying the database
+      getDefaultStore().set(profileAtom, profile as Profile);
+    }
+  }
+
   return { success: true, error: "" };
 }
 

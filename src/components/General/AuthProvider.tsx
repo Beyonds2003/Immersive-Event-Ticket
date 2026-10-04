@@ -36,7 +36,7 @@ const AuthProvider = () => {
     const fetchProfile = async (userId: string) => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("role")
+        .select("full_name, email, role, purchased_nfc")
         .eq("id", userId)
         .single();
 
