@@ -1125,6 +1125,10 @@ body {
     color: var(--close-hover-color, #f1e8dd);
     transform: scale(1.25) rotate(-90deg);
   }
+
+  &:active {
+    transform: scale(0.9) rotate(-90deg);
+  }
 }
 
 .panel-header {

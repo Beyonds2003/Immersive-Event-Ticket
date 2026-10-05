@@ -47,6 +47,9 @@ const NfcUi = () => {
           stiffness={0.04}
           damping={0.96}
           proximityThreshold={70}
+          // onClick={() =>
+          //   window.dispatchEvent(new CustomEvent("buy-ticket-click"))
+          // }
         />
       </div>
     </div>

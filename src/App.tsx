@@ -20,6 +20,7 @@ import LoginDialog from "./components/General/LoginDialog";
 import AuthProvider from "./components/General/AuthProvider";
 import PostProcessing from "./components/General/PostProcessing";
 import LoadingScreen from "./components/General/LoadingScreen";
+import BuyTicketSummaryDialog from "./components/General/BuyTicketSummaryDialog";
 
 /** Syncs React Router location into the Jotai atom so R3F canvas can read it */
 const LocationSync = () => {
@@ -38,14 +39,15 @@ const App = () => {
       <AuthProvider />
       <div className="h-screen login-container">
         <LoadingScreen />
-        <div className="scene-wrapper">
+        {/* <div className="scene-wrapper">
           <Scene />
-        </div>
+        </div> */}
         <Leva collapsed />
         <PageHtmlUi />
         <Profile />
         <ProfileDialog />
         <LoginDialog />
+        <BuyTicketSummaryDialog />
 
         <MenuButton />
       </div>

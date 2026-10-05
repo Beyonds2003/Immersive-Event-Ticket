@@ -124,6 +124,17 @@ const About = () => {
             damping={0.96}
             fontFamily="Dingos-Bold"
             proximityThreshold={70}
+            onClick={(e) => {
+              const btn =
+                (e?.currentTarget as HTMLElement) ||
+                (e?.target as HTMLElement) ||
+                document.querySelector(".buy-ticket-btn-container .wobbly-btn");
+              window.dispatchEvent(
+                new CustomEvent("buy-ticket-click", {
+                  detail: { sourceEl: btn },
+                }),
+              );
+            }}
           />
         </div>
       </div>
@@ -144,6 +155,17 @@ const About = () => {
           damping={0.96}
           fontFamily="Dingos-Bold"
           proximityThreshold={70}
+          onClick={(e) => {
+            const btn =
+              (e?.currentTarget as HTMLElement) ||
+              (e?.target as HTMLElement) ||
+              document.querySelector(".buy-ticket-btn-container-2 .wobbly-btn");
+            window.dispatchEvent(
+              new CustomEvent("buy-ticket-click", {
+                detail: { sourceEl: btn },
+              }),
+            );
+          }}
         />
       </div>
     </section>
