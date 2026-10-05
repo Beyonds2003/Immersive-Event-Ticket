@@ -1,5 +1,5 @@
 import { type ThreeEvent, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useCallback } from "react";
+import { useEffect, useMemo, useRef, useCallback, useState } from "react";
 import * as THREE from "three";
 import VirtualScroll from "virtual-scroll";
 import { useMouse } from "../../libs/useMouse";
@@ -47,13 +47,23 @@ export const SpiralCards = ({
   // Spring physics for uScrollSpeed uniform
   const { tick: springTick } = useSpringValue("Spring Physics");
 
+  // Track active tab index to control ticketData order (0 = normal, 1 = reversed)
+  const [tabIndex, setTabIndex] = useState<number>(0);
+
+  const currentData = useMemo(() => {
+    return tabIndex === 1 ? [...ticketData].reverse() : ticketData;
+  }, [tabIndex]);
+
   // Texture Pool Manager (Zero useState, uses 4 CanvasTextures pool)
   const { textures, textureIndexBuffer, updateTexturePool } =
     useTexturePoolManager({
-      data: ticketData,
+      data: currentData,
       totalCards: controls.totalCards,
       cardGap: controls.cardGap,
       infiniteLoop: controls.infiniteLoop,
+      cardOptions: {
+        maxTitleLines: controls.maxTitleLines ?? 2,
+      },
     });
 
   const clampTarget = useCallback(
@@ -204,10 +214,10 @@ export const SpiralCards = ({
   // Handle change tab
   useEffect(() => {
     const handleClick = (event: Event) => {
-      const tabIndex = (event as CustomEvent).detail.tabIndex;
+      const newTabIndex = (event as CustomEvent).detail.tabIndex;
 
       const cardColor =
-        tabIndex === 0 ? controls.cardColor : controls.activeColor;
+        newTabIndex === 0 ? controls.cardColor : controls.activeColor;
 
       // Change color based on tab
       uniforms.uCardColor.value.set(cardColor);
@@ -215,13 +225,22 @@ export const SpiralCards = ({
       // Reset
       targetScroll.current = clampTarget(0);
 
-      currentTabIndex.current = tabIndex;
+      currentTabIndex.current = newTabIndex;
+
+      setTimeout(() => {
+        setTabIndex(newTabIndex);
+      }, 250);
     };
 
     window.addEventListener("tab-click", handleClick);
 
     return () => window.removeEventListener("tab-click", handleClick);
-  }, [clampTarget, setTargetScrollRef]);
+  }, [
+    clampTarget,
+    controls.activeColor,
+    controls.cardColor,
+    uniforms.uCardColor,
+  ]);
 
   // Synchronize uniforms on Leva GUI tweak
   useEffect(() => {

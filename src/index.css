@@ -1685,6 +1685,7 @@ body {
   width: 0.62em;
   line-height: 1;
   vertical-align: middle;
+  font-size: 5rem;
 }
 
 .progress-loader-char {

@@ -163,6 +163,13 @@ const EventCard = () => {
       cardColor: { value: "#7eb3df", label: "Card Base Color" },
       activeColor: { value: "#ffe816", label: "Active Highlight" },
       wireframe: { value: false, label: "Wireframe Mode" },
+      maxTitleLines: {
+        value: 1,
+        min: 1,
+        max: 4,
+        step: 1,
+        label: "Max Title Lines",
+      },
     }),
     "3. Post Processing Pass (FBO + Depth)": folder({
       enablePostProcessing: { value: false, label: "Enable Post Processing" },

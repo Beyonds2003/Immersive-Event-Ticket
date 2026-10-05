@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import {
   type CanvasTextureItem,
+  type CardCanvasOptions,
   createCardCanvasTexture,
   updateCardCanvasTexture,
 } from "./createCardCanvasTexture";
@@ -14,6 +15,7 @@ export interface TexturePoolManagerOptions {
   totalCards: number;
   cardGap: number;
   infiniteLoop: boolean;
+  cardOptions?: CardCanvasOptions;
 }
 
 export function useTexturePoolManager({
@@ -21,10 +23,15 @@ export function useTexturePoolManager({
   totalCards,
   cardGap,
   infiniteLoop,
+  cardOptions,
 }: TexturePoolManagerOptions) {
   // Store 4 CanvasTexture pool items without triggering React re-renders
   const poolItemsRef = useRef<CanvasTextureItem[]>([]);
   const texturesArrayRef = useRef<THREE.CanvasTexture[]>([]);
+  const cardOptionsRef = useRef(cardOptions);
+  cardOptionsRef.current = cardOptions;
+  const dataRef = useRef(data);
+  dataRef.current = data;
 
   // Instanced attribute array (size = totalCards)
   const textureIndexBufferRef = useRef<Float32Array>(
@@ -56,6 +63,21 @@ export function useTexturePoolManager({
     }
   }, [totalCards]);
 
+  // When cardOptions or data change, invalidate cached slots and textures so they re-render
+  useEffect(() => {
+    slotToInstanceRef.current.fill(-1);
+    instanceToSlotRef.current.clear();
+    poolItemsRef.current.forEach((item) => {
+      item.currentDataIndex = -1;
+    });
+  }, [
+    data,
+    cardOptions?.maxTitleLines,
+    cardOptions?.titleMaxWidth,
+    cardOptions?.titleLineHeight,
+    cardOptions?.ellipsis,
+  ]);
+
   // Clean up textures on unmount
   useEffect(() => {
     return () => {
@@ -70,7 +92,8 @@ export function useTexturePoolManager({
    */
   const updateTexturePool = (scrollProgress: number): boolean => {
     const count = Math.max(1, totalCards);
-    const dataCount = data.length;
+    const currentDataset = dataRef.current;
+    const dataCount = currentDataset.length;
     if (dataCount === 0) return false;
 
     // 1. Calculate distance of each instance to view center (scrollProgress)
@@ -112,14 +135,19 @@ export function useTexturePoolManager({
     for (const vis of visibleInstances) {
       const instId = vis.id;
       const dataIndex = vis.dataIndex;
-      const itemData = data[dataIndex];
+      const itemData = currentDataset[dataIndex];
 
       // If instance already has a slot assigned, check if data index is current
       if (instanceToSlotRef.current.has(instId)) {
         const currentSlot = instanceToSlotRef.current.get(instId)!;
         const poolItem = poolItemsRef.current[currentSlot];
         if (poolItem.currentDataIndex !== dataIndex) {
-          updateCardCanvasTexture(poolItem, itemData, dataIndex);
+          updateCardCanvasTexture(
+            poolItem,
+            itemData,
+            dataIndex,
+            cardOptionsRef.current,
+          );
         }
       } else {
         // Find an unassigned slot
@@ -130,7 +158,12 @@ export function useTexturePoolManager({
         instanceToSlotRef.current.set(instId, freeSlot);
 
         const poolItem = poolItemsRef.current[freeSlot];
-        updateCardCanvasTexture(poolItem, itemData, dataIndex);
+        updateCardCanvasTexture(
+          poolItem,
+          itemData,
+          dataIndex,
+          cardOptionsRef.current,
+        );
         attributeChanged = true;
       }
     }

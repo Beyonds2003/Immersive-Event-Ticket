@@ -3,12 +3,13 @@ export interface TicketItem {
   title: string;
   location: string;
   time: string;
+  maxTitleLines?: number;
 }
 
 export const ticketData: TicketItem[] = [
   {
     date: "12 AUG 2026",
-    title: "React Conf",
+    title: "Cybersecurity & Ethical Hacking",
     location: "Yangon",
     time: "6:30 PM - 9:00 PM",
   },

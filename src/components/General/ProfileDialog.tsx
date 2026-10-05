@@ -20,6 +20,7 @@ import ProfileScene from "../ProfileScene";
 const ProfileDialog = () => {
   const [open, setOpen] = useAtom(isProfileOpenAtom);
   const profileData = useAtomValue(profileAtom);
+
   console.log("ProfileDialog: userData", profileData);
 
   useEffect(() => {
