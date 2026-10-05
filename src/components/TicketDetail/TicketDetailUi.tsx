@@ -6,6 +6,7 @@ import { pageColor, pageTabColor } from "../../libs/config/pageColor";
 import { useSearchParams } from "react-router";
 import gsap from "gsap";
 import Review from "./Review";
+import BuyTicketSummaryDialog from "../General/BuyTicketSummaryDialog";
 
 const colorA = pageTabColor.Detail[0];
 const colorB = pageTabColor.Detail[1];

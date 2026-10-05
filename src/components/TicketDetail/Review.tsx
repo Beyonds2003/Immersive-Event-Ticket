@@ -52,13 +52,13 @@ const Review = () => {
 const reviews = [
   {
     id: 1,
-    name: "Addy",
+    name: "Yadanar",
     review: "The event was really well organized. Had a great time!",
     date: "1h ago",
   },
   {
     id: 2,
-    name: "Mia",
+    name: "Khin",
     review: "Loved the atmosphere and the people. Definitely coming again.",
     date: "2h ago",
   },

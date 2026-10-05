@@ -4,10 +4,7 @@ import { profileAtom } from "../../libs/atoms";
 import WobbleButton from "../UI/WobbleButton";
 import { Lock, Check, Copy, CheckCircle2 } from "lucide-react";
 import { gsap } from "gsap";
-import { Flip } from "gsap/Flip";
 import "./BuyTicketSummaryDialog.css";
-
-gsap.registerPlugin(Flip);
 
 type MobileWallet = "kbz" | "wave";
 
@@ -32,56 +29,23 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
   const [profile, setProfile] = useAtom(profileAtom);
 
   // Form fields
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
   const [isCompany, setIsCompany] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(true);
 
   // Success state after completing payment
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // DOM refs for GSAP Flip animation
+  // DOM refs for animation
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const sourceElRef = useRef<HTMLElement | null>(null);
 
-  // Pre-fill profile info if available
-  useEffect(() => {
-    if (profile) {
-      if (profile.full_name) {
-        const parts = profile.full_name.trim().split(" ");
-        setFirstName(parts[0] || "");
-        setLastName(parts.slice(1).join(" ") || "");
-      }
-      if (profile.email) {
-        setEmail(profile.email);
-      }
-    }
-  }, [profile]);
-
-  // Helper to find a fallback button if none passed in event
-  const getFallbackSourceEl = (): HTMLElement | null => {
-    return (
-      (document.querySelector(
-        ".buy-ticket-btn-container-2 .wobbly-btn",
-      ) as HTMLElement) ||
-      (document.querySelector(".buy-ticket-btn-container-2") as HTMLElement) ||
-      (document.querySelector(
-        ".buy-ticket-btn-container .wobbly-btn",
-      ) as HTMLElement) ||
-      (document.querySelector(".buy-ticket-btn-container") as HTMLElement) ||
-      null
-    );
-  };
-
   // Listen to open events from buttons ("Buy Ticket", "Buy Nfc", etc.)
   useEffect(() => {
     const handleOpen = (e: Event) => {
       const customEvent = e as CustomEvent<{ sourceEl?: HTMLElement }>;
-      const source = customEvent.detail?.sourceEl || getFallbackSourceEl();
-      sourceElRef.current = source;
+      sourceElRef.current = customEvent.detail?.sourceEl || null;
       setOpen(true);
       setClosing(false);
       setIsSuccess(false);
@@ -109,18 +73,18 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, closing]);
 
-  // Animate panel entering from the clicked button using GSAP Flip
+  // Animate panel entering: scale from button position to center
   useLayoutEffect(() => {
     if (!open || closing) return;
 
     const panel = panelRef.current;
     const overlay = overlayRef.current;
     const content = contentRef.current;
-    const sourceEl = sourceElRef.current || getFallbackSourceEl();
+    const sourceEl = sourceElRef.current;
 
     if (!panel || !overlay) return;
 
-    // Fade in backdrop overlay
+    // Fade in backdrop overlay (no scale)
     gsap.fromTo(
       overlay,
       { opacity: 0 },
@@ -131,47 +95,85 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
       // Clear previous transform state before measuring
       gsap.set(panel, { clearProps: "transform,scale,x,y,opacity" });
 
-      // Fit panel onto the button's position and size
-      Flip.fit(panel, sourceEl, { scale: true });
+      // Measure positions
+      const sourceRect = sourceEl.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
 
-      // Animate inner content fading in smoothly as the panel expands
+      // Scale ratio: how small the panel needs to be to match the button
+      const scaleX = sourceRect.width / panelRect.width;
+      const scaleY = sourceRect.height / panelRect.height;
+
+      // Translation to move panel center onto button center
+      const panelCenterX = panelRect.left + panelRect.width / 2;
+      const panelCenterY = panelRect.top + panelRect.height / 2;
+      const sourceCenterX = sourceRect.left + sourceRect.width / 2;
+      const sourceCenterY = sourceRect.top + sourceRect.height / 2;
+      const deltaX = sourceCenterX - panelCenterX;
+      const deltaY = sourceCenterY - panelCenterY;
+
+      // Stagger children inside content with bouncy entrance
       if (content) {
+        const children = content.querySelectorAll(
+          ":scope > *:not(.profile-close)",
+        );
+        gsap.set(content, { opacity: 1 });
         gsap.fromTo(
-          content,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.35, delay: 0.12, ease: "power2.out" },
+          children,
+          { opacity: 0, y: 18 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            delay: 0.3,
+            stagger: 0.06,
+            ease: "back.out(1.7)",
+          },
         );
       }
 
-      // Animate panel from button position/scale to its full dialog state
-      gsap.to(panel, {
-        x: 0,
-        y: 0,
-        scaleX: 1,
-        scaleY: 1,
-        borderRadius: "24px",
-        duration: 0.2,
-        ease: "cubic-bezier(0.34, 1.7, 2.5, 1))",
-        clearProps: "transform",
-      });
+      // Animate panel from button rect to its natural centered state
+      gsap.fromTo(
+        panel,
+        { scaleX, scaleY, x: deltaX, y: deltaY },
+        {
+          scaleX: 1,
+          scaleY: 1,
+          x: 0,
+          y: 0,
+          duration: 0.8,
+          ease: "elastic.out(1, 1)",
+          clearProps: "transform",
+        },
+      );
     } else {
-      // Fallback animation if no source button is in DOM
+      // Fallback animation if no source button
       gsap.fromTo(
         panel,
         { scale: 0.85, opacity: 0, y: 20 },
         { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.4)" },
       );
       if (content) {
+        const children = content.querySelectorAll(
+          ":scope > *:not(.profile-close)",
+        );
+        gsap.set(content, { opacity: 1 });
         gsap.fromTo(
-          content,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.3, delay: 0.1, ease: "power2.out" },
+          children,
+          { opacity: 0, y: 18 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            delay: 0.25,
+            stagger: 0.06,
+            ease: "back.out(1.7)",
+          },
         );
       }
     }
   }, [open]);
 
-  // Animate panel exit shrinking back to the clicked button using GSAP Flip
+  // Animate panel exit: shrink back to button position
   const handleClose = () => {
     if (closing) return;
     setClosing(true);
@@ -179,7 +181,7 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
     const panel = panelRef.current;
     const overlay = overlayRef.current;
     const content = contentRef.current;
-    const sourceEl = sourceElRef.current || getFallbackSourceEl();
+    const sourceEl = sourceElRef.current;
 
     // Fade out backdrop overlay
     if (overlay) {
@@ -194,18 +196,37 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
     if (content) {
       gsap.to(content, {
         opacity: 0,
-        duration: 0.16,
+        duration: 0.2,
         ease: "power2.in",
       });
     }
 
     if (panel && sourceEl) {
-      // Animate panel collapsing into the button using Flip.fit
-      Flip.fit(panel, sourceEl, {
-        scale: true,
+      // Measure positions for exit
+      gsap.set(panel, { clearProps: "transform" });
+      const sourceRect = sourceEl.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+
+      const scaleX = sourceRect.width / panelRect.width;
+      const scaleY = sourceRect.height / panelRect.height;
+
+      const panelCenterX = panelRect.left + panelRect.width / 2;
+      const panelCenterY = panelRect.top + panelRect.height / 2;
+      const sourceCenterX = sourceRect.left + sourceRect.width / 2;
+      const sourceCenterY = sourceRect.top + sourceRect.height / 2;
+      const deltaX = sourceCenterX - panelCenterX;
+      const deltaY = sourceCenterY - panelCenterY;
+
+      // Animate panel collapsing back to the button
+      gsap.to(panel, {
+        scaleX,
+        scaleY,
+        x: deltaX,
+        y: deltaY,
         duration: 0.42,
         ease: "power3.in",
         onComplete: () => {
+          gsap.set(panel, { clearProps: "transform,scale,x,y" });
           setClosing(false);
           setOpen(false);
           if (onClose) onClose();
@@ -300,6 +321,7 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
                   height={48}
                   fontSize={1.05}
                   fontFamily="Dingos-Bold"
+                  clickShockWave={1}
                   onClick={handleClose}
                 />
               </div>
