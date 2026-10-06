@@ -127,8 +127,75 @@ body {
   white-space: nowrap;
   font-family: JustMeAgainDownHere, sans-serif;
   font-size: 46px;
-  font-weight: 700;
+  /* font-weight: 700; */
   line-height: 140%;
+}
+
+.group-member-name {
+  display: inline-grid;
+  margin-bottom: 10px;
+}
+
+.group-member-name span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(15px);
+  /* font-family: "Just Me Again Down Here", cursive; */
+  font-family: JustMeAgainDownHere, sans-serif;
+  font-size: 3rem;
+  white-space: nowrap;
+  animation: rotateName 27s infinite ease-in-out;
+}
+
+#s1 {
+  animation-delay: 0s;
+}
+#s2 {
+  animation-delay: 3s;
+}
+#s3 {
+  animation-delay: 6s;
+}
+#s4 {
+  animation-delay: 9s;
+}
+#s5 {
+  animation-delay: 12s;
+}
+#s6 {
+  animation-delay: 15s;
+}
+#s7 {
+  animation-delay: 18s;
+}
+#s8 {
+  animation-delay: 21s;
+}
+#s9 {
+  animation-delay: 24s;
+}
+
+@keyframes rotateName {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  2.5% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  8.6% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  11.11% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
 }
 
 .message-container {
