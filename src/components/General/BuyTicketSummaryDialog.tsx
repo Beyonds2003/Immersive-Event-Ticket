@@ -511,8 +511,8 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
                   Cancel
                 </button>
                 <WobbleButton
-                  text="Complete Payment"
-                  hoverText="Pay 3,000 MMK"
+                  text="Pay Now"
+                  hoverText="3,000 MMK"
                   fillColor="#fed26a"
                   hoverColor="#ffe08a"
                   textColor="#181335"

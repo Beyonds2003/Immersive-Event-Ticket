@@ -48,6 +48,7 @@ const TicketBoughtIcon = (props: SVGProps<SVGSVGElement>) => {
           duration: 0.3,
           ease: "back.out(1.7)",
         },
+        "-=0.6",
       );
     });
 

@@ -7,7 +7,6 @@ const Review = () => {
   return (
     <section className="ticket-detail-review-tab">
       <div className="review-container">
-        {" "}
         <div className="review-input-container">
           <div className="review-icon-container">
             <PenIcon />
@@ -19,9 +18,9 @@ const Review = () => {
             className="review-input"
           />
 
-          <button className="review-icon-container cursor-pointer">
+          {/* <button className="review-icon-container cursor-pointer">
             <SmileIcon />
-          </button>
+          </button> */}
           <div>
             <WobbleButton
               text="Post"
@@ -33,7 +32,7 @@ const Review = () => {
               height={60}
               fontSize={1.15}
               fontFamily="Dingos-Bold"
-              bulgeAmount={6}
+              bulgeAmount={3}
               stiffness={0.04}
               damping={0.96}
               proximityThreshold={70}

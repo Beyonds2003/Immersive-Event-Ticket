@@ -13,6 +13,7 @@ const Heart = (props: SVGProps<SVGSVGElement>) => (
       stroke="black"
       strokeWidth={2}
       strokeLinecap="round"
+      // fill="red"
     />
   </svg>
 );

@@ -20,7 +20,11 @@ const colorD = pageTabColor.Detail[3];
 
 const TicketDetailUi = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const [isTicketBought, setIsTicketBought] = useState(false);
+
+  const [isLikeClicked, setIsLikeClicked] = useState(false);
+  const [likeCount, setLikeCount] = useState(203);
 
   // Read tab from URL: ?tab=1 → About, ?tab=2 → Review. Default to 1.
   const tabParam = searchParams.get("tab");
@@ -28,6 +32,16 @@ const TicketDetailUi = () => {
 
   // 0-based index for the Tab component (0 = About, 1 = Review)
   const tabComponentIndex = activeTab - 1;
+
+  const handleLikeClick = () => {
+    if (!isLikeClicked) {
+      setIsLikeClicked(true);
+      setLikeCount((prev) => prev + 1);
+    } else {
+      setIsLikeClicked(false);
+      setLikeCount((prev) => prev - 1);
+    }
+  };
 
   // Listen to the tab-click custom event dispatched by <Tab />
   useEffect(() => {
@@ -89,10 +103,10 @@ const TicketDetailUi = () => {
             rippleDirection="out"
             timeScale={0.6}
           />
-          <button className="rating-container">
-            <span>4</span>
+          <button onClick={handleLikeClick} className="rating-container">
+            <span>{likeCount}</span>
             <div className="rate-btn">
-              <Heart />
+              <Heart fill={isLikeClicked ? "red" : "transparent"} />
               <span className="visually-hidden">Like this event</span>
             </div>
           </button>
