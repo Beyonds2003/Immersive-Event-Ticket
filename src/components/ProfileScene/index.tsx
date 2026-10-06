@@ -22,6 +22,7 @@ const index = () => {
       }}
       camera={{ position: [0, 1, 15], fov: 20 }}
       shadows
+      dpr={[1, 2]}
       resize={{ scroll: true, debounce: { scroll: 50, resize: 0 } }}
     >
       <Suspense fallback={<CanvasLoader />}>

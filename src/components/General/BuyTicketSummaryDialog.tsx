@@ -124,9 +124,9 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
             opacity: 1,
             y: 0,
             duration: 0.5,
-            delay: 0.3,
-            stagger: 0.06,
-            ease: "back.out(1.7)",
+            delay: 0.6,
+            stagger: 0.07,
+            ease: "back.out(2)",
           },
         );
       }
@@ -177,6 +177,10 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
   const handleClose = () => {
     if (closing) return;
     setClosing(true);
+
+    if (isSuccess) {
+      window.dispatchEvent(new CustomEvent("finish-payment"));
+    }
 
     const panel = panelRef.current;
     const overlay = overlayRef.current;
@@ -293,7 +297,7 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
         <div ref={contentRef} className="buy-ticket-panel-inner">
           {/* Close Button */}
           <button
-            onClick={handleClose}
+            onClick={() => handleClose()}
             className="profile-close"
             aria-label="Close dialog"
           >
@@ -322,7 +326,8 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
                   fontSize={1.05}
                   fontFamily="Dingos-Bold"
                   clickShockWave={1}
-                  onClick={handleClose}
+                  bulgeAmount={2}
+                  onClick={() => handleClose()}
                 />
               </div>
             </div>
@@ -500,7 +505,7 @@ const BuyTicketSummaryDialog: React.FC<BuyTicketSummaryDialogProps> = ({
               <div className="buy-ticket-actions">
                 <button
                   type="button"
-                  onClick={handleClose}
+                  onClick={() => handleClose()}
                   className="buy-ticket-cancel-btn"
                 >
                   Cancel

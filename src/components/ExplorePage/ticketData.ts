@@ -9,7 +9,7 @@ export interface TicketItem {
 export const ticketData: TicketItem[] = [
   {
     date: "12 AUG 2026",
-    title: "Cybersecurity & Ethical Hacking",
+    title: "React Conf",
     location: "Yangon",
     time: "6:30 PM - 9:00 PM",
   },
@@ -63,7 +63,7 @@ export const ticketData: TicketItem[] = [
   },
   {
     date: "04 OCT 2026",
-    title: "Innovation Day",
+    title: "PHP Meetup",
     location: "Pyin Oo Lwin",
     time: "12:00 PM - 5:00 PM",
   },

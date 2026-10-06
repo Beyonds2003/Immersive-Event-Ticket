@@ -465,6 +465,76 @@ body {
     text-decoration: underline;
   }
 }
+/* ── Event Info — inline row ── */
+.event-info-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.event-info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: Dingos, sans-serif;
+  font-size: 0.85rem;
+  color: #211c3b;
+  background: rgba(0, 0, 0, 0.08);
+  padding: 6px 20px 6px 14px;
+  border-radius: 99px;
+}
+
+.event-info-item svg {
+  flex-shrink: 0;
+  opacity: 0.65;
+  margin-bottom: 4px;
+}
+
+.event-info-dot {
+  display: none;
+}
+
+/* ── Capacity — slim bar ── */
+.event-capacity {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.event-capacity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-capacity-count {
+  font-family: Dingos, sans-serif;
+  font-size: 0.8rem;
+  color: #211c3baa;
+}
+
+.event-capacity-urgency {
+  font-family: Dingos, sans-serif;
+  font-size: 0.8rem;
+  color: #211c3b99;
+}
+
+.event-capacity-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.event-capacity-fill {
+  height: 100%;
+  border-radius: 99px;
+  /* background: linear-gradient(90deg, #3ec99e, #1a9e74); */
+  background: #1c8d6a;
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
 
 .buy-ticket-btn-container {
   position: absolute;
@@ -474,6 +544,11 @@ body {
 
   & button {
     cursor: pointer;
+  }
+
+  &:has(.ticket-bought-icon) {
+    top: 14px;
+    right: 0px;
   }
 }
 
