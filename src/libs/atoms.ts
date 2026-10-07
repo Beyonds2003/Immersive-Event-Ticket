@@ -28,3 +28,4 @@ export const profileAtom = atom<Profile>(null);
 
 /** True while auth session is being restored on app start */
 export const isAuthLoadingAtom = atom<boolean>(true);
+

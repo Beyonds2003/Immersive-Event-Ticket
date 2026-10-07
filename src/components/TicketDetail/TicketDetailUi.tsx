@@ -5,7 +5,7 @@ import WobbleButton from "../UI/WobbleButton";
 import { pageColor, pageTabColor } from "../../libs/config/pageColor";
 import { useSearchParams } from "react-router";
 import gsap from "gsap";
-import Review from "./Review";
+import Review, { INITIAL_REVIEWS, type ReviewItem } from "./Review";
 import BuyTicketSummaryDialog from "../General/BuyTicketSummaryDialog";
 import TicketBoughtIcon from "../Icons/TicketBoughtIcon";
 import AnimatedLikeCount from "./AnimatedLikeCount";
@@ -23,7 +23,7 @@ const TicketDetailUi = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [isTicketBought, setIsTicketBought] = useState(false);
-
+  const [reviews, setReviews] = useState<ReviewItem[]>(INITIAL_REVIEWS);
   const [isLikeClicked, setIsLikeClicked] = useState(false);
 
   // Read tab from URL: ?tab=1 → About, ?tab=2 → Review. Default to 1.
@@ -109,7 +109,7 @@ const TicketDetailUi = () => {
           {activeTab === 1 ? (
             <About isTicketBought={isTicketBought} />
           ) : (
-            <Review />
+            <Review reviews={reviews} setReviews={setReviews} />
           )}
         </div>
       </div>
