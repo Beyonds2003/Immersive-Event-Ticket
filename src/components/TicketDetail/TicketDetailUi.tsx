@@ -8,6 +8,7 @@ import gsap from "gsap";
 import Review from "./Review";
 import BuyTicketSummaryDialog from "../General/BuyTicketSummaryDialog";
 import TicketBoughtIcon from "../Icons/TicketBoughtIcon";
+import AnimatedLikeCount from "./AnimatedLikeCount";
 
 const colorA = pageTabColor.Detail[0];
 const colorB = pageTabColor.Detail[1];
@@ -24,7 +25,6 @@ const TicketDetailUi = () => {
   const [isTicketBought, setIsTicketBought] = useState(false);
 
   const [isLikeClicked, setIsLikeClicked] = useState(false);
-  const [likeCount, setLikeCount] = useState(203);
 
   // Read tab from URL: ?tab=1 → About, ?tab=2 → Review. Default to 1.
   const tabParam = searchParams.get("tab");
@@ -34,13 +34,7 @@ const TicketDetailUi = () => {
   const tabComponentIndex = activeTab - 1;
 
   const handleLikeClick = () => {
-    if (!isLikeClicked) {
-      setIsLikeClicked(true);
-      setLikeCount((prev) => prev + 1);
-    } else {
-      setIsLikeClicked(false);
-      setLikeCount((prev) => prev - 1);
-    }
+    setIsLikeClicked((prev) => !prev);
   };
 
   // Listen to the tab-click custom event dispatched by <Tab />
@@ -104,10 +98,9 @@ const TicketDetailUi = () => {
             timeScale={0.6}
           />
           <button onClick={handleLikeClick} className="rating-container">
-            <span>{likeCount}</span>
+            <AnimatedLikeCount isLikeClicked={isLikeClicked} count={203} />
             <div className="rate-btn">
-              <Heart fill={isLikeClicked ? "red" : "transparent"} />
-              <span className="visually-hidden">Like this event</span>
+              <Heart isLikeClicked={isLikeClicked} />
             </div>
           </button>
         </div>

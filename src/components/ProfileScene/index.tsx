@@ -67,7 +67,7 @@ const Scene = () => {
       <ScenePlane texture={fbo.texture} />
 
       {/* Volumetric God Rays on Top Right */}
-      {/* <GodRays /> */}
+      <GodRays />
 
       {/* Main Scene Model */}
       <Stage />
