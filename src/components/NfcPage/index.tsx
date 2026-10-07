@@ -9,6 +9,7 @@ import { useTexture } from "@react-three/drei";
 import { useControls, folder } from "leva";
 import { createFlameWrapMaterial, DEFAULTS } from "./FlameWrapShader";
 import gsap from "gsap";
+import { Howl } from "howler";
 
 const index = () => {
   const [show, setShow] = useState(false);
@@ -31,7 +32,7 @@ const index = () => {
           <>
             <group>
               <GroupOfSphere configKey="Nfc1" configOffset={2} />
-              <GroupOfSphere configKey="Nfc2" configOffset={14} />
+              <GroupOfSphere configKey="Nfc2" configOffset={15} />
 
               {/* <GroupOfSphere configKey="Nfc" configOffset={0} /> */}
             </group>
@@ -211,6 +212,20 @@ const Card = () => {
       );
     }
   });
+
+  const sound = new Howl({
+    src: "/sounds/fire-burning.mp3",
+    loop: true,
+    volume: 0.6,
+  });
+
+  useEffect(() => {
+    sound.play();
+
+    return () => {
+      sound.stop();
+    };
+  }, [sound]);
 
   return (
     <group renderOrder={1} ref={groupRef} position={[0, -0, 0]}>
